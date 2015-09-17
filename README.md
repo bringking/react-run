@@ -13,4 +13,5 @@ and more.
 ## Running
 
 ```npm install```
+then run
 ``` gulp ```
