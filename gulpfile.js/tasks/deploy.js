@@ -14,6 +14,6 @@ gulp.task('deploy', function() {
     });
 
     return gulp.src('public/**/*')
-        .pipe(zip('latest.zip'))
+        .pipe(zip('project_name.zip'))
         .pipe(conn.dest('/from_Rincon'));
 });

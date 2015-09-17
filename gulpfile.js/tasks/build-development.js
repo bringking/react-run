@@ -2,5 +2,5 @@ var gulp         = require('gulp');
 var gulpSequence = require('gulp-sequence');
 
 gulp.task('build:development', function(cb) {
-  gulpSequence('clean', ['fonts', 'iconFont', 'images'], ['sass', 'webpack:development', 'meta','html', 'php'], ['watch', 'browserSync'], cb);
+  gulpSequence('clean', ['fonts', 'iconFont', 'images'], ['sass', 'webpack:development', 'meta','html'], ['watch', 'browserSync'], cb);
 });
