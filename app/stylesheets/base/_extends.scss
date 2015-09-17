@@ -1,0 +1,31 @@
+%marginAuto {
+  @include margin-auto();
+}
+
+%clearfix {
+  @include clearfix();
+}
+
+%inlineBlock {
+  @include inline-block();
+}
+
+%hideText {
+  @include hide-text();
+}
+
+%flexBetween{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+%goldTitle{
+  color: $gold;
+  font-family: $Oswald-light;
+}
+%whiteTitle{
+  color: $white;
+  font-family: $Oswald-light;
+}

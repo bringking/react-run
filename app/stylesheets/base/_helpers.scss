@@ -1,0 +1,45 @@
+.pointer {
+  cursor:pointer;
+}
+
+.hide-mobile{
+  display: none;
+
+  @include breakpoint(sm) {
+    display: inline-block;
+  }
+
+}
+
+.text-gray{
+  color: $gray;
+}
+
+.left{
+  float: left;
+}
+.float-right{
+  float: right;
+}
+
+.is-gold{
+  color: $gold;
+}
+
+.mt-3{
+  margin-top: 3rem;
+}
+
+.rotate-left-90 {
+  @include transform("rotate",-90);
+}
+.rotate-right-90 {
+  @include transform("rotate",90);
+}
+
+.has-bullets{
+  list-style-type: disc;
+  list-style-position: inside;
+  font-size: 1.4rem;
+
+}

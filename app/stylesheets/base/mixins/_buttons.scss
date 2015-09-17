@@ -1,0 +1,16 @@
+
+// -----------------------------------------
+   // Button Defaults
+// -----------------------------------------
+$btn-bg:  #000;
+$btn-color: #FFFFFF;
+
+@mixin button($btn-bg, $btn-color){
+
+  background-color: $btn-bg;
+  display: inline-block;
+  color: $btn-color:
+  text-align: center;
+  text-decoration: none;
+
+}

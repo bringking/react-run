@@ -1,0 +1,70 @@
+// ----------------------------------------------------------------------
+// Color Palette
+// ----------------------------------------------------------------------
+$white: #FFFFFF;
+$black: #000000;
+$white-lt:   rgba($white, 0.3);
+$slate:      #1b1b1b;
+$gray:       #707070;
+$gold-light: #A47522;
+$gold:       #cc9933;
+$gold-dk:    #a87a1f;
+$gold-darker: #402F11;
+$gold-darkest: #2A1F0B;
+
+$slate: #1b1b1b;
+$gray: #707070;
+$gold: #cc9933;
+$gold-dk: #a87a1f;
+$rust: #644b1b;
+
+// ----------------------------------------------------------------------
+// General UI Elements
+// ----------------------------------------------------------------------
+$backgroundColor: $black;
+$activeHeaderBar: #1b1b1b;
+$countdownBackground:#262626;
+$categoryTitleBackground:#111111;
+$categoryBorderOnHome: #363636;
+$buttonBorder:#410410;
+$accentOrange:#cc9933;
+
+// ----------------------------------------------------------------------
+// Colors for Text
+// ----------------------------------------------------------------------
+$header: #ffffff;
+$subHeader: #959595;
+$bodyText: #707070;
+$orangeText: $accentOrange;
+
+// ----------------------------------------------------------------------
+// Layout Breakpoints
+// ----------------------------------------------------------------------
+$maxWidth: 1400;
+
+$breakpoint-mb: 415px !default;
+$breakpoint-xs: 768px !default;
+$breakpoint-sm: 992px !default;
+$breakpoint-med: 1073px !default;
+$breakpoint-lg: 1200px !default;
+$breakpoint-xlg: 1600px !default;
+
+// ----------------------------------------------------------------------
+// Font Sizes
+// ----------------------------------------------------------------------
+$regularSize: 16;
+
+// ----------------------------------------------------------------------
+// Font Families
+// ----------------------------------------------------------------------
+$OpenSans: 'OpenSans-Regular', sans-serif;
+$OpenSans-bold: 'OpenSans-Bold', sans-serif;
+$OpenSans-Semibold: 'OpenSans-Semibold', sans-serif;
+$Oswald-light: 'Oswald-Light', sans-serif;
+$Oswald-bold: 'Oswald-Bold', sans-serif;
+$AbandonedExtended: 'AbandonedExtended', sans-serif;
+
+// ----------------------------------------------------------------------
+// Grid
+// ----------------------------------------------------------------------
+$grid-columns: 12;

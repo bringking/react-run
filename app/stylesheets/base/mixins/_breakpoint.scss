@@ -1,0 +1,45 @@
+// ----------------------------------------------------------------------
+
+// Media Query Breakpoints
+
+// ----------------------------------------------------------------------
+
+// example @include breakpoint(940) { width:80%; }
+
+@mixin breakpoint($class) {
+  @if $class == mb {
+    @media (min-width: $breakpoint-mb) {
+      @content;
+    }
+  } @else if $class == sm {
+    @media (min-width: $breakpoint-sm) {
+      @content;
+    }
+  } @else if $class == xs {
+    @media (min-width: $breakpoint-xs) {
+      @content;
+    }
+  } @else if $class == med {
+    @media (min-width: $breakpoint-med) {
+      @content;
+    }
+  } @else if $class == lg {
+    @media (min-width: $breakpoint-lg) {
+      @content;
+    }
+  } @else if $class == xlg {
+    @media (min-width: $breakpoint-xlg) {
+      @content;
+    }
+  } @else {
+    @warn "Breakpoint mixin supports: xs, sm, md, lg";
+  }
+}
+
+@mixin breakpoint-between($class-a,$class-b) {
+
+  @media (min-width: $class-a) and (max-width: $class-b) {
+    @content;
+  }
+
+}

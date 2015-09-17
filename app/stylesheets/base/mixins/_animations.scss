@@ -1,0 +1,52 @@
+// ----------------------------------------------------------------------
+
+// Animations
+
+// ----------------------------------------------------------------------
+
+// example: @include animation('slide-down 5s 3');
+
+@mixin animation($str) {
+  -webkit-animation: #{$str};
+  -moz-animation: #{$str};
+  -ms-animation: #{$str};
+  -o-animation: #{$str};
+  animation: #{$str};
+}
+
+@mixin fly-in-fade($duration,$delay) {
+  animation: fly-in-fade #{$duration} ease;
+  animation-delay: #{$delay};
+}
+
+@mixin pulse($duration,$delay) {
+  animation: pulse #{$duration} ease-in-out;
+  animation-delay: #{$delay};
+}
+@keyframes pulse {
+  0% {
+    transform:scale(1);
+  }
+  10% {
+    transform:scale(3.3);
+  }
+  20% {
+    transform:scale(2.8);
+  }
+  50% {
+    transform:scale(1.5);
+  }
+  100% {
+    transform:scale(1);
+  }
+}
+@keyframes fly-in-fade {
+  0% {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}

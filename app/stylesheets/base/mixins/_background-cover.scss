@@ -1,0 +1,12 @@
+// ----------------------------------------------------------------------
+
+  // Background cover
+
+// ----------------------------------------------------------------------
+
+// example: @include background-cover( center , center);
+
+@mixin background-cover($vert , $horz){
+  background-size: cover;
+  background-position: $vert $horz;
+}
