@@ -65,7 +65,6 @@
     "karma-phantomjs2-launcher": "^0.3.2",
     "karma-tap": "^1.0.3",
     "karma-webpack": "^1.7.0",
-    "lodash": "^3.10.1",
     "morgan": "^1.5.1",
     "object-assign": "^4.0.1",
     "open": "0.0.5",
