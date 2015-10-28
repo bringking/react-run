@@ -2,8 +2,8 @@
  * The client JS file that brings in React and bootstraps the app into the page from the server state.
  */
 import React from "react"
+import ReactDOM from "react-dom"
 import { Router, Route, Link, Redirect, ImitateBrowserBehavior } from 'react-router'
-import { history } from 'react-router/lib/HashHistory'
 
 //components
 import App from "./components/application"
@@ -15,7 +15,7 @@ window.React = React;
 const mountNode = document.getElementById('app');
 
 //render our app component into that node
-React.render(<Router history={history} scrollBehavior={ImitateBrowserBehavior}>
+ReactDOM.render(<Router scrollBehavior={ImitateBrowserBehavior}>
     <Route path="/" component={App}>
     </Route>
 </Router>, mountNode);
