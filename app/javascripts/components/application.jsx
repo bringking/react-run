@@ -7,6 +7,7 @@ import 'brace/mode/jsx';
 import 'brace/theme/solarized_dark';
 import {initialScript} from "../constants";
 import renderReactToFrame from "../utils/render_react_to_frame"
+import debounce from "debounce";
 
 class Application extends React.Component {
 
@@ -21,6 +22,9 @@ class Application extends React.Component {
 
         //bind keyboard handlers
         document.addEventListener("keydown", this.onKeyDown.bind(this));
+
+        //debounce the auto compile
+        this.updateCode = debounce(this.updateCode.bind(this), 250);
     }
 
     componentDidMount() {
@@ -37,11 +41,13 @@ class Application extends React.Component {
         }
     }
 
+    updateCode() {
+        this.socket.emit("code change", this.state.value);
+    }
+
     textChanged( newValue ) {
         this.setState({value: newValue}, ()=> {
-            setTimeout(()=> {
-                this.socket.emit("code change", this.state.value);
-            }, 100)
+            this.updateCode();
         });
     }
 

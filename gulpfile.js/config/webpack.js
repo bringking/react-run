@@ -36,6 +36,7 @@ module.exports = function( env ) {
         plugins: [],
 
         resolve: {
+            modulesDirectories: ['', paths.sourceAssets + '/javascripts/lib', 'node_modules'],
             extensions: ['', '.js', '.jsx', '.json']
         },
 
@@ -58,6 +59,7 @@ module.exports = function( env ) {
                 fs: 'empty'
             },
             resolve: {
+                modulesDirectories: ['', paths.sourceAssets + '/javascripts/lib', 'node_modules'],
                 extensions: ['', '.js', '.jsx', '.json']
             },
             module: {
