@@ -2,9 +2,6 @@
   "name": "rincon_react_starter",
   "version": "0.0.0",
   "description": "Rincon React Starter",
-  "engines": {
-    "node": "4.0.0"
-  },
   "repository": {
     "type": "git",
     "url": "git://bitbucket.org/rinconstrategies/hgfa.git"
