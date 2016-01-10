@@ -6,18 +6,33 @@ var app     = require('koa')(),
 
 //babel transformer
 var babel = require("babel-core");
+//id generator
+var shortid = require('shortid');
 
 // Send static files
 app.use(serve('./public'));
 
 // Use html
-app.use(views("./public", {map: {html: 'swig'}}));
+app.use(views("./views", {map: {html: 'swig'}}));
 
-/**
- * Routes can go both before and after but
- * app.use(router(app)); must be before
- */
 router.get('/', function *( next ) {
+
+    //generate guid
+    var id = shortid.generate();
+    //TODO store a record in the DB
+
+    //temporary redirect
+    this.redirect('/' + id);
+    this.status = 302;
+
+    yield next;
+});
+
+router.get('/:bin', function *( next ) {
+
+    console.log(this.params.bin);
+    //TODO look up record, if any
+
     yield this.render('index', {my: 'data'});
 });
 

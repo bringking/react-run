@@ -19,7 +19,7 @@ const mountNode = document.getElementById('app');
 
 //render our app component into that node
 ReactDOM.render(<Router history={createBrowserHistory()}>
-    <Route path="/" component={App}>
+    <Route path="*" component={App}>
     </Route>
 </Router>, mountNode);
 

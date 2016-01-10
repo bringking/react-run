@@ -16,3 +16,6 @@ public/
 
 #build artifacts
 generated
+
+# Ignore .env configuration files
+.env

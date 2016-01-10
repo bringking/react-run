@@ -95,7 +95,7 @@ class Application extends React.Component {
                         editorProps={{$blockScrolling: true}}
                     />
                     <div id="results">
-                        <iframe ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
+                        <iframe frameBorder="0" ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
                     </div>
                 </SplitLayout>
                 <Errors socket={this.socket}/>
