@@ -33,7 +33,8 @@ class Application extends React.Component {
     }
 
     renderCode( code ) {
-        renderReactToFrame('results', code);
+
+        renderReactToFrame('results', code, this.socket.id);
     }
 
     onCodeChange( code ) {
@@ -43,7 +44,12 @@ class Application extends React.Component {
     }
 
     updateCode() {
-        this.socket.emit("code change", this.state.value);
+        let code = this.state.value + `
+                (function(){
+                var mountNode = document.getElementById('results');
+                ReactDOM.render(React.createElement(Main),mountNode);})();
+            `;
+        this.socket.emit("code change", code);
     }
 
     textChanged( newValue ) {

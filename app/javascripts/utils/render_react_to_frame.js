@@ -50,10 +50,7 @@ export default function renderReactToFrame( target, code ) {
     _lastScript = frameScript.id;
 
     //update the script
-    frameScript.innerHTML = code + `(function(){
-                var mountNode = document.getElementById('results');
-                ReactDOM.render(React.createElement(Main),mountNode);
-            })()`;
+    frameScript.innerHTML = code;
 
     frame.contentDocument.body.appendChild(frameScript);
 }
