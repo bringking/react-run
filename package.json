@@ -1,15 +1,16 @@
 {
-  "name": "rincon_react_starter",
+  "name": "react_bin",
   "version": "0.0.0",
-  "description": "Rincon React Starter",
+  "description": "React Bin",
   "repository": {
     "type": "git",
-    "url": "git://bitbucket.org/rinconstrategies/hgfa.git"
+    "url": "git@bitbucket.org:bringking/jsx_bin.git"
   },
   "scripts": {
     "pretest": "npm install",
     "test": "gulp karma",
     "build": "gulp build:production",
+    "prestart":"npm run build",
     "start": "node server.js"
   },
   "dependencies": {
