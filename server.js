@@ -45,6 +45,11 @@ router.get('/:bin', function *( next ) {
         .findOne({'id': this.params.bin});
     var latestRevision = yield models.binRevision.findOne({"_bin": result._id});
 
+    if ( !latestRevision ) {
+        latestRevision = new models.binRevision({id: "r_" + shortid.generate(), text: "", "_bin": result._id});
+        yield latestRevision.save();
+    }
+
     //temporary redirect
     this.redirect('/' + result.id + "/" + latestRevision.id);
     this.status = 302;
