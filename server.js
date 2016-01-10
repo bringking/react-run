@@ -46,6 +46,6 @@ io.on('connection', function( socket ) {
     });
 });
 
-// Start the server
-server.listen(1337);
-console.info('Now running on localhost:1337');
+//start the server
+var port = process.env.PORT || 3000;
+server.listen(port);
