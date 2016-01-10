@@ -3,7 +3,9 @@
  */
 import React from "react"
 import ReactDOM from "react-dom"
-import { Router, Route, Link, Redirect, ImitateBrowserBehavior } from 'react-router'
+import createBrowserHistory from 'history/lib/createBrowserHistory'
+
+import { Router, Route, Link, Redirect, browserHistory } from 'react-router'
 
 //components
 import App from "./components/application"
@@ -16,7 +18,7 @@ window.ReactDOM = ReactDOM;
 const mountNode = document.getElementById('app');
 
 //render our app component into that node
-ReactDOM.render(<Router scrollBehavior={ImitateBrowserBehavior}>
+ReactDOM.render(<Router history={createBrowserHistory()}>
     <Route path="/" component={App}>
     </Route>
 </Router>, mountNode);
