@@ -16,6 +16,7 @@ class Application extends React.Component {
         super(props, context);
         this.socket = io();
         this.state = {
+            revisions: window.revisions || [],
             value: window.existingCode || initialScript
         };
         this.textChanged = this.textChanged.bind(this);
@@ -96,7 +97,7 @@ class Application extends React.Component {
             <div>
                 <SplitLayout split="vertical">
                     <select>
-                        {revisions.map(r=><option>{r.hash}</option>)}
+                        {this.state.revisions.map(r=><option>{r.hash}</option>)}
                     </select>
                     <AceEditor
                         mode="jsx"
