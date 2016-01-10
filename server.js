@@ -1,9 +1,15 @@
-var app     = require('koa')(),
-    router  = require('koa-router')(),
-    serve   = require('koa-static'),
-    webpack = require("webpack"),
-    views   = require('koa-views');
+//load variables
+require('dotenv').load();
 
+var app      = require('koa')(),
+    router   = require('koa-router')(),
+    serve    = require('koa-static'),
+    webpack  = require("webpack"),
+    mongoose = require('mongoose'),
+    views    = require('koa-views');
+
+//store our models
+var models;
 //babel transformer
 var babel = require("babel-core");
 //id generator
@@ -19,21 +25,46 @@ router.get('/', function *( next ) {
 
     //generate guid
     var id = shortid.generate();
-    //TODO store a record in the DB
+    var newBin = new models.bin({id: id});
+
+    var result = yield newBin.save();
+    var newRevision = new models.binRevision({id: "r_" + shortid.generate(), text: "", "_bin": result._id});
+    var binRevision = yield newRevision.save();
 
     //temporary redirect
     this.redirect('/' + id);
     this.status = 302;
 
     yield next;
+
 });
 
 router.get('/:bin', function *( next ) {
 
-    console.log(this.params.bin);
-    //TODO look up record, if any
+    var result = yield models.bin
+        .findOne({'id': this.params.bin});
+    var latestRevision = yield models.binRevision.findOne({"_bin": result._id});
 
-    yield this.render('index', {my: 'data'});
+    //temporary redirect
+    this.redirect('/' + result.id + "/" + latestRevision.id);
+    this.status = 302;
+
+    yield next;
+
+});
+
+router.get('/:bin/:revision', function *( next ) {
+
+    var bin = yield models.bin
+        .findOne({'id': this.params.bin});
+    var binRevision = yield models.binRevision
+        .findOne({'id': this.params.revision});
+
+    console.log(bin);
+    console.log(binRevision);
+
+    //TODO look up record, if any
+    yield this.render('index', {});
 });
 
 //router
@@ -47,6 +78,15 @@ var server = require('http').Server(app.callback()),
 
 // Socket.io
 io.on('connection', function( socket ) {
+
+    socket.on('code save', function( data ) {
+        try {
+            if ( data.revision && data.id && data.text ) {
+                //saving
+            }
+        } catch ( e ) {
+        }
+    });
 
     socket.on('code change', function( data ) {
         try {
@@ -62,6 +102,18 @@ io.on('connection', function( socket ) {
     });
 });
 
-//start the server
-var port = process.env.PORT || 3000;
-server.listen(port);
+mongoose.connect(process.env.DB);
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+
+    //load our models
+    models = require("./models")(mongoose);
+    // we're connected!
+    console.log('connected');
+    //start the server
+    var port = process.env.PORT || 3000;
+    server.listen(port);
+});
+
+
