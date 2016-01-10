@@ -9,7 +9,7 @@
   "scripts": {
     "pretest": "npm install",
     "test": "gulp karma",
-    "build": "gulp build:development",
+    "build": "gulp build:production",
     "prestart": "npm run build",
     "start": "node server.js"
   },
