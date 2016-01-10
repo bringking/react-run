@@ -42,7 +42,6 @@ io.on('connection', function( socket ) {
             socket.emit("code transformed", result.code);
 
         } catch ( e ) {
-            console.error(e);
             socket.emit("code error", e.message);
         }
     });

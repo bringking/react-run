@@ -82,21 +82,24 @@ class Application extends React.Component {
 
     render() {
         return (
-            <SplitLayout split="vertical">
-                <AceEditor
-                    mode="jsx"
-                    theme="solarized_dark"
-                    onChange={this.textChanged}
-                    width="100%"
-                    value={this.state.value}
-                    height="100vh"
-                    name="UNIQUE_ID_OF_DIV"
-                    editorProps={{$blockScrolling: true}}
-                />
-                <div id="results">
-                    <iframe ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
-                </div>
-            </SplitLayout>);
+            <div>
+                <SplitLayout split="vertical">
+                    <AceEditor
+                        mode="jsx"
+                        theme="solarized_dark"
+                        onChange={this.textChanged}
+                        width="100%"
+                        value={this.state.value}
+                        height="100vh"
+                        name="UNIQUE_ID_OF_DIV"
+                        editorProps={{$blockScrolling: true}}
+                    />
+                    <div id="results">
+                        <iframe ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
+                    </div>
+                </SplitLayout>
+                <Errors socket={this.socket}/>
+            </div>);
     }
 }
 export default Application;

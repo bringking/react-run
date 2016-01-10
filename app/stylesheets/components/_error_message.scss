@@ -1,0 +1,18 @@
+.error-message {
+  position: fixed;
+  z-index: 999999;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 40px;
+  opacity: .95;
+  background: darkred;
+  color: white;
+  font-family: sans-serif;
+  line-height: 40px;
+  padding-left: 12px;
+
+  &.initial {
+    visibility: hidden;
+  }
+}
