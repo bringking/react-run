@@ -12,14 +12,15 @@ import debounce from "debounce";
 
 class Application extends React.Component {
 
-    constructor( props ) {
-        super(props);
+    constructor( props, context ) {
+        super(props, context);
         this.socket = io();
         this.state = {
-            value: initialScript
+            value: window.existingCode || initialScript
         };
         this.textChanged = this.textChanged.bind(this);
         this.socket.on("code transformed", this.onCodeChange.bind(this));
+        this.socket.on("code saved", this.onCodeSaved.bind(this));
 
         //bind keyboard handlers
         document.addEventListener("keydown", this.onKeyDown.bind(this));
@@ -71,10 +72,20 @@ class Application extends React.Component {
         });
     }
 
+    onCodeSaved( data ) {
+        let {bin,revision} = data;
+        if ( bin && revision ) {
+            this.props.history.push({
+                pathname: `/${bin}/${revision}`
+            });
+        }
+    }
+
     onKeyDown( event ) {
         if ( event.metaKey && event.keyCode === 83 ) {
+            let [bin,revision] = this.props.params.splat.split("/");
             event.preventDefault();
-            this.socket.emit("code change", this.state.value);
+            this.socket.emit("code save", {code: this.state.value, bin, revision});
             return false;
         }
         return true;
@@ -84,6 +95,9 @@ class Application extends React.Component {
         return (
             <div>
                 <SplitLayout split="vertical">
+                    <select>
+                        {revisions.map(r=><option>{r.hash}</option>)}
+                    </select>
                     <AceEditor
                         mode="jsx"
                         theme="solarized_dark"
@@ -102,4 +116,5 @@ class Application extends React.Component {
             </div>);
     }
 }
+
 export default Application;

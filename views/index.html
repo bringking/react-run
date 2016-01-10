@@ -63,6 +63,10 @@
     <div id="app">
     </div>
 </div>
+<script>
+    window.existingCode = "{% autoescape 'js' %}{{ code }}{% endautoescape %}";
+    window.revisions = {{ otherRevisions|json|raw }};
+</script>
 <script src="/javascripts/socket.io.js" defer></script>
 <script src="/javascripts/client.js" defer></script>
 </body>

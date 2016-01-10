@@ -1,7 +1,8 @@
 module.exports = function( mongoose ) {
     var BinRevision = mongoose.Schema({
-        id: String,
+        hash: String,
         text: String,
+        createdAt: {type: Date},
         _bin: {type: mongoose.Schema.Types.ObjectId, ref: 'bin'}
     });
 
