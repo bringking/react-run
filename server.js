@@ -4,9 +4,7 @@ var app     = require('koa')(),
     webpack = require("webpack"),
     views   = require('koa-views');
 
-var MemoryFileSystem = require("memory-fs");
-var fs = new MemoryFileSystem(); // Optionally pass a javascript object
-var realFs = require('fs');
+
 //babel transformer
 var babel = require("babel-core");
 
@@ -38,73 +36,12 @@ io.on('connection', function( socket ) {
 
     socket.on('code change', function( data ) {
         try {
-
-            var sanitized = socket.id.replace('/', '');
-            var inputFileName = sanitized + ".js";
-            var outputFileName = "compiled_" + sanitized + ".js";
-
-            if ( !realFs.existsSync("./generated") ) {
-                realFs.mkdirSync("./generated");
-            }
-
-            //create a temp file
-            realFs.writeFileSync("./generated/" + inputFileName, data);
-
-            var babelJsLoader = {
-                test: /\.js$/, exclude: [/node_modules/], loader: 'babel', query: {
-                    presets: ['react', 'es2015', 'stage-1'],
-                    plugins: ['transform-runtime']
-                }
-            };
-
-            var config = {
-                entry: "./generated/" + inputFileName,
-                module: {
-                    loaders: [
-                        babelJsLoader
-                    ]
-                },
-                plugins: [],
-                resolve: {
-                    extensions: ['', '.js', '.jsx', '.json']
-                },
-                output: {
-                    path: "/",
-                    filename: outputFileName
-                }
-            };
-
-            //minify
-            config.plugins.push(
-                new webpack.DefinePlugin({
-                    'process.env': {
-                        'NODE_ENV': JSON.stringify('production')
-                    }
-                }),
-                new webpack.optimize.DedupePlugin(),
-                new webpack.optimize.UglifyJsPlugin()
-            );
-
-            var compiler = webpack(config);
-            compiler.outputFileSystem = fs;
-
-            compiler.run(function( err, stats ) {
-
-                if ( !err ) {
-                    fs.readFile("/" + outputFileName, "utf-8", function( err, data ) {
-                        socket.emit("code transformed", data);
-                    });
-                } else {
-                    console.log(err);
-                }
-
-            });
-
             //TODO Since this is a pure function, we could memoize it for performance
-            /* var result = babel.transform(data, {
-             presets: ['react', 'es2015', 'stage-1']
-             //plugins: ['transform-runtime']
-             });*/
+            var result = babel.transform(data, {
+                presets: ['react', 'es2015', 'stage-1']
+                //plugins: ['transform-runtime']
+            });
+            socket.emit("code transformed", result.code);
 
         } catch ( e ) {
             console.error(e);
