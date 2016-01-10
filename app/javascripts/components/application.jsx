@@ -5,6 +5,8 @@ import AceEditor from 'react-ace';
 import Errors from "./errors";
 import 'brace/mode/jsx';
 import 'brace/theme/solarized_dark';
+import {initialScript} from "../constants";
+import renderReactToFrame from "../utils/render_react_to_frame"
 
 class Application extends React.Component {
 
@@ -12,7 +14,7 @@ class Application extends React.Component {
         super(props);
         this.socket = io();
         this.state = {
-            value: ""
+            value: initialScript
         };
         this.textChanged = this.textChanged.bind(this);
         this.socket.on("code transformed", this.onCodeChange.bind(this));
@@ -21,12 +23,18 @@ class Application extends React.Component {
         document.addEventListener("keydown", this.onKeyDown.bind(this));
     }
 
-    onCodeChange( code ) {
+    componentDidMount() {
+        this.textChanged(this.state.value);
+    }
 
-        let result = code + `
-var mountNode = document.getElementById('results');
-ReactDOM.render(React.createElement(Main),mountNode);`;
-        eval(result);
+    renderCode( code ) {
+        renderReactToFrame('results', code);
+    }
+
+    onCodeChange( code ) {
+        if ( code ) {
+            this.renderCode(code);
+        }
     }
 
     textChanged( newValue ) {
@@ -38,11 +46,9 @@ ReactDOM.render(React.createElement(Main),mountNode);`;
     }
 
     onKeyDown( event ) {
-        //TODO implement this
         if ( event.metaKey && event.keyCode === 83 ) {
             event.preventDefault();
             this.socket.emit("code change", this.state.value);
-            console.log("saving");
             return false;
         }
         return true;

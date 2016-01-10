@@ -8,6 +8,7 @@ body {
   width: 100%;
   @include rem("font-size", $regularSize);
   line-height: 1.2;
+  overflow: hidden;
 }
 
 body, html {
