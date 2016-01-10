@@ -136,13 +136,18 @@ io.on('connection', co.wrap(function *( socket ) {
                 var newRevision = new models.binRevision({
                     hash: "r_" + shortid.generate(),
                     text: data.code,
+                    createdAt: new Date(),
                     "_bin": bin._id
                 });
                 var newResult = yield newRevision.save();
 
                 //save the result
                 if ( newResult ) {
-                    socket.emit("code saved", {bin: data.bin, revision: newResult.hash});
+                    socket.emit("code saved", {
+                        bin: data.bin,
+                        revision: newResult.hash,
+                        createdAt: newResult.createdAt
+                    });
                 }
 
             }

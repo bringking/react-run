@@ -2,24 +2,35 @@ import React from "react";
 import ReactDOM from "react-dom";
 import brace from 'brace';
 import AceEditor from 'react-ace';
-import SplitLayout from "react-split-layout";
 import Errors from "./errors";
 import 'brace/mode/jsx';
 import 'brace/theme/solarized_dark';
 import {initialScript} from "../constants";
 import renderReactToFrame from "../utils/render_react_to_frame"
 import debounce from "debounce";
+import Revisions from "./revisions";
 
 class Application extends React.Component {
 
     constructor( props, context ) {
         super(props, context);
         this.socket = io();
+
+        //set the initial bin
+        let [bin,revision] = props.params.splat.split("/");
+
         this.state = {
+            bin,
+            revision,
+            showingRevisions: false,
             revisions: window.revisions || [],
             value: window.existingCode || initialScript
         };
+        this.showRevisions = this.showRevisions.bind(this);
+        this.hideRevisions = this.hideRevisions.bind(this);
+
         this.textChanged = this.textChanged.bind(this);
+
         this.socket.on("code transformed", this.onCodeChange.bind(this));
         this.socket.on("code saved", this.onCodeSaved.bind(this));
 
@@ -45,6 +56,7 @@ class Application extends React.Component {
             <div id="results"></div>
         </body>
  </html>`);
+
     }
 
     renderCode( code ) {
@@ -74,11 +86,17 @@ class Application extends React.Component {
     }
 
     onCodeSaved( data ) {
-        let {bin,revision} = data;
+        let {bin,revision,createdAt} = data;
         if ( bin && revision ) {
             this.props.history.push({
                 pathname: `/${bin}/${revision}`
             });
+
+            //store in revisions
+            let revisions = this.state.revisions;
+            revisions.push({hash: revision, createdAt});
+            this.setState({revisions, revision});
+
         }
     }
 
@@ -92,27 +110,45 @@ class Application extends React.Component {
         return true;
     }
 
+    hideRevisions() {
+        this.setState({showingRevisions: false});
+
+    }
+
+    showRevisions() {
+        this.setState({showingRevisions: true});
+    }
+
     render() {
         return (
-            <div>
-                <SplitLayout split="vertical">
-                    <select>
-                        {this.state.revisions.map(r=><option>{r.hash}</option>)}
-                    </select>
-                    <AceEditor
-                        mode="jsx"
-                        theme="solarized_dark"
-                        onChange={this.textChanged}
-                        width="100%"
-                        value={this.state.value}
-                        height="100vh"
-                        name="UNIQUE_ID_OF_DIV"
-                        editorProps={{$blockScrolling: true}}
-                    />
+            <div className="app-container">
+
+                <Revisions revision={this.state.revision} bin={this.state.bin} revisions={this.state.revisions}
+                           showingRevisions={this.state.showingRevisions} hideRevisions={this.hideRevisions}/>
+
+                <div className="app-inner">
+                    <div id="editor">
+                        <div className="toolbar">
+                            <div className="toolbar-pad"></div>
+                            <ul className="toolbar-controls">
+                                <li onClick={this.showRevisions}>Revisions <i className="fa fa-file-text"></i></li>
+                            </ul>
+                        </div>
+                        <AceEditor
+                            mode="jsx"
+                            theme="solarized_dark"
+                            onChange={this.textChanged}
+                            width="100%"
+                            value={this.state.value}
+                            height="100vh"
+                            name="UNIQUE_ID_OF_DIV"
+                            editorProps={{$blockScrolling: true}}
+                        />
+                    </div>
                     <div id="results">
                         <iframe frameBorder="0" ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
                     </div>
-                </SplitLayout>
+                </div>
                 <Errors socket={this.socket}/>
             </div>);
     }

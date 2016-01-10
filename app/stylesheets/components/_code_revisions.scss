@@ -1,0 +1,50 @@
+.code-revisions {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+  width: 200px;
+  background-color: rgba(0, 43, 55, 1) * 1.1;
+  transform: translate3d(-200px, 0, 0);
+  transition: transform 250ms ease;
+  padding-top: 10px;
+  h3 {
+    color: rgba(133, 154, 0, 1);
+    font-family: monospace;
+    border-bottom: 1px solid rgba(133, 154, 0, 1);
+    padding-left: 5px;
+    font-size: 15px;
+    i {
+      float: right;
+      padding-right: 5px;
+      padding-top: 1px;
+      cursor: pointer;
+    }
+  }
+
+  &.open {
+    transform: translate3d(0, 0, 0);
+  }
+
+  a {
+    color: rgba(133, 154, 0, 1);
+    font-family: monospace;
+    height: 20px;
+    line-height: 20px;
+    display: block;
+  }
+
+  li {
+    padding: 5px;
+
+    &.active {
+      background-color: rgba(133, 154, 0, 1);
+
+      a {
+        color: rgba(0, 43, 55, 1);
+      }
+    }
+  }
+
+}

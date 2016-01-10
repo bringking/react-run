@@ -4,6 +4,27 @@
   display: flex;
 }
 
+#editor {
+  width: 50%;
+}
+
+#results {
+  width: 50%;
+}
+
+#app {
+  width: 100%;
+
+}
+
+.app-container {
+  width: 100%;
+}
+
+.app-inner {
+  display: flex;
+  width: 100%;
+}
 
 #resultsFrame {
   height: 100vh;
