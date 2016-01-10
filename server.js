@@ -1,5 +1,5 @@
 //load variables
-require('dotenv').load();
+require('dotenv').load({silent: true});
 
 var app      = require('koa')(),
     router   = require('koa-router')(),
@@ -42,7 +42,7 @@ router.get('/', function *( next ) {
     this.redirect('/' + id);
     this.status = 302;
 
-    yield next;
+    //yield next;
 
 });
 
@@ -74,7 +74,7 @@ router.get('/:bin', function *( next ) {
     this.redirect('/' + result.id + "/" + latestRevision.hash);
     this.status = 302;
 
-    yield next;
+    // yield next;
 
 });
 
@@ -171,7 +171,7 @@ io.on('connection', co.wrap(function *( socket ) {
 
 }));
 
-mongoose.connect(process.env.DB);
+mongoose.connect(process.env.MONGOLAB_URI);
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
