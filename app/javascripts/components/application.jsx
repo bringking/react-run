@@ -2,6 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import brace from 'brace';
 import AceEditor from 'react-ace';
+import SplitLayout from "react-split-layout";
 import Errors from "./errors";
 import 'brace/mode/jsx';
 import 'brace/theme/solarized_dark';
@@ -69,8 +70,7 @@ class Application extends React.Component {
 
     render() {
         return (
-            <div>
-                <Errors/>
+            <SplitLayout split="vertical">
                 <AceEditor
                     mode="jsx"
                     theme="solarized_dark"
@@ -80,7 +80,11 @@ class Application extends React.Component {
                     height="100vh"
                     name="UNIQUE_ID_OF_DIV"
                     editorProps={{$blockScrolling: true}}
-                /></div>);
+                />
+                <div id="results">
+                    <iframe src="about:blank" id="resultsFrame"></iframe>
+                </div>
+            </SplitLayout>);
     }
 }
 export default Application;

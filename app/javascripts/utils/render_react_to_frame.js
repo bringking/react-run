@@ -11,18 +11,11 @@ export default function renderReactToFrame( target, code ) {
         return;
     }
 
-    var frameNode = document.getElementById(target);
     let frame = document.getElementById("resultsFrame");
     if ( !frame ) {
-        frame = document.createElement("iframe");
-        frame.id = "resultsFrame";
-        frame.width = '100%';
         frame.height = '100%';
         frame.frameborder = 0;
         frame.src = 'about:blank';
-
-        //update the frame
-        frameNode.appendChild(frame);
 
         //write the content
         frame.contentDocument.write(`<html>
