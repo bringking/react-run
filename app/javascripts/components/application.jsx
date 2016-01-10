@@ -31,11 +31,23 @@ class Application extends React.Component {
     componentDidMount() {
         //update the window with the default script
         this.textChanged(this.state.value);
+
+        let frame = this.refs.resultsFrame;
+        //TODO this is a hack
+        frame.contentWindow.React = window.React;
+        frame.contentWindow.ReactDOM = window.ReactDOM;
+        //write the content
+        frame.contentDocument.write(`<html>
+        <head><title>Code</title></head>
+        <body>
+            <div id="results"></div>
+        </body>
+ </html>`);
     }
 
     renderCode( code ) {
 
-        renderReactToFrame('results', code, this.socket.id);
+        renderReactToFrame(this.refs.resultsFrame, code, this.socket.id);
     }
 
     onCodeChange( code ) {
@@ -82,7 +94,7 @@ class Application extends React.Component {
                     editorProps={{$blockScrolling: true}}
                 />
                 <div id="results">
-                    <iframe src="about:blank" id="resultsFrame"></iframe>
+                    <iframe ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
                 </div>
             </SplitLayout>);
     }

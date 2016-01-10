@@ -4,30 +4,11 @@ import ReactDOM from "react-dom";
 let _lastScript = null;
 let _lastCode = "";
 
-export default function renderReactToFrame( target, code ) {
+export default function renderReactToFrame( frame, code ) {
 
     //only change if code is different
     if ( code === _lastCode ) {
         return;
-    }
-
-    let frame = document.getElementById("resultsFrame");
-    if ( !frame ) {
-        frame.height = '100%';
-        frame.frameborder = 0;
-        frame.src = 'about:blank';
-
-        //write the content
-        frame.contentDocument.write(`<html>
-        <head><title>Code</title></head>
-        <body>
-            <div id="results"></div>
-        </body>
- </html>`);
-
-        //TODO this is a hack
-        frame.contentWindow.React = window.React;
-        frame.contentWindow.ReactDOM = window.ReactDOM;
     }
 
     //remove the old script
