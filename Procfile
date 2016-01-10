@@ -1,1 +1,1 @@
-web: node --harmony --use-strict server.js
+web: npm start
