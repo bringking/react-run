@@ -1,6 +1,5 @@
 var paths = require('./');
 var webpack = require('webpack');
-var webpackManifest = require('../lib/webpackManifest');
 
 module.exports = function( env ) {
 
@@ -30,7 +29,7 @@ module.exports = function( env ) {
 
         output: {
             path: jsDest,
-            filename: env === 'production' ? '[name]-[hash].js' : '[name].js',
+            filename: '[name].js',
             publicPath: publicPath
         },
 
@@ -71,7 +70,6 @@ module.exports = function( env ) {
 
     if ( env === 'production' || env === 'staging' ) {
         webpackConfig.plugins.push(
-            new webpackManifest(publicPath, 'public'),
             new webpack.DefinePlugin({
                 'process.env': {
                     'NODE_ENV': JSON.stringify('production')
