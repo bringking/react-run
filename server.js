@@ -4,7 +4,6 @@ var app     = require('koa')(),
     webpack = require("webpack"),
     views   = require('koa-views');
 
-
 //babel transformer
 var babel = require("babel-core");
 
@@ -39,7 +38,6 @@ io.on('connection', function( socket ) {
             //TODO Since this is a pure function, we could memoize it for performance
             var result = babel.transform(data, {
                 presets: ['react', 'es2015', 'stage-1']
-                //plugins: ['transform-runtime']
             });
             socket.emit("code transformed", result.code);
 
