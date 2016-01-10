@@ -10,6 +10,7 @@ import App from "./components/application"
 
 //put React into the global scope for chrome dev tool support
 window.React = React;
+window.ReactDOM = ReactDOM;
 
 //grab the app node
 const mountNode = document.getElementById('app');

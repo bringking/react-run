@@ -8,6 +8,21 @@ module.exports = function( env ) {
     var jsDest = paths.publicAssets + '/javascripts/';
     var publicPath = '/javascripts/';
 
+    var babelJsxLoader = {
+        test: /\.jsx$/, exclude: [/node_modules/], loader: 'babel', query: {
+            presets: ['react', 'es2015', 'stage-1'],
+            plugins: ['transform-runtime'],
+            cacheDirectory: true
+        }
+    };
+    var babelJsLoader = {
+        test: /\.js$/, exclude: [/node_modules/], loader: 'babel', query: {
+            presets: ['react', 'es2015', 'stage-1'],
+            plugins: ['transform-runtime'],
+            cacheDirectory: true
+        }
+    };
+
     var webpackConfig = {
         entry: {
             client: [jsSrc + "client.js"]
@@ -27,8 +42,7 @@ module.exports = function( env ) {
 
         module: {
             loaders: [
-                {test: /\.jsx$/, exclude: [/node_modules/], loader: 'babel?stage=0'},
-                {test: /\.js$/, exclude: [/node_modules/], loader: 'babel?stage=0'}
+                babelJsLoader, babelJsxLoader
             ]
         }
     };
@@ -49,8 +63,7 @@ module.exports = function( env ) {
             },
             module: {
                 loaders: [
-                    {test: /\.jsx$/, exclude: [/node_modules/], loader: 'babel?stage=0'},
-                    {test: /\.js$/, exclude: [/node_modules/], loader: 'babel?stage=0'}
+                    babelJsLoader, babelJsxLoader
                 ]
             }
         }
