@@ -28,6 +28,7 @@ class Application extends React.Component {
     }
 
     componentDidMount() {
+        //update the window with the default script
         this.textChanged(this.state.value);
     }
 
