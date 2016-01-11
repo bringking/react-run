@@ -3,9 +3,8 @@
  */
 import React from "react"
 import ReactDOM from "react-dom"
-import createBrowserHistory from 'history/lib/createBrowserHistory'
-
-import { Router, Route, Link, Redirect, browserHistory } from 'react-router'
+import { createHistory } from 'history'
+import { Router, Route } from 'react-router'
 
 //components
 import App from "./components/application"
@@ -18,8 +17,9 @@ window.ReactDOM = ReactDOM;
 const mountNode = document.getElementById('app');
 
 //render our app component into that node
-ReactDOM.render(<Router history={createBrowserHistory()}>
-    <Route path="*" component={App}>
+ReactDOM.render(<Router history={createHistory()}>
+    <Route path="/:bin/:revision" component={App}>
     </Route>
 </Router>, mountNode);
+
 

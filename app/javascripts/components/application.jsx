@@ -15,19 +15,21 @@ class Application extends React.Component {
     constructor( props, context ) {
         super(props, context);
         this.socket = io();
-
         //set the initial bin
-        let [bin,revision] = props.params.splat.split("/");
+        let {bin,revision} = props.params;
 
         this.state = {
             bin,
             revision,
+            frameError: null,
             showingRevisions: false,
             revisions: window.revisions || [],
             value: window.existingCode || initialScript
         };
         this.showRevisions = this.showRevisions.bind(this);
         this.hideRevisions = this.hideRevisions.bind(this);
+        this.onFrameError = this.onFrameError.bind(this);
+        this.clearFrameError = this.clearFrameError.bind(this);
 
         this.textChanged = this.textChanged.bind(this);
 
@@ -49,18 +51,30 @@ class Application extends React.Component {
         //TODO this is a hack
         frame.contentWindow.React = window.React;
         frame.contentWindow.ReactDOM = window.ReactDOM;
+
         //write the content
         frame.contentDocument.write(`<html>
         <head><title>Code</title></head>
         <body>
-            <div id="results"></div>
+            <div id="client_results"></div>
         </body>
  </html>`);
 
+        //listen for frame errors
+        frame.contentWindow.console.error = this.onFrameError;
+        frame.contentWindow.__clearMessages = this.clearFrameError;
+
+    }
+
+    clearFrameError() {
+        this.setState({frameError: null});
+    }
+
+    onFrameError( msg ) {
+        this.setState({frameError: msg.message});
     }
 
     renderCode( code ) {
-
         renderReactToFrame(this.refs.resultsFrame, code, this.socket.id);
     }
 
@@ -71,11 +85,16 @@ class Application extends React.Component {
     }
 
     updateCode() {
-        let code = this.state.value + `
+        let code = `try{` + this.state.value + `
                 (function(){
-                var mountNode = document.getElementById('results');
+                var mountNode = document.getElementById('client_results');
                 ReactDOM.render(React.createElement(Main),mountNode);})();
-            `;
+
+                if(window.__clearMessages) {
+                     __clearMessages();
+                }
+
+            }catch(e){console.error(e)}`;
         this.socket.emit("code change", code);
     }
 
@@ -102,7 +121,7 @@ class Application extends React.Component {
 
     onKeyDown( event ) {
         if ( event.metaKey && event.keyCode === 83 ) {
-            let [bin,revision] = this.props.params.splat.split("/");
+            let {bin,revision} = this.props.params;
             event.preventDefault();
             this.socket.emit("code save", {code: this.state.value, bin, revision});
             return false;
@@ -146,10 +165,10 @@ class Application extends React.Component {
                         />
                     </div>
                     <div id="results">
-                        <iframe frameBorder="0" ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
+                        <iframe frameBorder="0" ref="resultsFrame" id="resultsFrame"></iframe>
                     </div>
                 </div>
-                <Errors socket={this.socket}/>
+                <Errors socket={this.socket} frameError={this.state.frameError}/>
             </div>);
     }
 }

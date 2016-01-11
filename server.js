@@ -22,7 +22,7 @@ app.use(serve('./public'));
 // Use html
 app.use(views("./views", {map: {html: 'swig'}}));
 
-router.get('/', function *( next ) {
+router.get('/', function *() {
 
     //generate guid
     var id = shortid.generate();
@@ -39,14 +39,12 @@ router.get('/', function *( next ) {
     yield newRevision.save();
 
     //temporary redirect
-    this.redirect('/' + id);
+    this.redirect('/' + id + "/" + newRevision.hash);
     this.status = 302;
-
-    //yield next;
 
 });
 
-router.get('/:bin', function *( next ) {
+router.get('/:bin', function *() {
 
     var result = yield models.bin
         .findOne({'id': this.params.bin});
@@ -55,7 +53,6 @@ router.get('/:bin', function *( next ) {
     if ( !result ) {
         this.status = 404;
         yield this.render('not_found', {});
-        return;
     }
 
     var latestRevision = yield models.binRevision.findOne({"_bin": result._id});
@@ -74,11 +71,9 @@ router.get('/:bin', function *( next ) {
     this.redirect('/' + result.id + "/" + latestRevision.hash);
     this.status = 302;
 
-    // yield next;
-
 });
 
-router.get('/:bin/:revision', function *( next ) {
+router.get('/:bin/:revision', function *() {
 
     var bin = yield models.bin
         .findOne({'id': this.params.bin});
@@ -178,8 +173,10 @@ db.once('open', function() {
 
     //load our models
     models = require("./models")(mongoose);
+
     // we're connected!
-    console.log('connected');
+    console.log('Application Started');
+
     //start the server
     var port = process.env.PORT || 3000;
     server.listen(port);

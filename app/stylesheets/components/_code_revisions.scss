@@ -9,6 +9,7 @@
   transform: translate3d(-200px, 0, 0);
   transition: transform 250ms ease;
   padding-top: 10px;
+  overflow-y: auto;
   h3 {
     color: rgba(133, 154, 0, 1);
     font-family: monospace;
@@ -17,7 +18,7 @@
     font-size: 15px;
     i {
       float: right;
-      padding-right: 5px;
+      padding-right: 15px;
       padding-top: 1px;
       cursor: pointer;
     }

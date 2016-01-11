@@ -6,7 +6,8 @@ export default class Errors extends React.Component {
         super(props);
         this.state = {
             initialState: true,
-            errorMessage: null
+            errorMessage: null,
+            frameError: null
         };
 
     }
@@ -14,7 +15,14 @@ export default class Errors extends React.Component {
     componentDidMount() {
         this.props.socket.on("code error", this.onCodeError.bind(this));
         this.props.socket.on("code transformed", this.onCodeNormal.bind(this));
+    }
 
+    componentWillReceiveProps( nextProps ) {
+        if ( nextProps.frameError ) {
+            this.setState({frameError: nextProps.frameError, initialState: false});
+        } else {
+            this.setState({frameError: null});
+        }
     }
 
     onCodeNormal() {
@@ -32,7 +40,7 @@ export default class Errors extends React.Component {
     render() {
         return (
             <div
-                className={`error-message ${this.state.initialState?'initial':'animated'} ${!this.state.errorMessage ?"fadeOut":"fadeIn"}`}>{this.state.errorMessage}</div>
+                className={`error-message ${this.state.initialState?'initial':'animated'} ${!this.state.errorMessage && !this.state.frameError ?"fadeOut":"fadeIn"}`}>{this.state.errorMessage || this.state.frameError}</div>
         );
     }
 }
