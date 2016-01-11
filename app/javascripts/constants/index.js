@@ -13,8 +13,9 @@ export const initialScript = `/**
  * view revisions of previous components you have created. Tip: You can
  * save your work by typing "cmd+s" or "window + s" on windows
  *
- * Globals Usage: Currently React.run exposes only two global variables for your use,
- * "React" and "ReactDOM". There are plans to add more soon!
+ * Globals Usage: Currently React.run exposes only two global
+ * variables for your use, "React" and "ReactDOM".
+ * There are plans to add more soon!
  *
  * This is a beta so expect more features soon!
  * Built with love by http://rinconstrategies.io
