@@ -59,6 +59,7 @@ router.get('/:bin', function *() {
     if ( !result ) {
         this.status = 404;
         yield this.render('not_found', {});
+        return;
     }
 
     var latestRevision = yield models.binRevision.findOne({"_bin": result._id});
