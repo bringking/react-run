@@ -1,13 +1,14 @@
 //load variables
 require('dotenv').load({silent: true});
 
-var app      = require('koa')(),
-    router   = require('koa-router')(),
-    serve    = require('koa-static'),
-    webpack  = require("webpack"),
-    co       = require('co'),
-    mongoose = require('mongoose'),
-    views    = require('koa-views');
+var app         = require('koa')(),
+    router      = require('koa-router')(),
+    staticCache = require('koa-static-cache'),
+    webpack     = require("webpack"),
+    co          = require('co'),
+    path        = require("path"),
+    mongoose    = require('mongoose'),
+    views       = require('koa-views');
 
 //store our models
 var models;
@@ -17,7 +18,12 @@ var babel = require("babel-core");
 var shortid = require('shortid');
 
 // Send static files
-app.use(serve('./public'));
+//app.use(serve('./public'));
+
+app.use(staticCache(path.join(__dirname, 'public'), {
+    maxAge: 365 * 24 * 60 * 60,
+    gzip: true
+}));
 
 // Use html
 app.use(views("./views", {map: {html: 'swig'}}));
