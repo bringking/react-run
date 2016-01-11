@@ -30,7 +30,7 @@ class Application extends React.Component {
         this.hideRevisions = this.hideRevisions.bind(this);
         this.onFrameError = this.onFrameError.bind(this);
         this.clearFrameError = this.clearFrameError.bind(this);
-
+        this.saveCode = this.saveCode.bind(this);
         this.textChanged = this.textChanged.bind(this);
 
         this.socket.on("code transformed", this.onCodeChange.bind(this));
@@ -121,12 +121,16 @@ class Application extends React.Component {
 
     onKeyDown( event ) {
         if ( event.metaKey && event.keyCode === 83 ) {
-            let {bin,revision} = this.props.params;
             event.preventDefault();
-            this.socket.emit("code save", {code: this.state.value, bin, revision});
+            this.saveCode();
             return false;
         }
         return true;
+    }
+
+    saveCode() {
+        let {bin,revision} = this.props.params;
+        this.socket.emit("code save", {code: this.state.value, bin, revision});
     }
 
     hideRevisions() {
@@ -150,6 +154,7 @@ class Application extends React.Component {
                         <div className="toolbar">
                             <div className="toolbar-pad"></div>
                             <ul className="toolbar-controls">
+                                <li onClick={this.saveCode}>Save <i className="fa fa-save"></i></li>
                                 <li onClick={this.showRevisions}>Revisions <i className="fa fa-file-text"></i></li>
                             </ul>
                         </div>
