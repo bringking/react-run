@@ -14,6 +14,8 @@ var app         = require('koa')(),
 var models;
 //babel transformer
 var babel = require("babel-core");
+const detective = require('babel-plugin-detective');
+
 //id generator
 var shortid = require('shortid');
 
@@ -162,9 +164,20 @@ io.on('connection', co.wrap(function *( socket ) {
         try {
             //TODO Since this is a pure function, we could memoize it for performance
             var result = babel.transform(data, {
-                presets: ['react', 'es2015', 'stage-1']
+                presets: ['react', 'es2015', 'stage-1'],
+                plugins:['detective', {}]
             });
-            socket.emit("code transformed", result.code);
+
+            const metadata = detective.metadata(result);
+            if(metadata.strings.length) {
+                console.log("required modules");
+                //TODO run through webpack to get the modules
+            } else {
+                socket.emit("code transformed", result.code);
+            }
+
+
+
 
         } catch ( e ) {
             socket.emit("code error", e.message);

@@ -90,12 +90,7 @@ class Application extends React.Component {
 
     onCodeChange( code ) {
         if ( code ) {
-            this.renderCode(code);
-        }
-    }
-
-    updateCode() {
-        let code = `try{` + this.state.value + `
+            let codeToRender = `try{` + code + `
                 (function(){
                 var mountNode = document.getElementById('client_results');
                 ReactDOM.render(React.createElement(Main),mountNode);})();
@@ -105,7 +100,13 @@ class Application extends React.Component {
                 }
 
             }catch(e){console.error(e)}`;
-        this.socket.emit("code change", code);
+
+            this.renderCode(codeToRender);
+        }
+    }
+
+    updateCode() {
+        this.socket.emit("code change", this.state.value);
     }
 
     textChanged( newValue ) {
