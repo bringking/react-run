@@ -1,14 +1,29 @@
 //load variables
+require('shelljs/global');
 require('dotenv').load({silent: true});
 
-var app         = require('koa')(),
-    router      = require('koa-router')(),
-    staticCache = require('koa-static-cache'),
-    webpack     = require("webpack"),
-    co          = require('co'),
-    path        = require("path"),
-    mongoose    = require('mongoose'),
-    views       = require('koa-views');
+var app          = require('koa')(),
+    router       = require('koa-router')(),
+    staticCache  = require('koa-static-cache'),
+    webpack      = require("webpack"),
+    co           = require('co'),
+    path         = require("path"),
+    regFs        = require('fs'),
+    intersection = require("lodash.intersection"),
+    union        = require('lodash.union'),
+    fs           = require('co-fs'),
+    mongoose     = require('mongoose'),
+    npmUtils     = require("./npm_utils"),
+    views        = require('koa-views');
+
+//ensure we have a generated folder
+var generatedFolder = path.join(__dirname, 'public/generated');
+regFs.stat(generatedFolder, function( err, stats ) {
+    if ( err ) {
+        console.log("making generated folder");
+        regFs.mkdirSync(generatedFolder);
+    }
+});
 
 //store our models
 var models;
@@ -18,9 +33,6 @@ const detective = require('babel-plugin-detective');
 
 //id generator
 var shortid = require('shortid');
-
-// Send static files
-//app.use(serve('./public'));
 
 app.use(staticCache(path.join(__dirname, 'public'), {
     maxAge: 365 * 24 * 60 * 60,
@@ -163,21 +175,33 @@ io.on('connection', co.wrap(function *( socket ) {
     socket.on('code change', co.wrap(function* ( data ) {
         try {
             //TODO Since this is a pure function, we could memoize it for performance
-            var result = babel.transform(data, {
+            var result = babel.transform(data.code, {
                 presets: ['react', 'es2015', 'stage-1'],
-                plugins:['detective', {}]
+                plugins: ['detective', {}]
             });
 
             const metadata = detective.metadata(result);
-            if(metadata.strings.length) {
-                console.log("required modules");
-                //TODO run through webpack to get the modules
+
+            if ( metadata && metadata.strings.length ) {
+                //inform the client that npm is installing
+                socket.emit("npm installing", {modules: metadata.strings});
+                var npmResult = yield npmUtils.installPackagesToBin(models.bin, data.bin, metadata.strings);
+                if ( npmResult.error ) {
+                    //inform the client that npm errored
+                    socket.emit("npm error", npmResult);
+                } else {
+                    if ( npmResult.type && npmResult.type === "NotRun" ) {
+                        //TODO emit the code here
+                        socket.emit("code transformed", result.code);
+                    } else {
+                        //inform the client that npm completed
+                        socket.emit("npm complete", {modules: metadata.strings});
+                    }
+
+                }
             } else {
                 socket.emit("code transformed", result.code);
             }
-
-
-
 
         } catch ( e ) {
             socket.emit("code error", e.message);

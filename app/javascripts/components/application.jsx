@@ -21,6 +21,7 @@ class Application extends React.Component {
         this.state = {
             bin,
             revision,
+            npmMessage: null,
             frameError: null,
             showingRevisions: false,
             revisions: window.revisions || [],
@@ -33,14 +34,43 @@ class Application extends React.Component {
         this.saveCode = this.saveCode.bind(this);
         this.textChanged = this.textChanged.bind(this);
 
+        //socket events
         this.socket.on("code transformed", this.onCodeChange.bind(this));
         this.socket.on("code saved", this.onCodeSaved.bind(this));
+
+        //module events
+        this.socket.on("npm installing", this.onNpmInstall.bind(this));
+        this.socket.on("npm error", this.onNpmError.bind(this));
+        this.socket.on("npm complete", this.onNpmComplete.bind(this));
 
         //bind keyboard handlers
         document.addEventListener("keydown", this.onKeyDown.bind(this));
 
         //debounce the auto compile
-        this.updateCode = debounce(this.updateCode.bind(this), 250);
+        this.updateCode = debounce(this.updateCode.bind(this), 500);
+    }
+
+    onNpmInstall( data ) {
+        this.setState({installing: true, npmMessage: `Installing ${data.modules.join(' ')} modules`})
+    }
+
+    onNpmError( data ) {
+        this.setState({
+            installing: false,
+            npmMessage: `Error Installing ${data.modules.join(' ')} modules. Stacktrace: ${data.output}`
+        })
+    }
+
+    onNpmComplete( data ) {
+        this.setState({installing: false, npmMessage: `Done installing ${data.modules.join(' ')} modules.`}, ()=> {
+            //update the code
+            this.updateCode();
+            //clear the message
+            setTimeout(()=> {
+                this.setState({npmMessage: null});
+            }, 2000)
+        })
+
     }
 
     componentDidMount() {
@@ -106,10 +136,18 @@ class Application extends React.Component {
     }
 
     updateCode() {
-        this.socket.emit("code change", this.state.value);
+        if ( !this.state.installing ) {
+            console.log('transpiling code');
+            this.socket.emit("code change", {
+                code: this.state.value,
+                bin: this.state.bin,
+                revision: this.state.revision
+            });
+        }
     }
 
     textChanged( newValue ) {
+
         this.setState({value: newValue}, ()=> {
             this.updateCode();
         });
@@ -133,6 +171,7 @@ class Application extends React.Component {
     onKeyDown( event ) {
         if ( event.metaKey && event.keyCode === 83 ) {
             event.preventDefault();
+
             this.saveCode();
             return false;
         }
@@ -184,6 +223,9 @@ class Application extends React.Component {
                         <iframe frameBorder="0" ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
                     </div>
                 </div>
+                {this.state.npmMessage ? <div className={`npm-message`}>
+                    {this.state.npmMessage} <i className="fa fa-circle-o-notch fa-spin"></i>
+                </div> : null}
                 <Errors socket={this.socket} frameError={this.state.frameError}/>
             </div>);
     }

@@ -6,7 +6,7 @@ var iconFontConfig = require('../config/iconFont');
 
 gulp.task('clean', function( cb ) {
     return del([
-        config.publicAssets,
+        //config.publicAssets,
         htmlConfig.dest,
         iconFontConfig.sassDest
     ]);
