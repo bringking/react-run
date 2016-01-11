@@ -1,7 +1,7 @@
 export const initialScript = `/**
  * Welcome to the React.run beta! The in-browser React testing environment.
- * This component is required for React.run to work,
- * and it your main Application entry point. You can feel free
+ * This "Main" component is required for React.run to work,
+ * and it is your main Application entry point. You can feel free
  * to modify it and add other components. Enjoy!
  *
  * URL: Your React.run URL contains two segments
