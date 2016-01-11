@@ -48,21 +48,27 @@ class Application extends React.Component {
         this.textChanged(this.state.value);
 
         let frame = this.refs.resultsFrame;
-        //TODO this is a hack
-        frame.contentWindow.React = window.React;
-        frame.contentWindow.ReactDOM = window.ReactDOM;
+        if ( frame ) {
 
-        //write the content
-        frame.contentDocument.write(`<html>
+
+
+            //TODO this is a hack
+            frame.contentWindow.React = window.React;
+            frame.contentWindow.ReactDOM = window.ReactDOM;
+
+            //write the content
+            frame.contentDocument.write(`<html>
         <head><title>Code</title></head>
         <body>
             <div id="client_results"></div>
         </body>
  </html>`);
+            frame.contentDocument.close();
 
-        //listen for frame errors
-        frame.contentWindow.console.error = this.onFrameError;
-        frame.contentWindow.__clearMessages = this.clearFrameError;
+            //listen for frame errors
+            frame.contentWindow.console.error = this.onFrameError;
+            frame.contentWindow.__clearMessages = this.clearFrameError;
+        }
 
     }
 
@@ -75,7 +81,11 @@ class Application extends React.Component {
     }
 
     renderCode( code ) {
-        renderReactToFrame(this.refs.resultsFrame, code, this.socket.id);
+        let frame = this.refs.resultsFrame;
+        if ( frame ) {
+            renderReactToFrame(frame, code, this.socket.id);
+        }
+
     }
 
     onCodeChange( code ) {
@@ -170,7 +180,7 @@ class Application extends React.Component {
                         />
                     </div>
                     <div id="results">
-                        <iframe frameBorder="0" ref="resultsFrame" id="resultsFrame"></iframe>
+                        <iframe frameBorder="0" ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
                     </div>
                 </div>
                 <Errors socket={this.socket} frameError={this.state.frameError}/>
