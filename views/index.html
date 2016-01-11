@@ -2,43 +2,18 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta name="title" content="React Bin">
+    <meta name="title" content="react.run">
     <meta name="description"
-          content="description_here">
+          content="Run, save and debug React code in the browser">
     <meta name="keywords"
           content="keywords_here">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>React Bin</title>
+    <title>react.run</title>
     <link rel="stylesheet" href="/stylesheets/main.css">
     <link rel="icon" type="image/png" href="/images/favicon-32x32.png" sizes="32x32">
     <link rel="icon" type="image/png" href="/images/favicon-194x194.png" sizes="194x194">
     <link rel="icon" type="image/png" href="/images/favicon-96x96.png" sizes="96x96">
     <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
-
-    <!-- Schema.org markup for Google+ -->
-    <meta itemprop="name" content="content_here">
-    <meta itemprop="description"
-          content="content_here">
-    <meta itemprop="image" content="image_here">
-
-    <!-- Twitter Card data -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="title_here">
-    <meta name="twitter:description"
-          content="description_here">
-    <meta name="twitter:creator" content="twitter_handle_here">
-    <meta name="twitter:image:src"
-          content="twitter_card_image_here">
-
-    <!-- Open Graph data -->
-    <meta property="og:title" content="title_here"/>
-    <meta property="og:type" content="article"/>
-    <meta property="og:url" content="url_here"/>
-    <meta property="og:image"
-          content="image_here"/>
-    <meta property="og:description"
-          content="description_here"/>
-    <meta property="og:site_name" content="title_here"/>
 </head>
 <body>
 <div class="app-container">
@@ -47,7 +22,7 @@
 </div>
 <script>
     window.existingCode = "{% autoescape 'js' %}{{ code }}{% endautoescape %}";
-    window.revisions = {{otherRevisions | json | raw }};
+    window.revisions = {{ otherRevisions | json | raw }};
 </script>
 <script src="/javascripts/socket.io.js" defer></script>
 <script src="/javascripts/client.js" defer></script>
