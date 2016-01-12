@@ -191,7 +191,7 @@ io.on('connection', co.wrap(function *( socket ) {
                 var preCheckResult = yield npmUtils.preCheck(models.bin, data.bin, metadata.strings);
                 var webpackCompiledCode;
                 if ( preCheckResult.type === "Install" ) {
-                    socket.emit("npm installing", {modules: metadata.strings});
+                    socket.emit("npm installing", {modules: preCheckResult.packagesToInstall});
                     var npmResult = yield npmUtils.installPackagesToBin(preCheckResult.bin, data.bin, preCheckResult.packagesToInstall);
 
                     console.log(npmResult);
