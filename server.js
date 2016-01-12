@@ -197,7 +197,7 @@ io.on('connection', co.wrap(function *( socket ) {
                     console.log(npmResult);
 
                     //inform the client that npm completed
-                    socket.emit("npm complete", {modules: metadata.strings});
+                    socket.emit("npm complete", {modules: preCheckResult.packagesToInstall});
                     //return the webpack compiled version
                     webpackCompiledCode = yield webpackTransform.compileWithWebpack(models.bin, data.bin, data.revision, data.code, true);
                     //return the webpack build
