@@ -1,0 +1,24 @@
+.saved {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 50%;
+  bottom: 0;
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 43, 55, 1);
+  color: rgba(133, 154, 0, 1);
+  font-family: monospace;
+  font-size: 20px;
+  pointer-events: none;
+  z-index: 999999999;
+
+  &.fadeIn {
+    animation-duration: 250ms;
+  }
+  &.fadeOut {
+    animation-duration: 1000ms;
+  }
+}

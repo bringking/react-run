@@ -22,6 +22,7 @@ class Application extends React.Component {
         this.state = {
             bin,
             revision,
+            justSaved: false,
             compiling: false,
             npmMessage: null,
             frameError: null,
@@ -52,7 +53,7 @@ class Application extends React.Component {
         document.addEventListener("keydown", this.onKeyDown.bind(this));
 
         //debounce the auto compile
-        this.updateCode = debounce(this.updateCode.bind(this), 500);
+        this.updateCode = debounce(this.updateCode.bind(this), 1000);
     }
 
     /**
@@ -89,8 +90,9 @@ class Application extends React.Component {
     }
 
     componentDidMount() {
+
         //update the window with the default script
-        this.textChanged(this.state.value);
+        this.updateCode(this.state.value);
 
         let frame = this.refs.resultsFrame;
         if ( frame ) {
@@ -187,7 +189,7 @@ class Application extends React.Component {
     }
 
     updateCode() {
-        if(!this.state.compiling) {
+        if ( !this.state.compiling ) {
             this.socket.emit("code change", {
                 code: this.state.value,
                 bin: this.state.bin,
@@ -198,7 +200,6 @@ class Application extends React.Component {
     }
 
     textChanged( newValue ) {
-
         this.setState({value: newValue}, ()=> {
             this.updateCode();
         });
@@ -214,18 +215,22 @@ class Application extends React.Component {
             //store in revisions
             let revisions = this.state.revisions;
             revisions.push({hash: revision, createdAt});
-            this.setState({revisions, revision});
-
+            this.setState({revisions, revision, justSaved: true}, ()=> {
+                setTimeout(()=> {
+                    this.setState({justSaved: false});
+                }, 600)
+            });
         }
+
     }
 
     onKeyDown( event ) {
         if ( event.metaKey && event.keyCode === 83 ) {
             event.preventDefault();
-
             this.saveCode();
             return false;
         }
+
         return true;
     }
 
@@ -236,7 +241,6 @@ class Application extends React.Component {
 
     hideRevisions() {
         this.setState({showingRevisions: false});
-
     }
 
     showRevisions() {
@@ -256,6 +260,7 @@ class Application extends React.Component {
                             <div className="toolbar-pad"></div>
                             <ul className="toolbar-controls">
                                 {/*<li>{this.state.compiling?'Compiling...':'Not Compiling'} <i className={`fa fa-refresh ${this.state.compiling?'fa-spin':''}`}></i></li>*/}
+                                <li onClick={this.updateCode}>Run <i className="fa fa-play"></i></li>
                                 <li onClick={this.saveCode}>Save <i className="fa fa-save"></i></li>
                                 <li onClick={this.showRevisions}>Revisions <i className="fa fa-file-text"></i></li>
                             </ul>
@@ -279,6 +284,10 @@ class Application extends React.Component {
                     {this.state.npmMessage} <i className="fa fa-circle-o-notch fa-spin"></i>
                 </div> : null}
                 <Errors socket={this.socket} frameError={this.state.frameError}/>
+                <div
+                    className={`saved animated ${this.state.justSaved ?'fadeIn':'fadeOut'}`}>
+                    Saved!
+                </div>
             </div>);
     }
 }
