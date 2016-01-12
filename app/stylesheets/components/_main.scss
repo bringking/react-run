@@ -1,3 +1,7 @@
+body {
+  background-color: rgba(0, 43, 55, 1);
+}
+
 .app-container {
   height: 100%;
   width: 100%;
@@ -6,9 +10,16 @@
 
 #editor {
   width: 50%;
+
+  &.fade {
+    #editor_window {
+      filter: blur(1px);
+    }
+  }
 }
 
 #results {
+  background: white;
   width: 50%;
 }
 

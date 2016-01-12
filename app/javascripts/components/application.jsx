@@ -255,7 +255,7 @@ class Application extends React.Component {
                            showingRevisions={this.state.showingRevisions} hideRevisions={this.hideRevisions}/>
 
                 <div className="app-inner">
-                    <div id="editor">
+                    <div id="editor" className={`${this.state.showingRevisions ?'fade':''}`}>
                         <div className="toolbar">
                             <div className="toolbar-pad"></div>
                             <ul className="toolbar-controls">
@@ -272,7 +272,7 @@ class Application extends React.Component {
                             width="100%"
                             value={this.state.value}
                             height="100vh"
-                            name="UNIQUE_ID_OF_DIV"
+                            name="editor_window"
                             editorProps={{$blockScrolling: true}}
                         />
                     </div>
