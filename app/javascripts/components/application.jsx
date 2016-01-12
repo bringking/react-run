@@ -21,6 +21,7 @@ class Application extends React.Component {
         this.state = {
             bin,
             revision,
+            compiling: false,
             npmMessage: null,
             frameError: null,
             showingRevisions: false,
@@ -38,6 +39,9 @@ class Application extends React.Component {
         this.socket.on("code transformed", this.onCodeChange.bind(this));
         this.socket.on("code saved", this.onCodeSaved.bind(this));
 
+        //webpack events
+        this.socket.on("webpack transform", this.onWebpackCodeChanged.bind(this));
+
         //module events
         this.socket.on("npm installing", this.onNpmInstall.bind(this));
         this.socket.on("npm error", this.onNpmError.bind(this));
@@ -50,25 +54,35 @@ class Application extends React.Component {
         this.updateCode = debounce(this.updateCode.bind(this), 500);
     }
 
+    /**
+     * This is the callback for when NPM install starts
+     * @param data
+     */
     onNpmInstall( data ) {
-        this.setState({installing: true, npmMessage: `Installing ${data.modules.join(' ')} modules`})
+        this.setState({compiling: true, npmMessage: `Installing ${data.modules.join(' ')} modules`})
     }
 
+    /**
+     * This is the callback for when NPM errors
+     * @param data
+     */
     onNpmError( data ) {
         this.setState({
-            installing: false,
+            compiling: false,
             npmMessage: `Error Installing ${data.modules.join(' ')} modules. Stacktrace: ${data.output}`
         })
     }
 
+    /**
+     * This is the callback for when NPM is finished processing
+     * @param data
+     */
     onNpmComplete( data ) {
-        this.setState({installing: false, npmMessage: `Done installing ${data.modules.join(' ')} modules.`}, ()=> {
-            //update the code
-            this.updateCode();
+        this.setState({npmMessage: `Done installing ${data.modules.join(' ')} modules.`}, ()=> {
             //clear the message
             setTimeout(()=> {
                 this.setState({npmMessage: null});
-            }, 2000)
+            }, 2000);
         })
 
     }
@@ -118,9 +132,22 @@ class Application extends React.Component {
 
     }
 
+    onWebpackCodeChanged( data ) {
+        if ( data.common && data.main ) {
+            console.log('webpack code changed');
+            console.log(data);
+        }
+    }
+
+    /**
+     * This is the callback function for when babel
+     * compiled code comes back from the socket
+     * @param code
+     */
     onCodeChange( code ) {
         if ( code ) {
-            let codeToRender = `try{` + code + `
+            this.setState({compiling: false}, ()=> {
+                let codeToRender = `try{` + code + `
                 (function(){
                 var mountNode = document.getElementById('client_results');
                 ReactDOM.render(React.createElement(Main),mountNode);})();
@@ -130,19 +157,23 @@ class Application extends React.Component {
                 }
 
             }catch(e){console.error(e)}`;
+                this.renderCode(codeToRender);
+            });
 
-            this.renderCode(codeToRender);
         }
     }
 
     updateCode() {
-        if ( !this.state.installing ) {
-            console.log('transpiling code');
-            this.socket.emit("code change", {
-                code: this.state.value,
-                bin: this.state.bin,
-                revision: this.state.revision
+        if ( !this.state.compiling ) {
+
+            this.setState({compiling: true}, ()=> {
+                this.socket.emit("code change", {
+                    code: this.state.value,
+                    bin: this.state.bin,
+                    revision: this.state.revision
+                });
             });
+
         }
     }
 
@@ -204,6 +235,7 @@ class Application extends React.Component {
                         <div className="toolbar">
                             <div className="toolbar-pad"></div>
                             <ul className="toolbar-controls">
+                                {/*<li>{this.state.compiling?'Compiling...':'Not Compiling'} <i className={`fa fa-refresh ${this.state.compiling?'fa-spin':''}`}></i></li>*/}
                                 <li onClick={this.saveCode}>Save <i className="fa fa-save"></i></li>
                                 <li onClick={this.showRevisions}>Revisions <i className="fa fa-file-text"></i></li>
                             </ul>

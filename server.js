@@ -2,19 +2,20 @@
 require('shelljs/global');
 require('dotenv').load({silent: true});
 
-var app          = require('koa')(),
-    router       = require('koa-router')(),
-    staticCache  = require('koa-static-cache'),
-    webpack      = require("webpack"),
-    co           = require('co'),
-    path         = require("path"),
-    regFs        = require('fs'),
-    intersection = require("lodash.intersection"),
-    union        = require('lodash.union'),
-    fs           = require('co-fs'),
-    mongoose     = require('mongoose'),
-    npmUtils     = require("./npm_utils"),
-    views        = require('koa-views');
+var app              = require('koa')(),
+    router           = require('koa-router')(),
+    staticCache      = require('koa-static-cache'),
+    webpack          = require("webpack"),
+    co               = require('co'),
+    path             = require("path"),
+    regFs            = require('fs'),
+    intersection     = require("lodash.intersection"),
+    union            = require('lodash.union'),
+    fs               = require('co-fs'),
+    mongoose         = require('mongoose'),
+    npmUtils         = require("./npm_utils"),
+    webpackTransform = require('./webpack_transform'),
+    views            = require('koa-views');
 
 //ensure we have a generated folder
 var generatedFolder = path.join(__dirname, 'public/generated');
@@ -27,6 +28,7 @@ regFs.stat(generatedFolder, function( err, stats ) {
 
 //store our models
 var models;
+
 //babel transformer
 var babel = require("babel-core");
 const detective = require('babel-plugin-detective');
@@ -36,7 +38,8 @@ var shortid = require('shortid');
 
 app.use(staticCache(path.join(__dirname, 'public'), {
     maxAge: 365 * 24 * 60 * 60,
-    gzip: true
+    gzip: true,
+    dynamic: true
 }));
 
 // Use html
@@ -186,16 +189,22 @@ io.on('connection', co.wrap(function *( socket ) {
                 //inform the client that npm is installing
                 socket.emit("npm installing", {modules: metadata.strings});
                 var npmResult = yield npmUtils.installPackagesToBin(models.bin, data.bin, metadata.strings);
+
                 if ( npmResult.error ) {
                     //inform the client that npm errored
                     socket.emit("npm error", npmResult);
                 } else {
+                    var webpackCompiledCode;
                     if ( npmResult.type && npmResult.type === "NotRun" ) {
-                        //TODO emit the code here
-                        socket.emit("code transformed", result.code);
+                        webpackCompiledCode = yield webpackTransform.compileWithWebpack(models.bin, data.bin, data.revision, data.code);
+                        socket.emit("webpack transform", webpackCompiledCode);
                     } else {
                         //inform the client that npm completed
                         socket.emit("npm complete", {modules: metadata.strings});
+                        //return the webpack compiled version
+                        webpackCompiledCode = yield webpackTransform.compileWithWebpack(models.bin, data.bin, data.revision, data.code, true);
+                        //return the webpack build
+                        socket.emit("webpack transform", webpackCompiledCode);
                     }
 
                 }

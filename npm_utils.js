@@ -28,7 +28,8 @@ module.exports = {
 
         //return since all the packages have been installed already
         if ( !packagesToInstall.length ) {
-            return {error: false, type:"NotRun", message: "All packages installed"}
+            console.log("npm NotRun");
+            return {error: false, type: "NotRun", message: "All packages installed"}
         }
 
         //install these packages
@@ -48,6 +49,7 @@ module.exports = {
         var npmInstall = exec(`npm install --prefix ${folder} ${packagesToInstall.join(' ')}`, {silent: false});
 
         if ( npmInstall.code !== 0 ) {
+            console.log("npm failed");
             return {
                 error: true,
                 message: "NPM install failed with command " + npmInstall.code,
@@ -62,6 +64,7 @@ module.exports = {
 
         //couldn't save the package install
         if ( !saveBinResult ) {
+            console.log("save bin failed");
             return {error: true, message: "Error saving packages to run"}
         }
 
