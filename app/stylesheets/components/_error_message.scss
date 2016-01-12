@@ -4,12 +4,12 @@
   left: 0;
   right: 50%;
   top: 0;
-  height: 40px;
+  min-height: 40px;
+  padding-top: 12px;
   opacity: .95;
   background: darkred;
   color: white;
   font-family: sans-serif;
-  line-height: 40px;
   padding-left: 12px;
   pointer-events: none;
   &.initial {
