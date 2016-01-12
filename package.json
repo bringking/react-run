@@ -80,6 +80,7 @@
     "lodash.union": "^3.1.0",
     "lodash.uniq": "^3.2.2",
     "merge-stream": "^1.0.0",
+    "moment": "^2.11.1",
     "mongoose": "^4.3.5",
     "morgan": "^1.5.1",
     "object-assign": "^4.0.1",

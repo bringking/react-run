@@ -53,7 +53,7 @@ class Application extends React.Component {
         document.addEventListener("keydown", this.onKeyDown.bind(this));
 
         //debounce the auto compile
-        this.updateCode = debounce(this.updateCode.bind(this), 1000);
+        this.updateCode = debounce(this.updateCode.bind(this), 500);
     }
 
     /**

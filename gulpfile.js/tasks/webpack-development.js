@@ -5,7 +5,7 @@ var logger = require('../lib/compileLogger')
 var webpack = require('webpack')
 
 gulp.task('webpack:development', function( callback ) {
-    /*var built = false
+    var built = false
 
     webpack(config).watch(200, function( err, stats ) {
         logger(err, stats)
@@ -14,9 +14,9 @@ gulp.task('webpack:development', function( callback ) {
             built = true;
             callback()
         }
-    })*/
-    webpack(config, function(err, stats) {
-        logger(err, stats)
-        callback()
     })
+    //webpack(config, function(err, stats) {
+    //    logger(err, stats)
+    //    callback()
+    //})
 })

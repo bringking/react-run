@@ -31,9 +31,15 @@
   a {
     color: rgba(133, 154, 0, 1);
     font-family: monospace;
-    height: 20px;
-    line-height: 20px;
+    height: auto;
+    min-height: 20px;
     display: block;
+    font-size: 12px;
+    display: flex;
+    align-items:center;
+    i {
+      margin-right:5px;
+    }
   }
 
   li {
