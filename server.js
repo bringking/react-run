@@ -123,9 +123,6 @@ router.get('/:bin/:revision', function *() {
         return;
     }
 
-
-
-
     yield this.render('index', {code: binRevision.text, otherRevisions: otherRevisions});
 });
 
@@ -187,30 +184,8 @@ io.on('connection', co.wrap(function *( socket ) {
                 plugins: ['detective', {}]
             });
 
-            const metadata = detective.metadata(result);
-
-            if ( metadata && metadata.strings.length ) {
-                //inform the client that npm is installing
-                var preCheckResult = yield npmUtils.preCheck(models.bin, data.bin, metadata.strings);
-                var webpackCompiledCode;
-                if ( preCheckResult.type === "Install" ) {
-                    socket.emit("npm installing", {modules: preCheckResult.packagesToInstall});
-                    var npmResult = yield npmUtils.installPackagesToBin(preCheckResult.bin, data.bin, preCheckResult.packagesToInstall);
-                    //inform the client that npm completed
-                    socket.emit("npm complete", {modules: preCheckResult.packagesToInstall});
-                    //return the webpack compiled version
-                    webpackCompiledCode = yield webpackTransform.compileWithWebpack(models.bin, data.bin, data.revision, data.code, true);
-                    //return the webpack build
-                    socket.emit("webpack transform", webpackCompiledCode);
-                } else {
-                    console.log("Precheck said no new modules, just transforming");
-                    webpackCompiledCode = yield webpackTransform.compileWithWebpack(models.bin, data.bin, data.revision, data.code);
-                    socket.emit("webpack transform", webpackCompiledCode);
-                }
-            } else {
-                //no imports, just use babel
-                socket.emit("code transformed", result.code);
-            }
+            //no imports, just use babel
+            socket.emit("code transformed", result.code);
 
         } catch ( e ) {
             socket.emit("code error", e.message);
