@@ -15,6 +15,8 @@ export default class Errors extends React.Component {
     componentDidMount() {
         this.props.socket.on("code error", this.onCodeError.bind(this));
         this.props.socket.on("code transformed", this.onCodeNormal.bind(this));
+        this.props.socket.on("webpack transform", this.onCodeNormal.bind(this));
+
     }
 
     componentWillReceiveProps( nextProps ) {

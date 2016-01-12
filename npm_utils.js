@@ -1,12 +1,11 @@
 var intersection = require("lodash.intersection"),
     union        = require('lodash.union'),
     difference   = require('lodash.difference'),
+    fileUtils    = require('./file_utils'),
     fs           = require('co-fs');
 
 module.exports = {
-    installPackagesToBin: function*( binModel, binId, packages ) {
-        console.log(`Installing Modules for bin ${binId}`);
-
+    preCheck: function*( binModel, binId, packages ) {
         //getting the bin, to check for existing modules
         var bin = yield binModel.findOne({'id': binId});
 
@@ -15,7 +14,6 @@ module.exports = {
 
         //determine what to install
         if ( !bin.packages || !bin.packages.length ) {
-            bin.packages = packages;
             packagesToInstall = packages;
         } else {
             packagesToInstall = difference(packages, bin.packages);
@@ -28,25 +26,28 @@ module.exports = {
 
         //return since all the packages have been installed already
         if ( !packagesToInstall.length ) {
-            console.log("npm NotRun");
+            console.log("NPM Precheck failed, no packages to install");
             return {error: false, type: "NotRun", message: "All packages installed"}
         }
+
+        return {error: false, type: "Install", bin: bin, packagesToInstall: packagesToInstall};
+
+    },
+    installPackagesToBin: function*( bin, binId, packagesToInstall ) {
+        console.log(`Installing Modules for bin ${binId}`);
 
         //install these packages
         console.log(`install ${packagesToInstall}`);
 
-        //TODO run through webpack to get the modules
         //ensure we create a folder
-        var folder = "./public/generated/" + binId;
-        var result = yield fs.exists(folder);
-        if ( !result ) {
-            yield fs.mkdir(folder);
-            //create package.json
+        var folder = yield fileUtils.generateFolderForBin(binId);
+        var packageJson = yield fs.exists(folder + "/package.json");
+        if ( !packageJson ) {
             yield fs.writeFile(folder + "/package.json", '{}');
         }
 
         //run the npm install
-        var npmInstall = exec(`npm install --prefix ${folder} ${packagesToInstall.join(' ')}`, {silent: false});
+        var npmInstall = exec(`npm install --save --prefix ${folder} ${packagesToInstall.join(' ')}`, {silent: false});
 
         if ( npmInstall.code !== 0 ) {
             console.log("npm failed");
@@ -59,7 +60,7 @@ module.exports = {
         }
 
         //save the bin with the new info
-        bin.packages = union(bin.packages, packages);
+        bin.packages = union(bin.packages, packagesToInstall);
         var saveBinResult = yield bin.save();
 
         //couldn't save the package install

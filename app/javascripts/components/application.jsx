@@ -6,7 +6,8 @@ import Errors from "./errors";
 import 'brace/mode/jsx';
 import 'brace/theme/solarized_dark';
 import {initialScript} from "../constants";
-import renderReactToFrame from "../utils/render_react_to_frame"
+import renderReactToFrame from "../utils/render_react_to_frame";
+
 import debounce from "debounce";
 import Revisions from "./revisions";
 
@@ -81,7 +82,7 @@ class Application extends React.Component {
         this.setState({npmMessage: `Done installing ${data.modules.join(' ')} modules.`}, ()=> {
             //clear the message
             setTimeout(()=> {
-                this.setState({npmMessage: null});
+                this.setState({npmMessage: null, compiling: false});
             }, 2000);
         })
 
@@ -127,15 +128,37 @@ class Application extends React.Component {
     renderCode( code ) {
         let frame = this.refs.resultsFrame;
         if ( frame ) {
-            renderReactToFrame(frame, code, this.socket.id);
+            renderReactToFrame(frame, code);
         }
+    }
 
+    renderWebpackCode( code, common ) {
+        let frame = this.refs.resultsFrame;
+        if ( frame ) {
+            renderReactToFrame(frame, code, common);
+        }
     }
 
     onWebpackCodeChanged( data ) {
         if ( data.common && data.main ) {
-            console.log('webpack code changed');
-            console.log(data);
+            this.setState({compiling: false}, ()=> {
+
+                //splice in exports
+                data.main = data.main.replace("var Main = function (", "window.Main = function (");
+
+                let codeToRender = `try{` + data.main + `
+
+                (function(){
+                var mountNode = document.getElementById('client_results');
+                ReactDOM.render(React.createElement(Main),mountNode);})();
+
+                if(window.__clearMessages) {
+                     __clearMessages();
+                }
+
+            }catch(e){console.error(e)}`;
+                this.renderWebpackCode(codeToRender, data.common);
+            });
         }
     }
 
@@ -164,17 +187,14 @@ class Application extends React.Component {
     }
 
     updateCode() {
-        if ( !this.state.compiling ) {
-
-            this.setState({compiling: true}, ()=> {
-                this.socket.emit("code change", {
-                    code: this.state.value,
-                    bin: this.state.bin,
-                    revision: this.state.revision
-                });
+        if(!this.state.compiling) {
+            this.socket.emit("code change", {
+                code: this.state.value,
+                bin: this.state.bin,
+                revision: this.state.revision
             });
-
         }
+
     }
 
     textChanged( newValue ) {

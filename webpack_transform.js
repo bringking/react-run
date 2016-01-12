@@ -58,6 +58,10 @@ module.exports = {
             resolve: {
                 extensions: ['', '.js', '.jsx', '.json']
             },
+            externals: {
+                "react": "React",
+                "react-dom":"ReactDOM"
+            },
             output: {
                 path: regenerateCommon ? binFolder + "/" : "/",
                 filename: "[name].entry.chunk.js"

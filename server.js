@@ -13,6 +13,7 @@ var app              = require('koa')(),
     union            = require('lodash.union'),
     fs               = require('co-fs'),
     mongoose         = require('mongoose'),
+    fileUtils        = require("./file_utils"),
     npmUtils         = require("./npm_utils"),
     webpackTransform = require('./webpack_transform'),
     views            = require('koa-views');
@@ -187,28 +188,27 @@ io.on('connection', co.wrap(function *( socket ) {
 
             if ( metadata && metadata.strings.length ) {
                 //inform the client that npm is installing
-                socket.emit("npm installing", {modules: metadata.strings});
-                var npmResult = yield npmUtils.installPackagesToBin(models.bin, data.bin, metadata.strings);
+                var preCheckResult = yield npmUtils.preCheck(models.bin, data.bin, metadata.strings);
+                var webpackCompiledCode;
+                if ( preCheckResult.type === "Install" ) {
+                    socket.emit("npm installing", {modules: metadata.strings});
+                    var npmResult = yield npmUtils.installPackagesToBin(preCheckResult.bin, data.bin, preCheckResult.packagesToInstall);
 
-                if ( npmResult.error ) {
-                    //inform the client that npm errored
-                    socket.emit("npm error", npmResult);
+                    console.log(npmResult);
+
+                    //inform the client that npm completed
+                    socket.emit("npm complete", {modules: metadata.strings});
+                    //return the webpack compiled version
+                    webpackCompiledCode = yield webpackTransform.compileWithWebpack(models.bin, data.bin, data.revision, data.code, true);
+                    //return the webpack build
+                    socket.emit("webpack transform", webpackCompiledCode);
                 } else {
-                    var webpackCompiledCode;
-                    if ( npmResult.type && npmResult.type === "NotRun" ) {
-                        webpackCompiledCode = yield webpackTransform.compileWithWebpack(models.bin, data.bin, data.revision, data.code);
-                        socket.emit("webpack transform", webpackCompiledCode);
-                    } else {
-                        //inform the client that npm completed
-                        socket.emit("npm complete", {modules: metadata.strings});
-                        //return the webpack compiled version
-                        webpackCompiledCode = yield webpackTransform.compileWithWebpack(models.bin, data.bin, data.revision, data.code, true);
-                        //return the webpack build
-                        socket.emit("webpack transform", webpackCompiledCode);
-                    }
-
+                    console.log("Precheck said no new modules, just transforming");
+                    webpackCompiledCode = yield webpackTransform.compileWithWebpack(models.bin, data.bin, data.revision, data.code);
+                    socket.emit("webpack transform", webpackCompiledCode);
                 }
             } else {
+                //no imports, just use babel
                 socket.emit("code transformed", result.code);
             }
 
