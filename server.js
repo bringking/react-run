@@ -123,6 +123,9 @@ router.get('/:bin/:revision', function *() {
         return;
     }
 
+
+
+
     yield this.render('index', {code: binRevision.text, otherRevisions: otherRevisions});
 });
 
@@ -193,9 +196,6 @@ io.on('connection', co.wrap(function *( socket ) {
                 if ( preCheckResult.type === "Install" ) {
                     socket.emit("npm installing", {modules: preCheckResult.packagesToInstall});
                     var npmResult = yield npmUtils.installPackagesToBin(preCheckResult.bin, data.bin, preCheckResult.packagesToInstall);
-
-                    console.log(npmResult);
-
                     //inform the client that npm completed
                     socket.emit("npm complete", {modules: preCheckResult.packagesToInstall});
                     //return the webpack compiled version

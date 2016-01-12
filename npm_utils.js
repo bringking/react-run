@@ -5,6 +5,9 @@ var intersection = require("lodash.intersection"),
     fs           = require('co-fs');
 
 module.exports = {
+    getPackageJson: function*( binId ) {
+
+    },
     preCheck: function*( binModel, binId, packages ) {
         //getting the bin, to check for existing modules
         var bin = yield binModel.findOne({'id': binId});
