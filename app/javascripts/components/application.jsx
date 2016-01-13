@@ -343,8 +343,8 @@ class Application extends React.Component {
         return (
             <div className="app-container">
 
-                <CssPanel open={this.state.showingCss} onClose={this.hideCss}/>
-                <JsPanel open={this.state.showingJs} onClose={this.hideJs}/>
+                <CssPanel open={this.state.showingCss} onClose={this.toggleCss}/>
+                <JsPanel open={this.state.showingJs} onClose={this.toggleJs}/>
                 <Revisions revision={this.state.revision} bin={this.state.bin} revisions={this.state.revisions}
                            showingRevisions={showingRevisions} hideRevisions={this.hideRevisions}/>
 

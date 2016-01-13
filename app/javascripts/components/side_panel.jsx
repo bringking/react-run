@@ -12,6 +12,16 @@ class SidePanel extends React.Component {
 
         this.saveChanges = this.saveChanges.bind(this);
         this.getContents = this.getContents.bind(this);
+        this.getTitle = this.getTitle.bind(this);
+        this.getDescription = this.getDescription.bind(this);
+    }
+
+    getDescription() {
+        return "";
+    }
+
+    getTitle() {
+        return "";
     }
 
     /**
@@ -30,8 +40,10 @@ class SidePanel extends React.Component {
     }
 
     render() {
-        const {open} = this.props;
-        return (<div className={`side-panel ${open?'open':''}`}>
+        const {open,onClose} = this.props;
+        return (<div className={`side-panel ${open?'open':''} large`}>
+                <h3>{this.getTitle()} <i className="fa fa-close" onClick={onClose}></i></h3>
+                <p>{this.getDescription()}</p>
                 <div className="side-panel-inner">
                     {this.getContents()}
                 </div>

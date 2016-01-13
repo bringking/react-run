@@ -1,4 +1,9 @@
+
 .code-revisions, .side-panel {
+  &.large {
+    width: 300px;
+    transform: translate3d(-300px, 0, 0);
+  }
   position: fixed;
   left: 0;
   top: 0;
@@ -22,6 +27,13 @@
       padding-top: 1px;
       cursor: pointer;
     }
+  }
+  p {
+    color: rgba(133, 154, 0, 1);
+    font-family: monospace;
+    padding-left:6px;
+    padding-right: 6px;
+    font-size: 12px;
   }
 
   &.open {
