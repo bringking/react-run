@@ -6,8 +6,7 @@ export default class Errors extends React.Component {
         super(props);
         this.state = {
             initialState: true,
-            errorMessage: null,
-            frameError: null
+            errors: []
         };
 
     }
@@ -21,28 +20,41 @@ export default class Errors extends React.Component {
 
     componentWillReceiveProps( nextProps ) {
         if ( nextProps.frameError ) {
-            this.setState({frameError: nextProps.frameError, initialState: false});
-        } else {
-            this.setState({frameError: null});
+            let errors = this.state.errors;
+
+            if ( errors.indexOf(nextProps.frameError) === -1 ) {
+                errors.push(nextProps.frameError);
+                this.setState({frameError: true, errors, initialState: false});
+            } else {
+                this.setState({frameError: false, initialState: false});
+
+            }
+
         }
     }
 
     onCodeNormal() {
-        this.setState({errorMessage: null});
+        if ( !this.state.frameError ) {
+            this.setState({errors: []});
+        }
     }
 
     onCodeError( e ) {
-
-        if ( e !== this.state.errorMessage ) {
-            this.setState({errorMessage: e, initialState: false});
+        let errors = this.state.errors;
+        if ( errors.indexOf(e) === -1 ) {
+            errors.push(e);
+            this.setState({errors, initialState: false});
         }
 
     }
 
     render() {
+
+        let errors = this.state.errors.map(e=><p key={e}>{e}</p>);
+
         return (
             <div
-                className={`error-message ${this.state.initialState?'initial':'animated'} ${!this.state.errorMessage && !this.state.frameError ?"fadeOut":"fadeIn"}`}>{this.state.errorMessage || this.state.frameError}</div>
+                className={`error-message ${this.state.initialState ?'initial':'animated'} ${!this.state.errors.length ?"fadeOut":"fadeIn"}`}>{errors}</div>
         );
     }
 }

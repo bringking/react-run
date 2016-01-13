@@ -48,7 +48,7 @@ module.exports = function( env ) {
     };
 
     if ( env === 'development' ) {
-        webpackConfig.devtool = 'source-map';
+        //webpackConfig.devtool = 'source-map';
         webpack.debug = true;
     }
 
@@ -70,16 +70,16 @@ module.exports = function( env ) {
         }
     }
 
+    //Allow errors and un-minified code, since I want the user to get good errors
     if ( env === 'production' || env === 'staging' ) {
         webpackConfig.plugins.push(
-            new webpack.DefinePlugin({
-                'process.env': {
-                    'NODE_ENV': JSON.stringify('production')
-                }
-            }),
+            //new webpack.DefinePlugin({
+            //    'process.env': {
+            //        'NODE_ENV': JSON.stringify('production')
+            //    }
+            //}),
             new webpack.optimize.DedupePlugin(),
-            new webpack.optimize.UglifyJsPlugin(),
-            new webpack.NoErrorsPlugin()
+            new webpack.optimize.UglifyJsPlugin()
         )
     }
 

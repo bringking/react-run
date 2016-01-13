@@ -1,17 +1,22 @@
 .error-message {
   position: fixed;
   z-index: 999999;
-  left: 0;
-  right: 50%;
-  top: 0;
+  right: 0;
+  left: 50%;
+  bottom: 0;
   min-height: 40px;
-  padding-top: 12px;
   opacity: .95;
   background: darkred;
   color: white;
   font-family: sans-serif;
   padding-left: 12px;
   pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  p {
+    width: 100%;
+  }
   &.initial {
     visibility: hidden;
   }

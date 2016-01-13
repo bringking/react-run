@@ -1,3 +1,6 @@
+/**
+ * The initialScript is the script that shows in the initial window
+ */
 export const initialScript = `/**
  * Welcome to the React.run beta! The in-browser React testing environment.
  * This "Main" component is required for React.run to work,
@@ -28,3 +31,33 @@ class Main extends React.Component {
         return (<div>Welcome to React.run!</div>)
     }
 }`;
+
+/**
+ * The babelFrameScript is our script that gets injected into the running frame
+ * @param code
+ */
+export const babelFrameScript = ( code ) =>`try{` + code + `
+
+                var mountNode = document.getElementById('client_results');
+                var MainElement = React.createElement(Main);
+                var MainComponent = ReactDOM.render(MainElement,mountNode);
+
+                //check for previous state
+                var state = getPreviousState();
+                var rendered = ComponentTree.render({
+                  component: Main,
+                  snapshot: state,
+                  container: mountNode
+                });
+
+                //add the ability to get state
+                window.getState = function(){
+                     return  ComponentTree.serialize(MainComponent);
+                };
+                //clear any frame errors on load
+                if (window.__clearMessages) {
+                      console.log("clearing messages");
+                     __clearMessages();
+                }
+
+            }catch(e){console.error(e)}`;

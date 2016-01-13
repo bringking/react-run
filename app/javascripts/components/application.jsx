@@ -5,9 +5,9 @@ import AceEditor from 'react-ace';
 import Errors from "./errors";
 import 'brace/mode/jsx';
 import 'brace/theme/solarized_dark';
-import {initialScript} from "../constants";
+import {initialScript, babelFrameScript} from "../constants";
 import renderReactToFrame from "../utils/render_react_to_frame";
-
+import ComponentTree from "react-component-tree";
 import debounce from "debounce";
 import Revisions from "./revisions";
 
@@ -97,11 +97,10 @@ class Application extends React.Component {
         let frame = this.refs.resultsFrame;
         if ( frame ) {
 
-
-
-            //TODO this is a hack
             frame.contentWindow.React = window.React;
             frame.contentWindow.ReactDOM = window.ReactDOM;
+            frame.contentWindow.ComponentTree = ComponentTree;
+            frame.contentWindow.getPreviousState = this.getPreviousFrameState.bind(this);
 
             //write the content
             frame.contentDocument.write(`<html>
@@ -117,6 +116,22 @@ class Application extends React.Component {
             frame.contentWindow.__clearMessages = this.clearFrameError;
         }
 
+    }
+
+    getPreviousFrameState() {
+        return this.prevState || {state: {}};
+    }
+
+    /**
+     * Get the React state from the users component tree
+     * @returns {*}
+     */
+    serializeFrameState() {
+        let frame = this.refs.resultsFrame;
+        if ( frame.contentWindow.getState ) {
+            return frame.contentWindow.getState();
+        }
+        return null;
     }
 
     clearFrameError() {
@@ -172,17 +187,7 @@ class Application extends React.Component {
     onCodeChange( code ) {
         if ( code ) {
             this.setState({compiling: false}, ()=> {
-                let codeToRender = `try{` + code + `
-                (function(){
-                var mountNode = document.getElementById('client_results');
-                ReactDOM.render(React.createElement(Main),mountNode);})();
-
-                if(window.__clearMessages) {
-                     __clearMessages();
-                }
-
-            }catch(e){console.error(e)}`;
-                this.renderCode(codeToRender);
+                this.renderCode(babelFrameScript(code));
             });
 
         }
@@ -190,6 +195,11 @@ class Application extends React.Component {
 
     updateCode() {
         if ( !this.state.compiling ) {
+
+            //store the previous state
+            this.prevState = this.serializeFrameState();
+
+            //emit the change
             this.socket.emit("code change", {
                 code: this.state.value,
                 bin: this.state.bin,
@@ -236,7 +246,7 @@ class Application extends React.Component {
 
     saveCode() {
         let {bin,revision} = this.props.params;
-        this.socket.emit("code save", {code: this.state.value, bin, revision});
+        this.socket.emit("code save", {code: this.state.value, bin, revision, state: this.prevState});
     }
 
     hideRevisions() {
