@@ -11,6 +11,8 @@ import ComponentTree from "react-component-tree";
 import debounce from "debounce";
 import Revisions from "./revisions";
 import SocketListener from "./socket_listener";
+import JsPanel from "./js_panel";
+import CssPanel from "./css_panel";
 
 class Application extends React.Component {
 
@@ -30,6 +32,8 @@ class Application extends React.Component {
             compiling: false,
             npmMessage: null,
             frameError: null,
+            showingCss: false,
+            showingJs: false,
             showingRevisions: false,
             revisions: window.revisions || [],
             value: window.existingCode || initialScript
@@ -42,6 +46,9 @@ class Application extends React.Component {
         this.clearFrameError = this.clearFrameError.bind(this);
         this.saveCode = this.saveCode.bind(this);
         this.onTextChanged = this.onTextChanged.bind(this);
+        this.toggleCss = this.toggleCss.bind(this);
+        this.toggleJs = this.toggleJs.bind(this);
+        this.hideAllPanels = this.hideAllPanels.bind(this);
 
         //socket events
         this.socket.on("code transformed", this.onCodeChange.bind(this));
@@ -317,25 +324,47 @@ class Application extends React.Component {
         this.setState({showingRevisions: true});
     }
 
+    toggleCss() {
+        let showing = this.state.showingCss;
+        this.setState({showingCss: !showing});
+    }
+
+    toggleJs() {
+        let showing = this.state.showingJs;
+        this.setState({showingJs: !showing});
+    }
+
+    hideAllPanels() {
+        this.setState({showingJs: false, showingCss: false, showingRevisions: false});
+    }
+
     render() {
+        const {showingRevisions, showingCss, showingJs} = this.state;
         return (
             <div className="app-container">
 
+                <CssPanel open={this.state.showingCss} onClose={this.hideCss}/>
+                <JsPanel open={this.state.showingJs} onClose={this.hideJs}/>
                 <Revisions revision={this.state.revision} bin={this.state.bin} revisions={this.state.revisions}
-                           showingRevisions={this.state.showingRevisions} hideRevisions={this.hideRevisions}/>
+                           showingRevisions={showingRevisions} hideRevisions={this.hideRevisions}/>
 
                 <div className="app-inner">
-                    <div id="editor" className={`${this.state.showingRevisions ?'fade':''}`}>
+                    <div id="editor" className={`${showingRevisions || showingCss || showingJs  ?'fade':''}`}>
                         <div className="toolbar">
                             <div className="toolbar-pad"></div>
                             <ul className="toolbar-controls">
                                 <li onClick={this.saveCode}>Save <i className="fa fa-save"></i></li>
+                                <li onClick={this.toggleCss}>CSS Resources <i className="fa fa-css3"></i>
+                                </li>
+                                <li onClick={this.toggleJs}>JS Resources <i className="fa fa-code"></i>
+                                </li>
                                 <li onClick={this.showRevisions}>Revisions <i className="fa fa-file-text"></i></li>
                             </ul>
                         </div>
                         <AceEditor
                             mode="jsx"
                             theme="solarized_dark"
+                            onFocus={this.hideAllPanels}
                             onChange={this.onTextChanged}
                             width="100%"
                             value={this.state.value}

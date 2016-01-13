@@ -23,6 +23,16 @@
       float: right;
       cursor: pointer;
       font-size: 12px;
+      position: relative;
     }
   }
+}
+
+.side-panel {
+  position: fixed;
+  width: 200px;
+  height: 400px;
+  bottom: 0;
+  right: 0;
+  left: 0;
 }
