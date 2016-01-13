@@ -10,12 +10,16 @@ import renderReactToFrame from "../utils/render_react_to_frame";
 import ComponentTree from "react-component-tree";
 import debounce from "debounce";
 import Revisions from "./revisions";
+import SocketListener from "./socket_listener";
 
 class Application extends React.Component {
 
     constructor( props, context ) {
         super(props, context);
+
+        //store a reference to the socket
         this.socket = io();
+
         //set the initial bin
         let {bin,revision} = props.params;
 
@@ -30,24 +34,24 @@ class Application extends React.Component {
             revisions: window.revisions || [],
             value: window.existingCode || initialScript
         };
-        this.showRevisions = this.showRevisions.bind(this);
-        this.hideRevisions = this.hideRevisions.bind(this);
-        this.onFrameError = this.onFrameError.bind(this);
-        this.clearFrameError = this.clearFrameError.bind(this);
-        this.saveCode = this.saveCode.bind(this);
-        this.textChanged = this.textChanged.bind(this);
+        
+        //bind our functions
+        this.showRevisions    = this.showRevisions.bind(this);
+        this.hideRevisions    = this.hideRevisions.bind(this);
+        this.onFrameError     = this.onFrameError.bind(this);
+        this.clearFrameError  = this.clearFrameError.bind(this);
+        this.saveCode         = this.saveCode.bind(this);
+        this.onTextChanged    = this.onTextChanged.bind(this);
 
         //socket events
-        this.socket.on("code transformed", this.onCodeChange.bind(this));
-        this.socket.on("code saved", this.onCodeSaved.bind(this));
-
+        this.socket.on("code transformed",  this.onCodeChange.bind(this));
+        this.socket.on("code saved",        this.onCodeSaved.bind(this));
         //webpack events
         this.socket.on("webpack transform", this.onWebpackCodeChanged.bind(this));
-
         //module events
-        this.socket.on("npm installing", this.onNpmInstall.bind(this));
-        this.socket.on("npm error", this.onNpmError.bind(this));
-        this.socket.on("npm complete", this.onNpmComplete.bind(this));
+        this.socket.on("npm installing",    this.onNpmInstall.bind(this));
+        this.socket.on("npm error",         this.onNpmError.bind(this));
+        this.socket.on("npm complete",      this.onNpmComplete.bind(this));
 
         //bind keyboard handlers
         document.addEventListener("keydown", this.onKeyDown.bind(this));
@@ -59,6 +63,35 @@ class Application extends React.Component {
         if ( window.savedState ) {
             this.prevState = window.savedState;
         }
+    }
+
+    componentDidMount() {
+
+        //update the window with the default script
+        this.updateCode(this.state.value);
+
+        let frame = this.refs.resultsFrame;
+        if ( frame ) {
+
+            frame.contentWindow.React = window.React;
+            frame.contentWindow.ReactDOM = window.ReactDOM;
+            frame.contentWindow.ComponentTree = ComponentTree;
+            frame.contentWindow.getPreviousState = this.getPreviousFrameState.bind(this);
+
+            //write the content
+            frame.contentDocument.write(`<html>
+        <head><title>Code</title></head>
+        <body>
+            <div id="client_results"></div>
+        </body>
+ </html>`);
+            frame.contentDocument.close();
+
+            //listen for frame errors
+            frame.contentWindow.console.error = this.onFrameError;
+            frame.contentWindow.__clearMessages = this.clearFrameError;
+        }
+
     }
 
     /**
@@ -94,37 +127,13 @@ class Application extends React.Component {
 
     }
 
-    componentDidMount() {
-
-        //update the window with the default script
-        this.updateCode(this.state.value);
-
-        let frame = this.refs.resultsFrame;
-        if ( frame ) {
-
-            frame.contentWindow.React = window.React;
-            frame.contentWindow.ReactDOM = window.ReactDOM;
-            frame.contentWindow.ComponentTree = ComponentTree;
-            frame.contentWindow.getPreviousState = this.getPreviousFrameState.bind(this);
-
-            //write the content
-            frame.contentDocument.write(`<html>
-        <head><title>Code</title></head>
-        <body>
-            <div id="client_results"></div>
-        </body>
- </html>`);
-            frame.contentDocument.close();
-
-            //listen for frame errors
-            frame.contentWindow.console.error = this.onFrameError;
-            frame.contentWindow.__clearMessages = this.clearFrameError;
-        }
-
-    }
-
+    /**
+     * Get the previous frame state or the last known state from the server which is bootstrapped into
+     * window.savedState
+     * @returns {*}
+     */
     getPreviousFrameState() {
-        return this.prevState || window.savedState //fallback to server state;
+        return this.prevState || window.savedState; //fallback to server state;
     }
 
     /**
@@ -139,14 +148,25 @@ class Application extends React.Component {
         return null;
     }
 
+    /**
+     * Clear any frame errors
+     */
     clearFrameError() {
         this.setState({frameError: null});
     }
 
+    /**
+     * Event handler for an exception caught in the frame
+     * @param msg
+     */
     onFrameError( msg ) {
         this.setState({frameError: msg.message});
     }
 
+    /**
+     * Render babel code to the iframe
+     * @param code
+     */
     renderCode( code ) {
         let frame = this.refs.resultsFrame;
         if ( frame ) {
@@ -154,6 +174,11 @@ class Application extends React.Component {
         }
     }
 
+    /**
+     * Render webpack code to the iframe
+     * @param code
+     * @param common
+     */
     renderWebpackCode( code, common ) {
         let frame = this.refs.resultsFrame;
         if ( frame ) {
@@ -161,6 +186,10 @@ class Application extends React.Component {
         }
     }
 
+    /**
+     * Callback for webpack compiled code being passed from the server
+     * @param data
+     */
     onWebpackCodeChanged( data ) {
         if ( data.common && data.main ) {
             this.setState({compiling: false}, ()=> {
@@ -198,6 +227,9 @@ class Application extends React.Component {
         }
     }
 
+    /**
+     * Update the code running in the frame by emitting a code change event
+     */
     updateCode() {
         if ( !this.state.compiling ) {
 
@@ -214,12 +246,20 @@ class Application extends React.Component {
 
     }
 
-    textChanged( newValue ) {
+    /**
+     * Event handler for when text in the editor has changed
+     * @param newValue
+     */
+    onTextChanged( newValue ) {
         this.setState({value: newValue}, ()=> {
             this.updateCode();
         });
     }
 
+    /**
+     * Event handler for code being successfully saved on the server
+     * @param data
+     */
     onCodeSaved( data ) {
         let {bin,revision,createdAt} = data;
         if ( bin && revision ) {
@@ -239,6 +279,11 @@ class Application extends React.Component {
 
     }
 
+    /**
+     * Key handler for performing keyboard shortcuts.
+     * @param event
+     * @returns {boolean}
+     */
     onKeyDown( event ) {
         if ( event.metaKey && event.keyCode === 83 ) {
             event.preventDefault();
@@ -249,16 +294,25 @@ class Application extends React.Component {
         return true;
     }
 
+    /**
+     * Save the current state of the code, passing the text, the bin, the revision and the serialized state of the
+     * mounted component
+     */
     saveCode() {
         let {bin,revision} = this.props.params;
-        console.log("saving");
         this.socket.emit("code save", {code: this.state.value, bin, revision, state: this.serializeFrameState()});
     }
 
+    /**
+     * Hide the revisions popover
+     */
     hideRevisions() {
         this.setState({showingRevisions: false});
     }
 
+    /**
+     * Show the revisions popover
+     */
     showRevisions() {
         this.setState({showingRevisions: true});
     }
@@ -284,7 +338,7 @@ class Application extends React.Component {
                         <AceEditor
                             mode="jsx"
                             theme="solarized_dark"
-                            onChange={this.textChanged}
+                            onChange={this.onTextChanged}
                             width="100%"
                             value={this.state.value}
                             height="100vh"
@@ -308,4 +362,4 @@ class Application extends React.Component {
     }
 }
 
-export default Application;
+export default SocketListener(Application);

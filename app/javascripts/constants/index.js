@@ -44,7 +44,6 @@ export const babelFrameScript = ( code ) =>`try{` + code + `
 
                 //check for previous state
                 var state = getPreviousState();
-                console.log(state);
                 var rendered = ComponentTree.render({
                   component: Main,
                   snapshot: state,
@@ -57,7 +56,6 @@ export const babelFrameScript = ( code ) =>`try{` + code + `
                 };
                 //clear any frame errors on load
                 if (window.__clearMessages) {
-                      console.log("clearing messages");
                      __clearMessages();
                 }
 
