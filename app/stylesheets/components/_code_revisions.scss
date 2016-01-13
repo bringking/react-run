@@ -10,7 +10,7 @@
   bottom: 0;
   z-index: 100;
   width: 200px;
-  background-color: rgba(0, 43, 55, 1) * 1.1;
+  background-color: rgba(0, 43, 55, .95) * 1.1;
   transform: translate3d(-200px, 0, 0);
   transition: transform 250ms ease;
   padding-top: 10px;
