@@ -55,8 +55,9 @@ router.get('/', function *() {
     var result = yield newBin.save();
     var newRevision = new models.binRevision({
         createdAt: new Date(),
-        hash: "r_" + shortid.generate(),
+        hash: "1",
         text: "",
+        state: "{}",
         "_bin": result._id
     });
 
@@ -85,8 +86,9 @@ router.get('/:bin', function *() {
     if ( !latestRevision ) {
         latestRevision = new models.binRevision({
             createdAt: new Date(),
-            hash: "r_" + shortid.generate(),
+            hash: "1",
             text: "",
+            state: "{}",
             "_bin": result._id
         });
         yield latestRevision.save();
@@ -138,7 +140,6 @@ app
 // This must come after last app.use()
 var server = require('http').Server(app.callback()),
     io     = require('socket.io')(server);
-
 io.on('connection', co.wrap(function *( socket ) {
 
     socket.on('code save', co.wrap(function *( data ) {
@@ -168,7 +169,7 @@ io.on('connection', co.wrap(function *( socket ) {
 
                 //create a new revision
                 var newRevision = new models.binRevision({
-                    hash: "r_" + shortid.generate(),
+                    hash: parseInt(binRevision.hash) + 1,
                     text: data.code,
                     state: JSON.stringify(data.state),
                     createdAt: new Date(),
