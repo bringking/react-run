@@ -20,13 +20,14 @@
 // ----------------------------------------------------------------------
 // Components
 // ----------------------------------------------------------------------
+@import "components/buttons";
 @import "components/main";
 @import "components/error_message";
 @import "components/code_revisions";
 @import "components/toolbar";
 @import "components/npm_message";
 @import "components/saved_message";
-
+@import "components/side_panel";
 // ----------------------------------------------------------------------
 // Vendor
 // ----------------------------------------------------------------------

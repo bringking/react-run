@@ -1,0 +1,11 @@
+.side-panel-button {
+  background-color: $editorBg;
+  color: $green;
+  border: 1px solid $green;
+  font-family: monospace;
+  transition: all 250ms ease;
+  &:hover {
+    background-color: $green;
+    color: $editorBg;
+  }
+}

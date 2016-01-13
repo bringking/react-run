@@ -57,6 +57,8 @@ router.get('/', function *() {
         createdAt: new Date(),
         hash: "1",
         text: "",
+        jsResources: [],
+        cssResources: [],
         state: "{}",
         "_bin": result._id
     });
@@ -88,6 +90,8 @@ router.get('/:bin', function *() {
             createdAt: new Date(),
             hash: "1",
             text: "",
+            jsResources: [],
+            cssResources: [],
             state: "{}",
             "_bin": result._id
         });
@@ -128,6 +132,8 @@ router.get('/:bin/:revision', function *() {
     yield this.render('index', {
         code: binRevision.text,
         otherRevisions: otherRevisions,
+        jsResources: binRevision.jsResources,
+        cssResources: binRevision.cssResources,
         state: JSON.parse(binRevision.state)
     });
 });
@@ -171,6 +177,8 @@ io.on('connection', co.wrap(function *( socket ) {
                 var newRevision = new models.binRevision({
                     hash: parseInt(binRevision.hash) + 1,
                     text: data.code,
+                    jsResources: data.jsResources || [],
+                    cssResources: data.cssResources || [],
                     state: JSON.stringify(data.state),
                     createdAt: new Date(),
                     "_bin": bin._id
@@ -182,6 +190,8 @@ io.on('connection', co.wrap(function *( socket ) {
                     socket.emit("code saved", {
                         bin: data.bin,
                         revision: newResult.hash,
+                        jsResources: newResult.jsResources,
+                        cssResources: newResult.cssResources,
                         createdAt: newResult.createdAt
                     });
                 }

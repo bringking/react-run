@@ -1,0 +1,19 @@
+.side-panel {
+  overflow-x:hidden;
+}
+.side-panel-buttons {
+  width: 100%;
+  padding:6px;
+  display: flex;
+  justify-content: center;
+}
+.side-panel-form {
+  padding: 6px;
+}
+
+.side-panel-input {
+  background-color: $editorBg;
+  color: $green;
+  border: 1px solid $green;
+  width: calc(100% - 6px);
+}

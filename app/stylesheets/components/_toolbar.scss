@@ -1,8 +1,8 @@
 .toolbar {
   height: 30px;
   line-height: 30px;
-  background-color: rgba(0, 43, 55, 1);
-  color: rgba(133, 154, 0, 1);
+  background-color: $editorBg;
+  color: $green;
   font-family: monospace;
 
   .toolbar-pad {

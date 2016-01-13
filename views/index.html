@@ -33,9 +33,12 @@
     </div>
 </div>
 <script>
+    //Bootstrapped from server
     window.existingCode = "{% autoescape 'js' %}{{ code }}{% endautoescape %}";
     window.revisions = {{otherRevisions | json | raw}};
     window.savedState = {{state | json | raw}};
+    window.jsResources= {{jsResources | json | raw}};
+    window.cssResources= {{cssResources | json | raw}};
 </script>
 <script src="/javascripts/socket.io.js" defer></script>
 <script src="/javascripts/client.js" defer></script>

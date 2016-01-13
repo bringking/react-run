@@ -43,12 +43,10 @@ class Main extends React.Component {
 export const babelFrameScript = ( code ) =>`try{` + code + `
 
                 var mountNode = document.getElementById('client_results');
-                var MainElement = React.createElement(Main);
-                var MainComponent = ReactDOM.render(MainElement,mountNode);
 
                 //check for previous state
                 var state = getPreviousState();
-                var rendered = ComponentTree.render({
+                var MainComponent = ComponentTree.render({
                   component: Main,
                   snapshot: state,
                   container: mountNode

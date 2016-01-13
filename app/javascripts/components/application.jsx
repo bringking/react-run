@@ -34,6 +34,8 @@ class Application extends React.Component {
             frameError: null,
             showingCss: false,
             showingJs: false,
+            jsResources: window.jsResources,
+            cssResources: window.cssResources,
             showingRevisions: false,
             revisions: window.revisions || [],
             value: window.existingCode || initialScript
@@ -247,6 +249,8 @@ class Application extends React.Component {
             this.socket.emit("code change", {
                 code: this.state.value,
                 bin: this.state.bin,
+                jsResources: this.state.jsResources,
+                cssResources: this.state.cssResources,
                 revision: this.state.revision
             });
         }
@@ -268,7 +272,8 @@ class Application extends React.Component {
      * @param data
      */
     onCodeSaved( data ) {
-        let {bin,revision,createdAt} = data;
+        console.log(data);
+        let {bin,revision,createdAt,jsResources,cssResources} = data;
         if ( bin && revision ) {
             this.props.history.push({
                 pathname: `/${bin}/${revision}`
@@ -277,7 +282,7 @@ class Application extends React.Component {
             //store in revisions
             let revisions = this.state.revisions;
             revisions.push({hash: revision, createdAt});
-            this.setState({revisions, revision, justSaved: true}, ()=> {
+            this.setState({jsResources, cssResources, revisions, revision, justSaved: true}, ()=> {
                 setTimeout(()=> {
                     this.setState({justSaved: false});
                 }, 600)
@@ -307,7 +312,14 @@ class Application extends React.Component {
      */
     saveCode() {
         let {bin,revision} = this.props.params;
-        this.socket.emit("code save", {code: this.state.value, bin, revision, state: this.serializeFrameState()});
+        this.socket.emit("code save", {
+            jsResources: this.state.jsResources,
+            cssResources: this.state.cssResources,
+            code: this.state.value,
+            bin,
+            revision,
+            state: this.serializeFrameState()
+        });
     }
 
     /**
@@ -321,17 +333,17 @@ class Application extends React.Component {
      * Show the revisions popover
      */
     showRevisions() {
-        this.setState({showingRevisions: true});
+        this.setState({showingRevisions: true, showingJs: false, showingCss: false});
     }
 
     toggleCss() {
         let showing = this.state.showingCss;
-        this.setState({showingCss: !showing});
+        this.setState({showingCss: !showing, showingJs: false, showingRevisions: false});
     }
 
     toggleJs() {
         let showing = this.state.showingJs;
-        this.setState({showingJs: !showing});
+        this.setState({showingJs: !showing, showingCss: false, showingRevisions: false});
     }
 
     hideAllPanels() {
@@ -339,12 +351,12 @@ class Application extends React.Component {
     }
 
     render() {
-        const {showingRevisions, showingCss, showingJs} = this.state;
+        const {showingRevisions, showingCss, showingJs,cssResources,jsResources} = this.state;
         return (
             <div className="app-container">
 
-                <CssPanel open={this.state.showingCss} onClose={this.toggleCss}/>
-                <JsPanel open={this.state.showingJs} onClose={this.toggleJs}/>
+                <CssPanel resources={cssResources} open={this.state.showingCss} onClose={this.toggleCss}/>
+                <JsPanel resources={jsResources} open={this.state.showingJs} onClose={this.toggleJs}/>
                 <Revisions revision={this.state.revision} bin={this.state.bin} revisions={this.state.revisions}
                            showingRevisions={showingRevisions} hideRevisions={this.hideRevisions}/>
 

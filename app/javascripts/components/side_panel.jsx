@@ -47,9 +47,9 @@ class SidePanel extends React.Component {
                 <div className="side-panel-inner">
                     {this.getContents()}
                 </div>
-                <div className="side-panel-buttons">
-                    <button onClick={this.saveChanges}>Save changes</button>
-                </div>
+            {/*<div className="side-panel-buttons">
+                    <button className="side-panel-button" onClick={this.saveChanges}>Save changes</button>
+                </div>*/}
             </div>
         );
     }

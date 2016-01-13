@@ -3,31 +3,8 @@
 // ----------------------------------------------------------------------
 $white: #FFFFFF;
 $black: #000000;
-$white-lt:   rgba($white, 0.3);
-$slate:      #1b1b1b;
-$gray:       #707070;
-$gold-light: #A47522;
-$gold:       #cc9933;
-$gold-dk:    #a87a1f;
-$gold-darker: #402F11;
-$gold-darkest: #2A1F0B;
-
-$slate: #1b1b1b;
-$gray: #707070;
-$gold: #cc9933;
-$gold-dk: #a87a1f;
-$rust: #644b1b;
-
-// ----------------------------------------------------------------------
-// General UI Elements
-// ----------------------------------------------------------------------
-$backgroundColor: $black;
-$activeHeaderBar: #1b1b1b;
-$countdownBackground:#262626;
-$categoryTitleBackground:#111111;
-$categoryBorderOnHome: #363636;
-$buttonBorder:#410410;
-$accentOrange:#cc9933;
+$green: rgba(133, 154, 0, 1);
+$editorBg: rgba(0, 43, 55, 1);
 
 // ----------------------------------------------------------------------
 // Colors for Text
@@ -35,7 +12,7 @@ $accentOrange:#cc9933;
 $header: #ffffff;
 $subHeader: #959595;
 $bodyText: #707070;
-$orangeText: $accentOrange;
+
 
 // ----------------------------------------------------------------------
 // Layout Breakpoints
