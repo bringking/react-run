@@ -54,6 +54,11 @@ class Application extends React.Component {
 
         //debounce the auto compile
         this.updateCode = debounce(this.updateCode.bind(this), 500);
+
+        //rehydrate our state
+        if ( window.savedState ) {
+            this.prevState = window.savedState;
+        }
     }
 
     /**
@@ -119,7 +124,7 @@ class Application extends React.Component {
     }
 
     getPreviousFrameState() {
-        return this.prevState || {state: {}};
+        return this.prevState || window.savedState //fallback to server state;
     }
 
     /**
@@ -246,7 +251,8 @@ class Application extends React.Component {
 
     saveCode() {
         let {bin,revision} = this.props.params;
-        this.socket.emit("code save", {code: this.state.value, bin, revision, state: this.prevState});
+        console.log("saving");
+        this.socket.emit("code save", {code: this.state.value, bin, revision, state: this.serializeFrameState()});
     }
 
     hideRevisions() {

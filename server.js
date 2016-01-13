@@ -123,7 +123,11 @@ router.get('/:bin/:revision', function *() {
         return;
     }
 
-    yield this.render('index', {code: binRevision.text, otherRevisions: otherRevisions});
+    yield this.render('index', {
+        code: binRevision.text,
+        otherRevisions: otherRevisions,
+        state: JSON.parse(binRevision.state)
+    });
 });
 
 //router
@@ -147,8 +151,18 @@ io.on('connection', co.wrap(function *( socket ) {
                 var binRevision = yield models.binRevision
                     .findOne({'hash': data.revision});
 
-                //don't resave the same code
-                if ( binRevision.text === data.code ) {
+                //don't re-save the same code
+                var stateSame = false;
+                if ( data.state ) {
+                    var savedState = binRevision.state;
+                    var newState = JSON.stringify(data.state);
+                    if ( newState === savedState ) {
+                        stateSame = true;
+                    }
+                }
+
+                if ( binRevision.text === data.code && stateSame ) {
+                    console.log('skipping save, text didn\'t change');
                     return;
                 }
 
@@ -156,6 +170,7 @@ io.on('connection', co.wrap(function *( socket ) {
                 var newRevision = new models.binRevision({
                     hash: "r_" + shortid.generate(),
                     text: data.code,
+                    state: JSON.stringify(data.state),
                     createdAt: new Date(),
                     "_bin": bin._id
                 });
@@ -172,6 +187,7 @@ io.on('connection', co.wrap(function *( socket ) {
 
             }
         } catch ( e ) {
+            console.error(e);
             socket.emit("error saving", {bin: data.bin, revision: data.revision});
         }
     }));
