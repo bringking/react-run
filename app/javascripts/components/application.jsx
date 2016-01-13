@@ -34,24 +34,24 @@ class Application extends React.Component {
             revisions: window.revisions || [],
             value: window.existingCode || initialScript
         };
-        
+
         //bind our functions
-        this.showRevisions    = this.showRevisions.bind(this);
-        this.hideRevisions    = this.hideRevisions.bind(this);
-        this.onFrameError     = this.onFrameError.bind(this);
-        this.clearFrameError  = this.clearFrameError.bind(this);
-        this.saveCode         = this.saveCode.bind(this);
-        this.onTextChanged    = this.onTextChanged.bind(this);
+        this.showRevisions = this.showRevisions.bind(this);
+        this.hideRevisions = this.hideRevisions.bind(this);
+        this.onFrameError = this.onFrameError.bind(this);
+        this.clearFrameError = this.clearFrameError.bind(this);
+        this.saveCode = this.saveCode.bind(this);
+        this.onTextChanged = this.onTextChanged.bind(this);
 
         //socket events
-        this.socket.on("code transformed",  this.onCodeChange.bind(this));
-        this.socket.on("code saved",        this.onCodeSaved.bind(this));
+        this.socket.on("code transformed", this.onCodeChange.bind(this));
+        this.socket.on("code saved", this.onCodeSaved.bind(this));
         //webpack events
         this.socket.on("webpack transform", this.onWebpackCodeChanged.bind(this));
         //module events
-        this.socket.on("npm installing",    this.onNpmInstall.bind(this));
-        this.socket.on("npm error",         this.onNpmError.bind(this));
-        this.socket.on("npm complete",      this.onNpmComplete.bind(this));
+        this.socket.on("npm installing", this.onNpmInstall.bind(this));
+        this.socket.on("npm error", this.onNpmError.bind(this));
+        this.socket.on("npm complete", this.onNpmComplete.bind(this));
 
         //bind keyboard handlers
         document.addEventListener("keydown", this.onKeyDown.bind(this));
@@ -329,8 +329,6 @@ class Application extends React.Component {
                         <div className="toolbar">
                             <div className="toolbar-pad"></div>
                             <ul className="toolbar-controls">
-                                {/*<li>{this.state.compiling?'Compiling...':'Not Compiling'} <i className={`fa fa-refresh ${this.state.compiling?'fa-spin':''}`}></i></li>*/}
-                                <li onClick={this.updateCode}>Run <i className="fa fa-play"></i></li>
                                 <li onClick={this.saveCode}>Save <i className="fa fa-save"></i></li>
                                 <li onClick={this.showRevisions}>Revisions <i className="fa fa-file-text"></i></li>
                             </ul>
