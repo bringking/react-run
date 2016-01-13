@@ -12,6 +12,10 @@ export const initialScript = `/**
  * and are unique to each component and revision that you create.
  * The revision.id is updated every time you save.
  *
+ * State: React.run preserves your app state changes
+ * as you code As an added bonus, React.run will save your
+ * components state to the server and rehydrate it as well!!
+ *
  * Toolbar: The toolbar above your code allows you to save your work and
  * view revisions of previous components you have created. Tip: You can
  * save your work by typing "cmd+s" or "window + s" on windows
