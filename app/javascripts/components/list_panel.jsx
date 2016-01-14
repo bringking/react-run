@@ -54,7 +54,7 @@ class ListPanel extends SidePanel {
 
     }
 
-    onEditItem( item ) {
+    onEditItem( item,idx ) {
         let editing = this.state.editing;
         let edited = this.state.edited;
 
@@ -63,7 +63,11 @@ class ListPanel extends SidePanel {
             edited[item] = {oldVal: item, newVal: item};
         }
 
-        this.setState({editing, edited});
+
+
+        this.setState({editing, edited},()=>{
+            this.refs[`input_${idx}`].focus();
+        });
     }
 
     onSaveItem( item ) {
@@ -89,8 +93,8 @@ class ListPanel extends SidePanel {
         return <div className="side-panel-form">
             <ReactCSSTransitionGroup transitionName="side-panel-item-animation" transitionEnterTimeout={500}
                                      transitionLeaveTimeout={300}>
-                {this.props.resources.map(r =><div className="side-panel-listing" key={r}>
-                    {this.state.editing[r] ? <input className="side-panel-input" value={this.state.edited[r].newVal}
+                {this.props.resources.map((r,idx) =><div className="side-panel-listing" key={r}>
+                    {this.state.editing[r] ? <input ref={`input_${idx}`} className="side-panel-input" value={this.state.edited[r].newVal}
                                                     onChange={this.onItemChange.bind(this,r)}/> :
                         <p className="side-panel-listing-left">{r}</p>}
                     <div className="side-panel-listing-right">
@@ -98,7 +102,7 @@ class ListPanel extends SidePanel {
                         {this.state.editing[r] ?
                             <i title="Save Item" className="fa fa-check"
                                onClick={this.onSaveItem.bind(this,r)}></i> :
-                            <i title="Edit Item" className="fa fa-edit" onClick={this.onEditItem.bind(this,r)}></i>}
+                            <i title="Edit Item" className="fa fa-edit" onClick={this.onEditItem.bind(this,r,idx)}></i>}
                         <i title="Move Up" className="fa fa-arrow-up"
                            onClick={this.props.onReorderItem.bind(null,r,"up")}></i>
                         <i title="Move Down" className="fa fa-arrow-down"
