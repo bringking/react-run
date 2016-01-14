@@ -8,9 +8,13 @@
   .toolbar-pad {
     background-color: rgba(0, 49, 64, 1);
     display: inline-block;
-    height: 30px;
+    height: 60px;
     width: 48px;
     float: left;
+
+    @include breakpoint(sm) {
+      height: 30px;
+    }
   }
   .toolbar-controls {
     display: inline-block;

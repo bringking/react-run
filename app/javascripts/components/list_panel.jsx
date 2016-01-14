@@ -32,8 +32,10 @@ class ListPanel extends SidePanel {
 
     onSubmit = event => {
         event.preventDefault();
-        this.props.onAdd(this.state.toAdd);
-        this.setState({toAdd: ""});
+        if ( this.state.toAdd.length ) {
+            this.props.onAdd(this.state.toAdd.trim());
+            this.setState({toAdd: ""});
+        }
     };
 
     onDeleteItem( item ) {

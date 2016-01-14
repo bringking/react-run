@@ -77,18 +77,54 @@ class Application extends React.Component {
             frame.contentWindow.getPreviousState = this.getPreviousFrameState;
 
             //write the content
-            frame.contentDocument.write(`<html>
-        <head><title>Code</title></head>
-        <body>
-            <div id="client_results"></div>
-        </body>
- </html>`);
+            frame.contentDocument.write(this.getFrameContent());
             frame.contentDocument.close();
 
             //listen for frame errors
             frame.contentWindow.console.error = this.onFrameError;
             frame.contentWindow.__clearMessages = this.clearFrameError;
         }
+
+    }
+
+    getFrameContent = () => {
+        return `<html>
+        <head>
+        <title>Code</title>
+         ${this.state.cssResources.map(r =>'<link class="injected-style" rel="stylesheet" href="' + r + '">')}
+         </head>
+        <body>
+            <div id="client_results"></div>
+            <div id="injected-scripts">
+              ${this.state.jsResources.map(r =>'<script type="text/javascript" src="' + r + '"></script>')}
+            </div>
+        </body>
+ </html>`
+    };
+
+    reconcileCss() {
+        let frame = this.refs.resultsFrame;
+        let styles = frame.contentDocument.getElementsByClassName("injected-style");
+        let head = frame.contentDocument.getElementsByTagName("head")[0];
+
+        //cleanup
+        Array.prototype.forEach.call(styles, ( style ) => {
+            head.removeChild(style);
+        });
+
+        if ( this.state.cssResources.length ) {
+            this.state.cssResources.forEach(r => {
+                let link = frame.contentDocument.createElement('link');
+                link.rel = 'stylesheet';
+                link.className = 'injected-style';
+                link.href = r;
+                head.appendChild(link);
+            });
+        }
+
+    }
+
+    reconcileScripts() {
 
     }
 
@@ -261,7 +297,6 @@ class Application extends React.Component {
      * @param data
      */
     onCodeSaved = ( data ) => {
-        console.log(data);
         let {bin,revision,createdAt,jsResources,cssResources} = data;
         if ( bin && revision ) {
             this.props.history.push({
@@ -343,7 +378,9 @@ class Application extends React.Component {
         let cssResources = this.state.cssResources;
         if ( cssResources.indexOf(resource) === -1 ) {
             cssResources.push(resource);
-            this.setState({cssResources});
+            this.setState({cssResources}, ()=> {
+                this.reconcileCss();
+            });
         }
     };
 
@@ -351,18 +388,24 @@ class Application extends React.Component {
         let jsResources = this.state.jsResources;
         if ( jsResources.indexOf(resource) === -1 ) {
             jsResources.push(resource);
-            this.setState({jsResources});
+            this.setState({jsResources}, ()=> {
+                this.reconcileScripts();
+            });
         }
     };
 
     onDeleteCssResource = resource => {
         let cssResources = this.state.cssResources.filter(r => r !== resource);
-        this.setState({cssResources});
+        this.setState({cssResources}, ()=> {
+            this.reconcileCss();
+        });
     };
 
     onDeleteJsResource = resource => {
         let jsResources = this.state.jsResources.filter(r => r !== resource);
-        this.setState({jsResources});
+        this.setState({jsResources}, ()=> {
+            this.reconcileScripts();
+        });
     };
 
     onReorderCssResource = ( resource, direction ) => {
@@ -376,7 +419,9 @@ class Application extends React.Component {
         cssResources.splice(newIdx, 0, resource);
 
         //move item up or down
-        this.setState({cssResources});
+        this.setState({cssResources}, ()=> {
+            this.reconcileCss();
+        });
 
     };
     onReorderJsResource = ( resource, direction ) => {
@@ -390,7 +435,9 @@ class Application extends React.Component {
         jsResources.splice(newIdx, 0, resource);
 
         //move item up or down
-        this.setState({jsResources});
+        this.setState({jsResources}, ()=> {
+            this.reconcileScripts();
+        });
 
     };
 
@@ -398,13 +445,17 @@ class Application extends React.Component {
         let cssResources = this.state.cssResources;
         let idx = cssResources.indexOf(oldVal);
         cssResources[idx] = newVal;
-        this.setState({cssResources});
+        this.setState({cssResources}, ()=> {
+            this.reconcileCss();
+        });
     };
     onJsItemUpdated = ( oldVal, newVal ) => {
         let jsResources = this.state.jsResources;
         let idx = jsResources.indexOf(oldVal);
         jsResources[idx] = newVal;
-        this.setState({jsResources});
+        this.setState({jsResources}, ()=> {
+            this.reconcileScripts();
+        });
     };
 
     render() {
