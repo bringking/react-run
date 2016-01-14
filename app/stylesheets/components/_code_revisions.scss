@@ -59,6 +59,11 @@
     padding: 5px;
 
     &.active {
+      .revision-hash {
+        background-color: $editorBg;
+        color: $green;
+
+      }
       background-color: $green;
 
       a {
@@ -67,4 +72,15 @@
     }
   }
 
+}
+
+.revision-hash {
+  margin-right: 5px;
+  background-color: $green;
+  color: $editorBg;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
 }

@@ -55,7 +55,7 @@ router.get('/', function *() {
     var result = yield newBin.save();
     var newRevision = new models.binRevision({
         createdAt: new Date(),
-        hash: "1",
+        hash: 1,
         text: "",
         jsResources: [],
         cssResources: [],
@@ -88,7 +88,7 @@ router.get('/:bin', function *() {
     if ( !latestRevision ) {
         latestRevision = new models.binRevision({
             createdAt: new Date(),
-            hash: "1",
+            hash: 1,
             text: "",
             jsResources: [],
             cssResources: [],
@@ -159,9 +159,10 @@ io.on('connection', co.wrap(function *( socket ) {
                     .find({'_bin': bin._id}).sort('-hash')
                     .limit(1);
 
+                console.log(parseInt(latestRevision[0].hash, 10));
                 //create a new revision
                 var newRevision = new models.binRevision({
-                    hash: parseInt(latestRevision[0].hash) + 1,
+                    hash: latestRevision[0].hash + 1,
                     text: data.code,
                     jsResources: data.jsResources || [],
                     cssResources: data.cssResources || [],

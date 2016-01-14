@@ -1,6 +1,6 @@
 module.exports = function( mongoose ) {
     var BinRevision = mongoose.Schema({
-        hash: String,
+        hash: Number,
         text: String,
         state: String,
         jsResources: [String],

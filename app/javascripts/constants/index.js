@@ -31,8 +31,18 @@ class Main extends React.Component {
     constructor(){
         super();
     }
+    styles(){
+        return {
+            height:"100%",
+            display:"flex",
+            alignItems:"center",
+            justifyContent:"center",
+            fontFamily:"Helvetica, Arial, sans-serif",
+            fontSize:"24px"
+        }
+    }
     render() {
-        return (<div>Welcome to React.run!</div>)
+        return (<div style={this.styles()}>Welcome to React.run!</div>)
     }
 }`;
 
