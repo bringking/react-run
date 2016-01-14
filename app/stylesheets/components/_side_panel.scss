@@ -1,19 +1,62 @@
 .side-panel {
-  overflow-x:hidden;
+  overflow-x: hidden;
 }
+
 .side-panel-buttons {
   width: 100%;
-  padding:6px;
+  padding: 6px;
   display: flex;
   justify-content: center;
 }
+
 .side-panel-form {
   padding: 6px;
 }
 
 .side-panel-input {
+  margin-top: 12px;
   background-color: $editorBg;
   color: $green;
   border: 1px solid $green;
   width: calc(100% - 6px);
+}
+
+.side-panel-listing {
+  color: $green;
+  font-size: 14px;
+  font-family: monospace;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  display: flex;
+  .side-panel-listing-left, .side-panel-listing-right {
+    width: 50%;
+    display: flex;
+    align-items:center;
+  }
+  .side-panel-listing-right {
+    justify-content: flex-end;
+  }
+  i {
+    cursor: pointer;
+    float: right;
+    margin-right: 6px;
+  }
+}
+
+.side-panel-item-animation-enter {
+  opacity: 0.01;
+}
+
+.side-panel-item-animation-enter.side-panel-item-animation-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.side-panel-item-animation-leave {
+  opacity: 1;
+}
+
+.side-panel-item-animation-leave.side-panel-item-animation-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
 }

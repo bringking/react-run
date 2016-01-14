@@ -17,6 +17,7 @@ class CssPanel extends SidePanel {
 }
 
 CssPanel.propTypes = assign({
+    onAdd: React.PropTypes.func.isRequired,
     resources: React.PropTypes.array.isRequired
 }, SidePanel.propTypes);
 

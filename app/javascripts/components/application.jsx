@@ -51,6 +51,8 @@ class Application extends React.Component {
         this.toggleCss = this.toggleCss.bind(this);
         this.toggleJs = this.toggleJs.bind(this);
         this.hideAllPanels = this.hideAllPanels.bind(this);
+        this.onAddJsResource = this.onAddJsResource.bind(this);
+        this.onAddCssResource = this.onAddCssResource.bind(this);
 
         //socket events
         this.socket.on("code transformed", this.onCodeChange.bind(this));
@@ -350,13 +352,33 @@ class Application extends React.Component {
         this.setState({showingJs: false, showingCss: false, showingRevisions: false});
     }
 
+    onAddCssResource( resource ) {
+        let cssResources = this.state.cssResources;
+        if ( cssResources.indexOf(resource) === -1 ) {
+            cssResources.push(resource);
+            this.setState({cssResources});
+        }
+
+    }
+
+    onAddJsResource( resource ) {
+        let jsResources = this.state.jsResources;
+        if ( jsResources.indexOf(resource) === -1 ) {
+            jsResources.push(resource);
+            this.setState({jsResources});
+        }
+
+    }
+
     render() {
         const {showingRevisions, showingCss, showingJs,cssResources,jsResources} = this.state;
         return (
             <div className="app-container">
 
-                <CssPanel resources={cssResources} open={this.state.showingCss} onClose={this.toggleCss}/>
-                <JsPanel resources={jsResources} open={this.state.showingJs} onClose={this.toggleJs}/>
+                <CssPanel onAdd={this.onAddCssResource} resources={cssResources} open={this.state.showingCss}
+                          onClose={this.toggleCss}/>
+                <JsPanel onAdd={this.onAddJsResource} resources={jsResources} open={this.state.showingJs}
+                         onClose={this.toggleJs}/>
                 <Revisions revision={this.state.revision} bin={this.state.bin} revisions={this.state.revisions}
                            showingRevisions={showingRevisions} hideRevisions={this.hideRevisions}/>
 
