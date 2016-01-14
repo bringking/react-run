@@ -14,9 +14,6 @@ class JsPanel extends SidePanel {
             edited: {}
         };
 
-        //submit handler
-        this.onSubmit = this.onSubmit.bind(this);
-        this.onChange = this.onChange.bind(this);
     }
 
     componentWillReceiveProps( nextProps ) {
@@ -37,15 +34,15 @@ class JsPanel extends SidePanel {
         return "JavaScript Resources"
     }
 
-    onChange( event ) {
+    onChange = event => {
         this.setState({toAdd: event.target.value})
-    }
+    };
 
-    onSubmit( event ) {
+    onSubmit = event => {
         event.preventDefault();
         this.props.onAdd(this.state.toAdd);
         this.setState({toAdd: ""});
-    }
+    };
 
     onDeleteItem( item ) {
         let editing = this.state.editing;
@@ -83,6 +80,7 @@ class JsPanel extends SidePanel {
         this.setState({editing});
     }
 
+
     getContents() {
         return <div className="side-panel-form">
             <ReactCSSTransitionGroup transitionName="side-panel-item-animation" transitionEnterTimeout={500}
@@ -91,25 +89,27 @@ class JsPanel extends SidePanel {
                     {this.state.editing[r] ? <input className="side-panel-input" value={this.state.edited[r]}/> :
                         <div className="side-panel-listing-left">{r}</div>}
                     <div className="side-panel-listing-right">
-                        <i className="fa fa-close"></i>
+                        <i className="fa fa-close" onClick={this.onDeleteItem.bind(this,r)}></i>
                         {this.state.editing[r] ?
                             <i className="fa fa-check" onClick={this.onSaveItem.bind(this,r)}></i> :
                             <i className="fa fa-edit" onClick={this.onEditItem.bind(this,r)}></i>}
-                        <i className="fa fa-arrow-up"></i>
-                        <i className="fa fa-arrow-down"></i>
+                        <i className="fa fa-arrow-up" onClick={this.props.onReorderItem.bind(null,r,"up")}></i>
+                        <i className="fa fa-arrow-down" onClick={this.props.onReorderItem.bind(null,r,"down")}></i>
 
                     </div>
                 </div>)}
             </ReactCSSTransitionGroup>
             <form onSubmit={this.onSubmit}>
                 <input ref="addInput" name="toAdd" className="side-panel-input" type="text"
-                       placeholder="Url to resource"
+                       placeholder="e.g. https://npmcdn.com/three.js"
                        value={this.state.toAdd} onChange={this.onChange}/>
             </form>
         </div>;
     }
 }
 JsPanel.propTypes = assign({
+    onReorderItem: React.PropTypes.func.isRequired,
+    onDelete: React.PropTypes.func.isRequired,
     onAdd: React.PropTypes.func.isRequired,
     resources: React.PropTypes.array.isRequired
 }, SidePanel.propTypes);

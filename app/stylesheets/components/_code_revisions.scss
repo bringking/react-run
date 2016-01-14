@@ -21,17 +21,18 @@
     border-bottom: 1px solid $green;
     padding-left: 5px;
     font-size: 15px;
+    padding-bottom: 5px;
     i {
       float: right;
       padding-right: 15px;
-      padding-top: 1px;
       cursor: pointer;
+      font-size: 17px;
     }
   }
   p {
     color: $green;
     font-family: monospace;
-    padding-left:6px;
+    padding-left: 6px;
     padding-right: 6px;
     font-size: 12px;
   }

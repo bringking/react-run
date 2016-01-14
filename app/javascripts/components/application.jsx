@@ -41,34 +41,21 @@ class Application extends React.Component {
             value: window.existingCode || initialScript
         };
 
-        //bind our functions
-        this.showRevisions = this.showRevisions.bind(this);
-        this.hideRevisions = this.hideRevisions.bind(this);
-        this.onFrameError = this.onFrameError.bind(this);
-        this.clearFrameError = this.clearFrameError.bind(this);
-        this.saveCode = this.saveCode.bind(this);
-        this.onTextChanged = this.onTextChanged.bind(this);
-        this.toggleCss = this.toggleCss.bind(this);
-        this.toggleJs = this.toggleJs.bind(this);
-        this.hideAllPanels = this.hideAllPanels.bind(this);
-        this.onAddJsResource = this.onAddJsResource.bind(this);
-        this.onAddCssResource = this.onAddCssResource.bind(this);
-
         //socket events
-        this.socket.on("code transformed", this.onCodeChange.bind(this));
-        this.socket.on("code saved", this.onCodeSaved.bind(this));
+        this.socket.on("code transformed", this.onCodeChange);
+        this.socket.on("code saved", this.onCodeSaved);
         //webpack events
-        this.socket.on("webpack transform", this.onWebpackCodeChanged.bind(this));
+        this.socket.on("webpack transform", this.onWebpackCodeChanged);
         //module events
-        this.socket.on("npm installing", this.onNpmInstall.bind(this));
-        this.socket.on("npm error", this.onNpmError.bind(this));
-        this.socket.on("npm complete", this.onNpmComplete.bind(this));
+        this.socket.on("npm installing", this.onNpmInstall);
+        this.socket.on("npm error", this.onNpmError);
+        this.socket.on("npm complete", this.onNpmComplete);
 
         //bind keyboard handlers
-        document.addEventListener("keydown", this.onKeyDown.bind(this));
+        document.addEventListener("keydown", this.onKeyDown);
 
         //debounce the auto compile
-        this.updateCode = debounce(this.updateCode.bind(this), 500);
+        this.updateCode = debounce(this.updateCode, 500);
 
         //rehydrate our state
         if ( window.savedState ) {
@@ -87,7 +74,7 @@ class Application extends React.Component {
             frame.contentWindow.React = window.React;
             frame.contentWindow.ReactDOM = window.ReactDOM;
             frame.contentWindow.ComponentTree = ComponentTree;
-            frame.contentWindow.getPreviousState = this.getPreviousFrameState.bind(this);
+            frame.contentWindow.getPreviousState = this.getPreviousFrameState;
 
             //write the content
             frame.contentDocument.write(`<html>
@@ -109,26 +96,26 @@ class Application extends React.Component {
      * This is the callback for when NPM install starts
      * @param data
      */
-    onNpmInstall( data ) {
+    onNpmInstall = ( data ) => {
         this.setState({compiling: true, npmMessage: `Installing ${data.modules.join(' ')} modules`})
-    }
+    };
 
     /**
      * This is the callback for when NPM errors
      * @param data
      */
-    onNpmError( data ) {
+    onNpmError = ( data ) => {
         this.setState({
             compiling: false,
             npmMessage: `Error Installing ${data.modules.join(' ')} modules. Stacktrace: ${data.output}`
         })
-    }
+    };
 
     /**
      * This is the callback for when NPM is finished processing
      * @param data
      */
-    onNpmComplete( data ) {
+    onNpmComplete = data => {
         this.setState({npmMessage: `Done installing ${data.modules.join(' ')} modules.`}, ()=> {
             //clear the message
             setTimeout(()=> {
@@ -136,72 +123,72 @@ class Application extends React.Component {
             }, 2000);
         })
 
-    }
+    };
 
     /**
      * Get the previous frame state or the last known state from the server which is bootstrapped into
      * window.savedState
      * @returns {*}
      */
-    getPreviousFrameState() {
+    getPreviousFrameState = () => {
         return this.prevState || window.savedState; //fallback to server state;
-    }
+    };
 
     /**
      * Get the React state from the users component tree
      * @returns {*}
      */
-    serializeFrameState() {
+    serializeFrameState = () => {
         let frame = this.refs.resultsFrame;
         if ( frame.contentWindow.getState ) {
             return frame.contentWindow.getState();
         }
         return null;
-    }
+    };
 
     /**
      * Clear any frame errors
      */
-    clearFrameError() {
+    clearFrameError = () => {
         this.setState({frameError: null});
-    }
+    };
 
     /**
      * Event handler for an exception caught in the frame
      * @param msg
      */
-    onFrameError( msg ) {
+    onFrameError = msg => {
         this.setState({frameError: msg.message});
-    }
+    };
 
     /**
      * Render babel code to the iframe
      * @param code
      */
-    renderCode( code ) {
+    renderCode = code => {
         let frame = this.refs.resultsFrame;
         if ( frame ) {
             renderReactToFrame(frame, code);
         }
-    }
+    };
 
     /**
      * Render webpack code to the iframe
      * @param code
      * @param common
      */
-    renderWebpackCode( code, common ) {
+    renderWebpackCode = ( code, common ) => {
         let frame = this.refs.resultsFrame;
         if ( frame ) {
             renderReactToFrame(frame, code, common);
         }
-    }
+    };
 
     /**
      * Callback for webpack compiled code being passed from the server
      * @param data
      */
-    onWebpackCodeChanged( data ) {
+    onWebpackCodeChanged = data => {
         if ( data.common && data.main ) {
             this.setState({compiling: false}, ()=> {
 
@@ -222,26 +209,26 @@ class Application extends React.Component {
                 this.renderWebpackCode(codeToRender, data.common);
             });
         }
-    }
+    };
 
     /**
      * This is the callback function for when babel
      * compiled code comes back from the socket
      * @param code
      */
-    onCodeChange( code ) {
+    onCodeChange = code => {
         if ( code ) {
             this.setState({compiling: false}, ()=> {
                 this.renderCode(babelFrameScript(code));
             });
 
         }
-    }
+    };
 
     /**
      * Update the code running in the frame by emitting a code change event
      */
-    updateCode() {
+    updateCode = () => {
         if ( !this.state.compiling ) {
 
             //store the previous state
@@ -257,23 +244,23 @@ class Application extends React.Component {
             });
         }
 
-    }
+    };
 
     /**
      * Event handler for when text in the editor has changed
      * @param newValue
      */
-    onTextChanged( newValue ) {
+    onTextChanged = ( newValue ) => {
         this.setState({value: newValue}, ()=> {
             this.updateCode();
         });
-    }
+    };
 
     /**
      * Event handler for code being successfully saved on the server
      * @param data
      */
-    onCodeSaved( data ) {
+    onCodeSaved = ( data ) => {
         console.log(data);
         let {bin,revision,createdAt,jsResources,cssResources} = data;
         if ( bin && revision ) {
@@ -291,14 +278,14 @@ class Application extends React.Component {
             });
         }
 
-    }
+    };
 
     /**
      * Key handler for performing keyboard shortcuts.
      * @param event
      * @returns {boolean}
      */
-    onKeyDown( event ) {
+    onKeyDown = event => {
         if ( event.metaKey && event.keyCode === 83 ) {
             event.preventDefault();
             this.saveCode();
@@ -306,13 +293,13 @@ class Application extends React.Component {
         }
 
         return true;
-    }
+    };
 
     /**
      * Save the current state of the code, passing the text, the bin, the revision and the serialized state of the
      * mounted component
      */
-    saveCode() {
+    saveCode = () => {
         let {bin,revision} = this.props.params;
         this.socket.emit("code save", {
             jsResources: this.state.jsResources,
@@ -322,62 +309,90 @@ class Application extends React.Component {
             revision,
             state: this.serializeFrameState()
         });
-    }
+    };
 
     /**
      * Hide the revisions popover
      */
-    hideRevisions() {
+    hideRevisions = () => {
         this.setState({showingRevisions: false});
-    }
+    };
 
     /**
      * Show the revisions popover
      */
-    showRevisions() {
+    showRevisions = () => {
         this.setState({showingRevisions: true, showingJs: false, showingCss: false});
-    }
+    };
 
-    toggleCss() {
+    toggleCss = () => {
         let showing = this.state.showingCss;
         this.setState({showingCss: !showing, showingJs: false, showingRevisions: false});
-    }
+    };
 
-    toggleJs() {
+    toggleJs = () => {
         let showing = this.state.showingJs;
         this.setState({showingJs: !showing, showingCss: false, showingRevisions: false});
-    }
+    };
 
-    hideAllPanels() {
+    hideAllPanels = ()=> {
         this.setState({showingJs: false, showingCss: false, showingRevisions: false});
-    }
+    };
 
-    onAddCssResource( resource ) {
+    onAddCssResource = resource => {
         let cssResources = this.state.cssResources;
         if ( cssResources.indexOf(resource) === -1 ) {
             cssResources.push(resource);
             this.setState({cssResources});
         }
+    };
 
-    }
-
-    onAddJsResource( resource ) {
+    onAddJsResource = resource => {
         let jsResources = this.state.jsResources;
         if ( jsResources.indexOf(resource) === -1 ) {
             jsResources.push(resource);
             this.setState({jsResources});
         }
+    };
 
-    }
+    onDeleteCssResource = resource => {
+        let cssResources = this.state.cssResources.filter(r => r !== resource);
+        this.setState({cssResources});
+    };
+
+    onDeleteJsResource = resource => {
+        let jsResources = this.state.jsResources.filter(r => r !== resource);
+        console.log(jsResources);
+        this.setState({jsResources});
+    };
+
+    onReorderJsResource = ( resource, direction ) => {
+        let jsResources = this.state.jsResources;
+        let idx = jsResources.indexOf(resource);
+        let newIdx = direction === "up"
+            ? Math.max(idx - 1, 0)
+            : Math.min(idx + 1, jsResources.length);
+
+        jsResources.splice(idx, 1);
+        jsResources.splice(newIdx, 0, resource);
+
+        //move item up or down
+        this.setState({jsResources});
+
+    };
 
     render() {
         const {showingRevisions, showingCss, showingJs,cssResources,jsResources} = this.state;
         return (
             <div className="app-container">
 
-                <CssPanel onAdd={this.onAddCssResource} resources={cssResources} open={this.state.showingCss}
+                <CssPanel onDelete={this.onDeleteCssResource}
+                          onAdd={this.onAddCssResource} resources={cssResources}
+                          open={this.state.showingCss}
                           onClose={this.toggleCss}/>
-                <JsPanel onAdd={this.onAddJsResource} resources={jsResources} open={this.state.showingJs}
+                <JsPanel onReorderItem={this.onReorderJsResource} onDelete={this.onDeleteJsResource}
+                         onAdd={this.onAddJsResource} resources={jsResources}
+                         open={this.state.showingJs}
                          onClose={this.toggleJs}/>
                 <Revisions revision={this.state.revision} bin={this.state.bin} revisions={this.state.revisions}
                            showingRevisions={showingRevisions} hideRevisions={this.hideRevisions}/>

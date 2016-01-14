@@ -18,7 +18,33 @@
   background-color: $editorBg;
   color: $green;
   border: 1px solid $green;
-  width: calc(100% - 6px);
+  padding: 9px;
+  width: calc(100% - 20px);
+  font-family: monospace;
+  &::-webkit-input-placeholder { /* Safari, Chrome and Opera */
+    color: $green * .7;
+  }
+
+  &:-moz-placeholder { /* Firefox 18- */
+    color: $green * .7;
+  }
+
+  &::-moz-placeholder { /* Firefox 19+ */
+    color: $green * .7;
+  }
+
+  &:-ms-input-placeholder { /* IE 10+ */
+    color: $green * .7;
+  }
+
+  &::-ms-input-placeholder { /* Edge */
+    color: $green * .7;
+  }
+
+  &:placeholder-shown { /* Standard one last! */
+    color: $green * .7;
+  }
+
 }
 
 .side-panel-listing {
@@ -31,7 +57,7 @@
   .side-panel-listing-left, .side-panel-listing-right {
     width: 50%;
     display: flex;
-    align-items:center;
+    align-items: center;
   }
   .side-panel-listing-right {
     justify-content: flex-end;
