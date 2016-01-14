@@ -154,30 +154,10 @@ io.on('connection', co.wrap(function *( socket ) {
                 //saving
                 var bin = yield models.bin.findOne({'id': data.bin});
 
-                //find the code to the current revision
-                var binRevision = yield models.binRevision
-                    .findOne({'_bin': bin._id, 'hash': data.revision});
-
-                //don't re-save the same code
-                var stateSame = false;
-                if ( data.state ) {
-                    var savedState = binRevision.state;
-                    var newState = JSON.stringify(data.state);
-                    if ( newState === savedState ) {
-                        stateSame = true;
-                    }
-                }
-
-                if ( binRevision.text === data.code && stateSame ) {
-                    console.log('skipping save, text didn\'t change');
-                    return;
-                }
-
                 var latestRevision = yield models
                     .binRevision
                     .find({'_bin': bin._id}).sort('-hash')
                     .limit(1);
-                
 
                 //create a new revision
                 var newRevision = new models.binRevision({
