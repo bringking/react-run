@@ -10,7 +10,7 @@ body {
 
 #editor {
   width: 50%;
-
+  position: relative;
   &.fade {
     #editor_window {
       filter: blur(1px);

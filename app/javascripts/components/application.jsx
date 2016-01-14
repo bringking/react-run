@@ -14,6 +14,7 @@ import SocketListener from "./socket_listener";
 import JsPanel from "./js_panel";
 import CssPanel from "./css_panel";
 import defaultsDeep from "lodash.defaultsdeep";
+import StateBar from "./state_bar";
 
 class Application extends React.Component {
 
@@ -30,6 +31,7 @@ class Application extends React.Component {
             bin,
             revision,
             saveState: window.savedState,
+            stateTransitions: [],
             justSaved: false,
             compiling: false,
             npmMessage: null,
@@ -86,6 +88,11 @@ class Application extends React.Component {
         }
 
     }
+
+    enableStateReplacement = ( state ) => {
+        let frame = this.refs.resultsFrame;
+        frame.contentWindow.initialState = state;
+    };
 
     getFrameContent = () => {
         return `<html>
@@ -272,6 +279,11 @@ class Application extends React.Component {
      */
     updateCode = () => {
         if ( !this.state.compiling ) {
+
+            //persist state across refreshes
+            if ( this.state.saveState ) {
+                this.enableStateReplacement(this.serializeFrameState());
+            }
 
             //emit the change
             this.socket.emit("code change", {
@@ -464,7 +476,13 @@ class Application extends React.Component {
 
     setPreserveState = ()=> {
         let saveState = this.state.saveState;
-        this.setState({saveState: !saveState});
+        this.setState({saveState: !saveState}, ()=> {
+            this.updateCode();
+        });
+    };
+
+    onSelectState = ( idx ) => {
+        console.log("Selected state " + idx);
     };
 
     render() {
@@ -490,7 +508,7 @@ class Application extends React.Component {
                         <div className="toolbar">
                             <div className="toolbar-pad"></div>
                             <ul className="toolbar-controls">
-                                <li onClick={this.setPreserveState}>Persist State {this.state.saveState ?
+                                <li onClick={this.setPreserveState}>Track State {this.state.saveState ?
                                     <i className="fa fa-check-square"></i> : <i className="fa fa-square"></i> }</li>
                                 <li onClick={this.saveCode}>Save <i className="fa fa-save"></i></li>
                                 <li onClick={this.toggleCss}>CSS Resources <i className="fa fa-css3"></i>
@@ -510,6 +528,9 @@ class Application extends React.Component {
                             showPrintMargin={false}
                             editorProps={{$blockScrolling: true}}
                         />
+                        {this.state.saveState ?
+                            <StateBar onSelectState={this.onSelectState} stateTransitions={[{num:1},{num:2}]}/>
+                            : null}
                     </div>
                     <div id="results">
                         <iframe frameBorder="0" ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>

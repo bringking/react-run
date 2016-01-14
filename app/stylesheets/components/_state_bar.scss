@@ -1,0 +1,32 @@
+.state-bar {
+  position: absolute;
+  right: 0;
+  top: 60px;
+  bottom: 0;
+  width: 40px;
+  @include breakpoint(sm) {
+    top: 30px;
+  }
+  display: flex;
+  flex-direction: column;
+
+  .slider {
+    height: calc(100vh - 60px) !important;
+    @include breakpoint(sm) {
+      height: calc(100vh - 30px) !important;
+    }
+  }
+
+  .handle {
+    background: $blue;
+    height: 20px;
+    width: 20px;
+    left: -10px;
+    cursor:pointer;
+  }
+  .bar {
+    width: 1px;
+    background: $green;
+    position: relative;
+  }
+}
