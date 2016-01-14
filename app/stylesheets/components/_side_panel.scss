@@ -52,12 +52,15 @@
 }
 
 .side-panel-listing {
-  color: $green;
+  color: $blue;
   font-size: 14px;
   font-family: monospace;
   padding-top: 4px;
   padding-bottom: 4px;
   display: flex;
+  p {
+    color: $blue;
+  }
   .side-panel-listing-left, .side-panel-listing-right {
     width: 50%;
     display: flex;

@@ -394,16 +394,31 @@ class Application extends React.Component {
 
     };
 
+    onCssItemUpdated = ( oldVal, newVal ) => {
+        let cssResources = this.state.cssResources;
+        let idx = cssResources.indexOf(oldVal);
+        cssResources[idx] = newVal;
+        this.setState({cssResources});
+    };
+    onJsItemUpdated = ( oldVal, newVal ) => {
+        let jsResources = this.state.jsResources;
+        let idx = jsResources.indexOf(oldVal);
+        jsResources[idx] = newVal;
+        this.setState({jsResources});
+    };
+
     render() {
         const {showingRevisions, showingCss, showingJs,cssResources,jsResources} = this.state;
         return (
             <div className="app-container">
 
-                <CssPanel onReorderItem={this.onReorderCssResource} onDelete={this.onDeleteCssResource}
+                <CssPanel onUpdateItem={this.onCssItemUpdated} onReorderItem={this.onReorderCssResource}
+                          onDelete={this.onDeleteCssResource}
                           onAdd={this.onAddCssResource} resources={cssResources}
                           open={this.state.showingCss}
                           onClose={this.toggleCss}/>
-                <JsPanel onReorderItem={this.onReorderJsResource} onDelete={this.onDeleteJsResource}
+                <JsPanel onUpdateItem={this.onJsItemUpdated} onReorderItem={this.onReorderJsResource}
+                         onDelete={this.onDeleteJsResource}
                          onAdd={this.onAddJsResource} resources={jsResources}
                          open={this.state.showingJs}
                          onClose={this.toggleJs}/>

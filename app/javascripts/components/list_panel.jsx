@@ -58,7 +58,7 @@ class ListPanel extends SidePanel {
 
         if ( !editing[item] ) {
             editing[item] = item;
-            edited[item] = item;
+            edited[item] = {oldVal: item, newVal: item};
         }
 
         this.setState({editing, edited});
@@ -66,24 +66,36 @@ class ListPanel extends SidePanel {
 
     onSaveItem( item ) {
         let editing = this.state.editing;
-
+        let edited = this.state.edited;
         editing[item] = null;
 
-        this.setState({editing});
+        //persist
+        this.props.onUpdateItem(edited[item].oldVal, edited[item].newVal);
+        edited[item].oldVal = edited[item].newVal;
+
+        this.setState({editing, edited});
+    }
+
+    onItemChange( item, event ) {
+        let edited = this.state.edited;
+        edited[item].newVal = event.target.value;
+        this.setState({edited});
+
     }
 
     getContents() {
-        console.log('getting contents');
         return <div className="side-panel-form">
             <ReactCSSTransitionGroup transitionName="side-panel-item-animation" transitionEnterTimeout={500}
                                      transitionLeaveTimeout={300}>
                 {this.props.resources.map(r =><div className="side-panel-listing" key={r}>
-                    {this.state.editing[r] ? <input className="side-panel-input" value={this.state.edited[r]}/> :
+                    {this.state.editing[r] ? <input className="side-panel-input" value={this.state.edited[r].newVal}
+                                                    onChange={this.onItemChange.bind(this,r)}/> :
                         <p className="side-panel-listing-left">{r}</p>}
                     <div className="side-panel-listing-right">
                         <i className="fa fa-close" onClick={this.onDeleteItem.bind(this,r)}></i>
                         {this.state.editing[r] ?
-                            <i title="Save Item" className="fa fa-check" onClick={this.onSaveItem.bind(this,r)}></i> :
+                            <i title="Save Item" className="fa fa-check"
+                               onClick={this.onSaveItem.bind(this,r)}></i> :
                             <i title="Edit Item" className="fa fa-edit" onClick={this.onEditItem.bind(this,r)}></i>}
                         <i title="Move Up" className="fa fa-arrow-up"
                            onClick={this.props.onReorderItem.bind(null,r,"up")}></i>
@@ -106,11 +118,16 @@ class ListPanel extends SidePanel {
         </div>;
     }
 }
-ListPanel.propTypes = assign({
+
+ListPanel
+    .propTypes = assign({
+    onUpdateItem: React.PropTypes.func.isRequired,
     onReorderItem: React.PropTypes.func.isRequired,
     onDelete: React.PropTypes.func.isRequired,
     onAdd: React.PropTypes.func.isRequired,
     resources: React.PropTypes.array.isRequired
 }, SidePanel.propTypes);
 
-export default ListPanel;
+export
+default
+ListPanel;
