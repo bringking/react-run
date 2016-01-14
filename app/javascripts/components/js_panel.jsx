@@ -80,7 +80,6 @@ class JsPanel extends SidePanel {
         this.setState({editing});
     }
 
-
     getContents() {
         return <div className="side-panel-form">
             <ReactCSSTransitionGroup transitionName="side-panel-item-animation" transitionEnterTimeout={500}
@@ -91,18 +90,25 @@ class JsPanel extends SidePanel {
                     <div className="side-panel-listing-right">
                         <i className="fa fa-close" onClick={this.onDeleteItem.bind(this,r)}></i>
                         {this.state.editing[r] ?
-                            <i className="fa fa-check" onClick={this.onSaveItem.bind(this,r)}></i> :
-                            <i className="fa fa-edit" onClick={this.onEditItem.bind(this,r)}></i>}
-                        <i className="fa fa-arrow-up" onClick={this.props.onReorderItem.bind(null,r,"up")}></i>
-                        <i className="fa fa-arrow-down" onClick={this.props.onReorderItem.bind(null,r,"down")}></i>
+                            <i title="Save Item" className="fa fa-check" onClick={this.onSaveItem.bind(this,r)}></i> :
+                            <i title="Edit Item" className="fa fa-edit" onClick={this.onEditItem.bind(this,r)}></i>}
+                        <i title="Move Up" className="fa fa-arrow-up"
+                           onClick={this.props.onReorderItem.bind(null,r,"up")}></i>
+                        <i title="Move Down" className="fa fa-arrow-down"
+                           onClick={this.props.onReorderItem.bind(null,r,"down")}></i>
 
                     </div>
                 </div>)}
             </ReactCSSTransitionGroup>
             <form onSubmit={this.onSubmit}>
-                <input ref="addInput" name="toAdd" className="side-panel-input" type="text"
-                       placeholder="e.g. https://npmcdn.com/three.js"
-                       value={this.state.toAdd} onChange={this.onChange}/>
+                <div className="side-panel-input-container">
+                    <input ref="addInput" name="toAdd" className="side-panel-input large" type="text"
+                           placeholder="e.g. https://npmcdn.com/three.js"
+                           value={this.state.toAdd} onChange={this.onChange}/>
+                    <button className="side-panel-button" type="submit" role="submit">
+                        Add
+                    </button>
+                </div>
             </form>
         </div>;
     }

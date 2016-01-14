@@ -362,10 +362,23 @@ class Application extends React.Component {
 
     onDeleteJsResource = resource => {
         let jsResources = this.state.jsResources.filter(r => r !== resource);
-        console.log(jsResources);
         this.setState({jsResources});
     };
 
+    onReorderCssResource = ( resource, direction ) => {
+        let cssResources = this.state.cssResources;
+        let idx = cssResources.indexOf(resource);
+        let newIdx = direction === "up"
+            ? Math.max(idx - 1, 0)
+            : Math.min(idx + 1, cssResources.length);
+
+        cssResources.splice(idx, 1);
+        cssResources.splice(newIdx, 0, resource);
+
+        //move item up or down
+        this.setState({cssResources});
+
+    };
     onReorderJsResource = ( resource, direction ) => {
         let jsResources = this.state.jsResources;
         let idx = jsResources.indexOf(resource);
@@ -386,7 +399,7 @@ class Application extends React.Component {
         return (
             <div className="app-container">
 
-                <CssPanel onDelete={this.onDeleteCssResource}
+                <CssPanel onReorderItem={this.onReorderCssResource} onDelete={this.onDeleteCssResource}
                           onAdd={this.onAddCssResource} resources={cssResources}
                           open={this.state.showingCss}
                           onClose={this.toggleCss}/>

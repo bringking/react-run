@@ -13,6 +13,10 @@
   padding: 6px;
 }
 
+.side-panel-input-container {
+  display: flex;
+}
+
 .side-panel-input {
   margin-top: 12px;
   background-color: $editorBg;

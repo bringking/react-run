@@ -117,7 +117,7 @@ router.get('/:bin/:revision', function *() {
     }
 
     var binRevision = yield models.binRevision
-        .findOne({'hash': this.params.revision});
+        .findOne({'_bin': bin._id, 'hash': this.params.revision});
 
     var otherRevisions = yield models.binRevision
         .find({'_bin': bin._id}).select({'hash': 1, 'createdAt': 1});
@@ -156,7 +156,7 @@ io.on('connection', co.wrap(function *( socket ) {
 
                 //find the code to the current revision
                 var binRevision = yield models.binRevision
-                    .findOne({'hash': data.revision});
+                    .findOne({'_bin': bin._id, 'hash': data.revision});
 
                 //don't re-save the same code
                 var stateSame = false;
@@ -173,9 +173,15 @@ io.on('connection', co.wrap(function *( socket ) {
                     return;
                 }
 
+                var latestRevision = yield models
+                    .binRevision
+                    .find({'_bin': bin._id}).sort('-hash')
+                    .limit(1);
+                
+
                 //create a new revision
                 var newRevision = new models.binRevision({
-                    hash: parseInt(binRevision.hash) + 1,
+                    hash: parseInt(latestRevision[0].hash) + 1,
                     text: data.code,
                     jsResources: data.jsResources || [],
                     cssResources: data.cssResources || [],

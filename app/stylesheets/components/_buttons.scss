@@ -4,6 +4,9 @@
   border: 1px solid $green;
   font-family: monospace;
   transition: all 250ms ease;
+  width: 20%;
+  margin-top: 12px;
+  margin-left: 10px;
   &:hover {
     background-color: $green;
     color: $editorBg;
