@@ -58,7 +58,6 @@ router.get('/', function *() {
         text: "",
         jsResources: [],
         cssResources: [],
-        state: "{}",
         "_bin": result._id
     });
 
@@ -91,7 +90,6 @@ router.get('/:bin', function *() {
             text: "",
             jsResources: [],
             cssResources: [],
-            state: "{}",
             "_bin": result._id
         });
         yield latestRevision.save();
@@ -133,7 +131,7 @@ router.get('/:bin/:revision', function *() {
         otherRevisions: otherRevisions,
         jsResources: binRevision.jsResources,
         cssResources: binRevision.cssResources,
-        state: JSON.parse(binRevision.state)
+        state: binRevision.state ? JSON.parse(binRevision.state) : null
     });
 });
 
@@ -164,7 +162,7 @@ io.on('connection', co.wrap(function *( socket ) {
                     text: data.code,
                     jsResources: data.jsResources || [],
                     cssResources: data.cssResources || [],
-                    state: JSON.stringify(data.state),
+                    state: data.state ? JSON.stringify(data.state) : null,
                     createdAt: new Date(),
                     "_bin": bin._id
                 });

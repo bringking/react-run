@@ -29,6 +29,7 @@ class Application extends React.Component {
         this.state = {
             bin,
             revision,
+            saveState: window.savedState,
             justSaved: false,
             compiling: false,
             npmMessage: null,
@@ -338,13 +339,14 @@ class Application extends React.Component {
      */
     saveCode = () => {
         let {bin,revision} = this.props.params;
+
         this.socket.emit("code save", {
             jsResources: this.state.jsResources,
             cssResources: this.state.cssResources,
             code: this.state.value,
             bin,
             revision,
-            state: this.serializeFrameState()
+            state: this.state.saveState ? this.serializeFrameState() : null
         });
     };
 
@@ -460,8 +462,9 @@ class Application extends React.Component {
         });
     };
 
-    flushState = ()=> {
-        this.prevState = {};
+    setPreserveState = ()=> {
+        let saveState = this.state.saveState;
+        this.setState({saveState: !saveState});
     };
 
     render() {
@@ -487,6 +490,8 @@ class Application extends React.Component {
                         <div className="toolbar">
                             <div className="toolbar-pad"></div>
                             <ul className="toolbar-controls">
+                                <li onClick={this.setPreserveState}>Persist State {this.state.saveState ?
+                                    <i className="fa fa-check-square"></i> : <i className="fa fa-square"></i> }</li>
                                 <li onClick={this.saveCode}>Save <i className="fa fa-save"></i></li>
                                 <li onClick={this.toggleCss}>CSS Resources <i className="fa fa-css3"></i>
                                 </li>
