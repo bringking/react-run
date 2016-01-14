@@ -18,6 +18,14 @@ body {
   }
 }
 
+#editor_window {
+  height: calc(100vh - 60px) !important;
+  width: 100% !important;
+  @include breakpoint(sm) {
+    height: calc(100vh - 30px) !important;
+  }
+}
+
 #results {
   background: white;
   width: 50%;

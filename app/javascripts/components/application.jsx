@@ -505,9 +505,7 @@ class Application extends React.Component {
                             theme="solarized_dark"
                             onFocus={this.hideAllPanels}
                             onChange={this.onTextChanged}
-                            width="100%"
                             value={this.state.value}
-                            height="100vh"
                             name="editor_window"
                             showPrintMargin={false}
                             editorProps={{$blockScrolling: true}}
