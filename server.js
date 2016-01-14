@@ -159,7 +159,6 @@ io.on('connection', co.wrap(function *( socket ) {
                     .find({'_bin': bin._id}).sort('-hash')
                     .limit(1);
 
-                console.log(parseInt(latestRevision[0].hash, 10));
                 //create a new revision
                 var newRevision = new models.binRevision({
                     hash: latestRevision[0].hash + 1,

@@ -64,7 +64,7 @@ export const babelFrameScript = ( code ) =>`try{` + code + `
 
                 //add the ability to get state
                 window.getState = function(){
-                     return  ComponentTree.serialize(MainComponent);
+                     return ComponentTree.serialize(MainComponent);
                 };
                 //clear any frame errors on load
                 if (window.__clearMessages) {

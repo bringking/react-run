@@ -191,6 +191,7 @@ class Application extends React.Component {
     serializeFrameState = () => {
         let frame = this.refs.resultsFrame;
         if ( frame.contentWindow.getState ) {
+            console.log(frame.contentWindow.getState());
             return frame.contentWindow.getState();
         }
         return null;
