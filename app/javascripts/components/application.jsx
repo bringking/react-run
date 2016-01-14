@@ -102,6 +102,9 @@ class Application extends React.Component {
  </html>`
     };
 
+    /**
+     * Reconcile the frames head <link> tags with the new resources from the CSS resources state
+     */
     reconcileCss() {
         let frame = this.refs.resultsFrame;
         let styles = frame.contentDocument.getElementsByClassName("injected-style");
@@ -124,7 +127,18 @@ class Application extends React.Component {
 
     }
 
+    /**
+     * Reconcile the frames 'injected-scripts' with the new scripts from the jsResources
+     */
     reconcileScripts() {
+        let frame = this.refs.resultsFrame;
+        let scripts = frame.contentDocument.getElementById("injected-scripts");
+        //clear the previous scripts
+        scripts.innerHTML = "";
+        //re-add
+        if ( this.state.jsResources.length ) {
+            scripts.innerHTML = `${this.state.jsResources.map(r =>'<script type="text/javascript" src="' + r + '"></script>')}`
+        }
 
     }
 
