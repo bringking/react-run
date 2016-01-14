@@ -75,6 +75,7 @@
     "koa-static-cache": "^3.1.4",
     "koa-views": "^3.1.0",
     "lodash": "^3.10.1",
+    "lodash.defaultsdeep": "^4.0.1",
     "lodash.difference": "^3.2.2",
     "lodash.intersection": "^3.2.0",
     "lodash.union": "^3.1.0",

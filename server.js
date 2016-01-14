@@ -5,7 +5,6 @@ require('dotenv').load({silent: true});
 var app              = require('koa')(),
     router           = require('koa-router')(),
     staticCache      = require('koa-static-cache'),
-    webpack          = require("webpack"),
     co               = require('co'),
     path             = require("path"),
     regFs            = require('fs'),

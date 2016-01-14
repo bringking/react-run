@@ -52,19 +52,28 @@ class Main extends React.Component {
  */
 export const babelFrameScript = ( code ) =>`try{` + code + `
 
+                //app mount node
                 var mountNode = document.getElementById('client_results');
 
-                //check for previous state
-                var state = getPreviousState();
-                var MainComponent = ComponentTree.render({
-                  component: Main,
-                  snapshot: state,
-                  container: mountNode
-                });
+                var MainComponent;
+                if (window.initialState) {
+                    //render component with user initial state
+                    MainComponent = ComponentTree.render({
+                      component: Main,
+                      snapshot: window.initialState || {},
+                      container: mountNode
+                    });
+                } else {
+                    MainComponent = ReactDOM.render(React.createElement(Main),mountNode);
+                }
+
+                //clear the window initialState, since we don't need it anymore
+                window.initialState = null;
 
                 //add the ability to get state
                 window.getState = function(){
-                     return ComponentTree.serialize(MainComponent);
+                     var currentState = ComponentTree.serialize(MainComponent);
+                     return currentState;
                 };
                 //clear any frame errors on load
                 if (window.__clearMessages) {

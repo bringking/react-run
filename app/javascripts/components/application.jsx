@@ -13,6 +13,7 @@ import Revisions from "./revisions";
 import SocketListener from "./socket_listener";
 import JsPanel from "./js_panel";
 import CssPanel from "./css_panel";
+import defaultsDeep from "lodash.defaultsdeep";
 
 class Application extends React.Component {
 
@@ -57,10 +58,6 @@ class Application extends React.Component {
         //debounce the auto compile
         this.updateCode = debounce(this.updateCode, 500);
 
-        //rehydrate our state
-        if ( window.savedState ) {
-            this.prevState = window.savedState;
-        }
     }
 
     componentDidMount() {
@@ -73,7 +70,9 @@ class Application extends React.Component {
 
             frame.contentWindow.React = window.React;
             frame.contentWindow.ReactDOM = window.ReactDOM;
+            frame.contentWindow.defaultsDeep = defaultsDeep;
             frame.contentWindow.ComponentTree = ComponentTree;
+            frame.contentWindow.initialState = window.savedState;
             frame.contentWindow.getPreviousState = this.getPreviousFrameState;
 
             //write the content
@@ -94,6 +93,7 @@ class Application extends React.Component {
          ${this.state.cssResources.map(r =>'<link class="injected-style" rel="stylesheet" href="' + r + '">')}
          </head>
         <body>
+            <div id="shadow_results" style="display:none;"></div>
             <div id="client_results"></div>
             <div id="injected-scripts">
               ${this.state.jsResources.map(r =>'<script type="text/javascript" src="' + r + '"></script>')}
@@ -176,22 +176,12 @@ class Application extends React.Component {
     };
 
     /**
-     * Get the previous frame state or the last known state from the server which is bootstrapped into
-     * window.savedState
-     * @returns {*}
-     */
-    getPreviousFrameState = () => {
-        return this.prevState || window.savedState; //fallback to server state;
-    };
-
-    /**
      * Get the React state from the users component tree
      * @returns {*}
      */
     serializeFrameState = () => {
         let frame = this.refs.resultsFrame;
         if ( frame.contentWindow.getState ) {
-            console.log(frame.contentWindow.getState());
             return frame.contentWindow.getState();
         }
         return null;
@@ -281,9 +271,6 @@ class Application extends React.Component {
      */
     updateCode = () => {
         if ( !this.state.compiling ) {
-
-            //store the previous state
-            this.prevState = this.serializeFrameState();
 
             //emit the change
             this.socket.emit("code change", {
@@ -473,6 +460,10 @@ class Application extends React.Component {
         });
     };
 
+    flushState = ()=> {
+        this.prevState = {};
+    };
+
     render() {
         const {showingRevisions, showingCss, showingJs,cssResources,jsResources} = this.state;
         return (
@@ -513,6 +504,7 @@ class Application extends React.Component {
                             value={this.state.value}
                             height="100vh"
                             name="editor_window"
+                            showPrintMargin={false}
                             editorProps={{$blockScrolling: true}}
                         />
                     </div>
