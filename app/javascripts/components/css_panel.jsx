@@ -1,24 +1,19 @@
-import SidePanel from "./side_panel";
-import React from "react";
-import assign from "lodash.assign";
+import ListPanel from "./list_panel";
 
-class CssPanel extends SidePanel {
+class CssPanel extends ListPanel {
+
+    getPlaceHolder() {
+        return "e.g. https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css";
+    }
+
     getDescription() {
-        return "Add external CSS files that will be added to the head of the document";
+        return "Add external CSS resources that will be added to the head of your application";
     }
 
     getTitle() {
         return "CSS Resources"
     }
 
-    getContents() {
-        return <div></div>;
-    }
 }
-
-CssPanel.propTypes = assign({
-    onAdd: React.PropTypes.func.isRequired,
-    resources: React.PropTypes.array.isRequired
-}, SidePanel.propTypes);
 
 export default CssPanel;

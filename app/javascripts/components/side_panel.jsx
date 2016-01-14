@@ -10,7 +10,6 @@ class SidePanel extends React.Component {
             open: false
         };
 
-        this.saveChanges = this.saveChanges.bind(this);
         this.getContents = this.getContents.bind(this);
         this.getTitle = this.getTitle.bind(this);
         this.getDescription = this.getDescription.bind(this);
@@ -30,13 +29,6 @@ class SidePanel extends React.Component {
      */
     getContents() {
         return null;
-    }
-
-    /**
-     * Default implementation, no-op
-     */
-    saveChanges() {
-        this.props.onClose();
     }
 
     render() {
