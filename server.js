@@ -11,11 +11,14 @@ var app              = require('koa')(),
     intersection     = require("lodash.intersection"),
     union            = require('lodash.union'),
     fs               = require('co-fs'),
+    lusca            = require('koa-lusca'),
     mongoose         = require('mongoose'),
     fileUtils        = require("./file_utils"),
     npmUtils         = require("./npm_utils"),
     webpackTransform = require('./webpack_transform'),
     views            = require('koa-views');
+
+
 
 //ensure we have a generated folder
 var generatedFolder = path.join(__dirname, 'public/generated');
@@ -36,6 +39,13 @@ const detective = require('babel-plugin-detective');
 //id generator
 var shortid = require('shortid');
 
+//security config
+app.use(lusca({
+    xframe: 'SAMEORIGIN',
+    xssProtection: true
+}));
+
+//static file server, with gzip
 app.use(staticCache(path.join(__dirname, 'public'), {
     maxAge: 365 * 24 * 60 * 60,
     gzip: true,

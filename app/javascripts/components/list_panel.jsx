@@ -93,7 +93,7 @@ class ListPanel extends SidePanel {
         return <div className="side-panel-form">
             <ReactCSSTransitionGroup transitionName="side-panel-item-animation" transitionEnterTimeout={500}
                                      transitionLeaveTimeout={300}>
-                {this.props.resources.map((r,idx) =><div className="side-panel-listing" key={r}>
+                {this.props.resources.map((r,idx) =><div className="side-panel-listing" key={idx}>
                     {this.state.editing[r] ? <input ref={`input_${idx}`} className="side-panel-input" value={this.state.edited[r].newVal}
                                                     onChange={this.onItemChange.bind(this,r)}/> :
                         <p className="side-panel-listing-left">{r}</p>}
