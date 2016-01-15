@@ -99,11 +99,11 @@
     "vinyl-ftp": "^0.4.4",
     "webpack": "^1.12.1",
     "webpack-stream": "^3.1.0",
-    "wiredep": "^3.0.0-beta"
+    "wiredep": "^3.0.0-beta",
+    "browser-sync": "^2.0.0",
+    "gulp-watch": "^4.1.1"
   },
   "devDependencies": {
-    "nodemon": "^1.8.1",
-    "gulp-watch": "^4.1.1",
-    "browser-sync": "^2.0.0"
+    "nodemon": "^1.8.1"
   }
 }
