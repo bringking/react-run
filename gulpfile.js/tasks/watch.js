@@ -6,7 +6,7 @@ var sass = require('../config/sass');
 var fonts = require('../config/fonts');
 var watch = require('gulp-watch');
 
-gulp.task('watch', function() {
+gulp.task('watch', ['browserSync'], function() {
     watch(images.src, function() {
         gulp.start('images');
     });
