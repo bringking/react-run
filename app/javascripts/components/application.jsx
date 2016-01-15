@@ -40,8 +40,6 @@ class Application extends React.Component {
             saveState: window.savedState,
             stateTransitions: [],
             justSaved: false,
-            compiling: false,
-            npmMessage: null,
             frameError: null,
             showingCss: false,
             showingJs: false,
@@ -55,12 +53,9 @@ class Application extends React.Component {
         //socket events
         this.socket.on("code transformed", this.onCodeChange);
         this.socket.on("code saved", this.onCodeSaved);
+
         //webpack events
         this.socket.on("webpack transform", this.onWebpackCodeChanged);
-        //module events
-        this.socket.on("npm installing", this.onNpmInstall);
-        this.socket.on("npm error", this.onNpmError);
-        this.socket.on("npm complete", this.onNpmComplete);
 
         //bind keyboard handlers
         document.addEventListener("keydown", this.onKeyDown);
@@ -158,7 +153,6 @@ class Application extends React.Component {
 
     }
 
-
     /**
      * Get the React state from the users component tree
      * @returns {*}
@@ -215,12 +209,11 @@ class Application extends React.Component {
      */
     onWebpackCodeChanged = data => {
         if ( data.common && data.main ) {
-            this.setState({compiling: false}, ()=> {
 
-                //splice in exports
-                data.main = data.main.replace("var Main = function (", "window.Main = function (");
+            //splice in exports
+            data.main = data.main.replace("var Main = function (", "window.Main = function (");
 
-                let codeToRender = `try{` + data.main + `
+            let codeToRender = `try{` + data.main + `
 
                 (function(){
                 var mountNode = document.getElementById('client_results');
@@ -231,8 +224,8 @@ class Application extends React.Component {
                 }
 
             }catch(e){console.error(e)}`;
-                this.renderWebpackCode(codeToRender, data.common);
-            });
+
+            this.renderWebpackCode(codeToRender, data.common);
         }
     };
 
@@ -254,22 +247,20 @@ class Application extends React.Component {
      * Update the code running in the frame by emitting a code change event
      */
     updateCode = () => {
-        if ( !this.state.compiling ) {
 
-            //persist state across refreshes
-            if ( this.state.saveState ) {
-                this.enableStateReplacement(this.serializeFrameState());
-            }
-
-            //emit the change
-            this.socket.emit("code change", {
-                code: this.state.value,
-                bin: this.state.bin,
-                jsResources: this.state.jsResources,
-                cssResources: this.state.cssResources,
-                revision: this.state.revision
-            });
+        //persist state across refreshes
+        if ( this.state.saveState ) {
+            this.enableStateReplacement(this.serializeFrameState());
         }
+
+        //emit the change
+        this.socket.emit("code change", {
+            code: this.state.value,
+            bin: this.state.bin,
+            jsResources: this.state.jsResources,
+            cssResources: this.state.cssResources,
+            revision: this.state.revision
+        });
 
     };
 
@@ -494,6 +485,9 @@ class Application extends React.Component {
                                 <li onClick={this.showRevisions}>Revisions <i className="fa fa-file-text"></i></li>
                             </ul>
                         </div>
+                        <Errors
+                            socket={this.socket}
+                            frameError={this.state.frameError}/>
                         <AceEditor
                             mode="jsx"
                             theme="solarized_dark"
@@ -510,11 +504,10 @@ class Application extends React.Component {
                     </div>
                 </div>
 
-                {this.state.npmMessage ? <div className={`npm-message`}>
-                    {this.state.npmMessage} <i className="fa fa-circle-o-notch fa-spin"></i>
+                {this.props.npmMessage ? <div className={`npm-message`}>
+                    {this.props.npmMessage} <i className="fa fa-circle-o-notch fa-spin"></i>
                 </div> : null}
 
-                <Errors socket={this.socket} frameError={this.state.frameError}/>
                 <div
                     className={`saved animated ${this.state.justSaved ?'fadeIn':'fadeOut'}`}>
                     Saved!

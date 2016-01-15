@@ -1,9 +1,5 @@
 .error-message {
-  position: fixed;
-  z-index: 999999;
-  right: 50%;
-  left: 0;
-  bottom: 0;
+  position:relative;
   min-height: 40px;
   opacity: .9;
   background: darkred;

@@ -11,6 +11,10 @@ body {
 #editor {
   width: 50%;
   position: relative;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x:hidden;
+
   &.fade {
     #editor_window {
       filter: blur(1px);

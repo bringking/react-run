@@ -9,8 +9,8 @@ class Errors extends React.Component {
     constructor( props ) {
         super(props);
         this.state = {
-            initialState: false,
-            errorMessage: "Hello",
+            initialState: true,
+            errorMessage: null,
             frameError: null
         };
 
@@ -23,7 +23,8 @@ class Errors extends React.Component {
         //this event will happen if the code successfully transformed,
         //thus any previous build error is resolved.
         this.props.socket.on("code transformed", this.onCodeNormal);
-
+        //this event will happen if the code successfully transformed with webpack,
+        //thus any previous build error is resolved.
         this.props.socket.on("webpack transform", this.onCodeNormal);
 
     }
@@ -40,7 +41,7 @@ class Errors extends React.Component {
      * Event handler for code returning to normal
      */
     onCodeNormal = ()=> {
-        this.setState({errorMessage: "ets"});
+        this.setState({errorMessage: null});
     };
 
     /**
@@ -56,9 +57,14 @@ class Errors extends React.Component {
     };
 
     render() {
+        //no errors
+        if ( !this.state.errorMessage && !this.state.frameError ) {
+            return <div></div>
+        }
+        //show the error
         return (
             <div
-                className={`error-message ${this.state.initialState?'initial':'animated'} ${!this.state.errorMessage && !this.state.frameError ?"fadeOut":"fadeIn"}`}>{this.state.errorMessage || this.state.frameError}</div>
+                className="error-message animated fadeIn">{this.state.errorMessage || this.state.frameError}</div>
         );
     }
 }
