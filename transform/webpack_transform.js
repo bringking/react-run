@@ -20,14 +20,13 @@ module.exports = {
     /**
      * Compile a bin model and revision with webpack, splitting the code into a main file and
      * a common chunk. The function returns the relative path to the commons file, and the contents of the main file
-     * @param binModel
      * @param binId
      * @param revisionId
      * @param code
      * @param regenerateCommon
      * @returns {{error: boolean, message: string}}
      */
-    compileWithWebpack: function*( binModel, binId, revisionId, code, regenerateCommon ) {
+    compileWithWebpack: function*( binId, revisionId, code, regenerateCommon ) {
 
 
         //write our temp code file
@@ -36,6 +35,8 @@ module.exports = {
         //generate our input files
         var tmpFile = binFolder + `/${binId}_${revisionId}.js`;
         var tmpDummy = binFolder + `/${binId}_${revisionId}_dummy.js`;
+        //write temporary files, one dummy and on real
+        //TODO To be efficient, we should figure out how to override the webpack inputFileSystem and use the memoryFS.
         try {
             yield coFs.writeFile(tmpFile, code);
             yield coFs.writeFile(tmpDummy, code);
@@ -54,13 +55,15 @@ module.exports = {
                     babelJsLoader
                 ]
             },
-            plugins: [],
+            plugins: [
+                //TODO Possibly use https://github.com/renke/auto-install-webpack-plugin?
+             ],
             resolve: {
                 extensions: ['', '.js', '.jsx', '.json']
             },
             externals: {
                 "react": "React",
-                "react-dom":"ReactDOM"
+                "react-dom": "ReactDOM"
             },
             output: {
                 path: regenerateCommon ? binFolder + "/" : "/",
@@ -68,7 +71,8 @@ module.exports = {
             }
         };
 
-        //use the commons chunk
+        //use the commons chunk to separate our "large" deps
+        //from the users main code
         config.plugins.push(
             new webpack.optimize.CommonsChunkPlugin("commons.chunk.js")
         );
@@ -85,7 +89,7 @@ module.exports = {
                 compiler.run(co.wrap(function*( err, stats ) {
                     if ( !err ) {
 
-                        //remove the tmp file
+                        //remove the tmp files
                         yield coFs.unlink(tmpFile);
                         yield coFs.unlink(tmpDummy);
 

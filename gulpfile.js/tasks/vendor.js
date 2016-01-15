@@ -1,7 +1,5 @@
 var browserSync = require('browser-sync');
-var changed = require('gulp-changed');
 var gulp = require('gulp');
-var imagemin = require('gulp-imagemin');
 var paths = require('../config');
 var jsSrc = paths.sourceAssets + '/javascripts/vendor/**/*.js';
 var jsDest = paths.publicAssets + '/javascripts/';

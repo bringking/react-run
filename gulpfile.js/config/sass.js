@@ -1,4 +1,4 @@
-var config = require('./')
+var config = require('./');
 
 module.exports = {
   autoprefixer: { browsers: ['last 2 version'] },
@@ -8,4 +8,4 @@ module.exports = {
     indentedSyntax: true, // Enable .sass syntax!
     imagePath: '/images' // Used by the image-url helper
   }
-}
+};

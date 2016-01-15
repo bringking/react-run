@@ -48,7 +48,7 @@ module.exports = function( env ) {
     };
 
     if ( env === 'development' ) {
-        //webpackConfig.devtool = 'source-map';
+        webpackConfig.devtool = 'source-map';
         webpack.debug = true;
     }
 
@@ -70,7 +70,8 @@ module.exports = function( env ) {
         }
     }
 
-    //Allow errors and un-minified code, since I want the user to get good errors
+    //TODO Allow errors and un-minified code, since I want the user to get good errors
+    //Is there a better way to do this?
     if ( env === 'production' || env === 'staging' ) {
         webpackConfig.plugins.push(
             //new webpack.DefinePlugin({

@@ -15,8 +15,4 @@ gulp.task('webpack:development', function( callback ) {
             callback()
         }
     })
-    //webpack(config, function(err, stats) {
-    //    logger(err, stats)
-    //    callback()
-    //})
 })

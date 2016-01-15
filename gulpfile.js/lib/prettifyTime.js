@@ -4,4 +4,4 @@ module.exports = function(milliseconds) {
   } else {
     return milliseconds + ' ms'
   }
-}
+};

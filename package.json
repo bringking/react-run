@@ -8,7 +8,6 @@
   },
   "scripts": {
     "pretest": "npm install",
-    "test": "gulp karma",
     "build": "gulp build:production",
     "prestart": "npm run build",
     "start": "node server.js"
