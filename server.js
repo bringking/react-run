@@ -18,8 +18,6 @@ var app              = require('koa')(),
     webpackTransform = require('./webpack_transform'),
     views            = require('koa-views');
 
-
-
 //ensure we have a generated folder
 var generatedFolder = path.join(__dirname, 'public/generated');
 regFs.stat(generatedFolder, function( err, stats ) {
@@ -62,6 +60,7 @@ app.use(function *( next ) {
         var status = this.status || 404;
         if ( status === 404 )  yield this.render('not_found', {});
     } catch ( err ) {
+        console.error(err);
         err.status = err.status || 500;
         // Set our response.
         this.status = err.status;

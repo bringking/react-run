@@ -529,6 +529,7 @@ class Application extends React.Component {
                             showPrintMargin={false}
                             editorProps={{$blockScrolling: true}}
                         />
+                        <Errors socket={this.socket} frameError={this.state.frameError}/>
                     </div>
                     <div id="results">
                         <iframe frameBorder="0" ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
@@ -537,7 +538,6 @@ class Application extends React.Component {
                 {this.state.npmMessage ? <div className={`npm-message`}>
                     {this.state.npmMessage} <i className="fa fa-circle-o-notch fa-spin"></i>
                 </div> : null}
-                <Errors socket={this.socket} frameError={this.state.frameError}/>
                 <div
                     className={`saved animated ${this.state.justSaved ?'fadeIn':'fadeOut'}`}>
                     Saved!

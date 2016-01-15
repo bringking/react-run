@@ -5,8 +5,8 @@ export default class Errors extends React.Component {
     constructor( props ) {
         super(props);
         this.state = {
-            initialState: true,
-            errorMessage: null,
+            initialState: false,
+            errorMessage: "Hello",
             frameError: null
         };
 
@@ -28,7 +28,7 @@ export default class Errors extends React.Component {
     }
 
     onCodeNormal() {
-        this.setState({errorMessage: null});
+        this.setState({errorMessage:"ets"});
     }
 
     onCodeError( e ) {
