@@ -1,6 +1,10 @@
 import React from "react";
 import ReactSlider from 'react-slider';
 
+/**
+ * The StateBar will allow a slider to select an item from a list of state revision to allow
+ * for time travel debugging
+ */
 export default class StateBar extends React.Component {
     constructor( props ) {
         super(props);
@@ -10,6 +14,10 @@ export default class StateBar extends React.Component {
         }
     }
 
+    /**
+     * Event handler for the slider value changing
+     * @param value
+     */
     onChange = ( value ) => {
         this.props.onSelectState(value);
     };

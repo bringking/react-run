@@ -1,6 +1,10 @@
-import React from "react"
+import React, {PropTypes} from "react"
 
-export default class Errors extends React.Component {
+/**
+ * The Errors modules is responsible for listening to the socket for
+ * code transformation errors and displaying them to the user
+ */
+class Errors extends React.Component {
 
     constructor( props ) {
         super(props);
@@ -13,9 +17,14 @@ export default class Errors extends React.Component {
     }
 
     componentDidMount() {
-        this.props.socket.on("code error", this.onCodeError.bind(this));
-        this.props.socket.on("code transformed", this.onCodeNormal.bind(this));
-        this.props.socket.on("webpack transform", this.onCodeNormal.bind(this));
+        //this error is effectively a build time error, meaning
+        // babel failed to transpile the code on the server
+        this.props.socket.on("code error", this.onCodeError);
+        //this event will happen if the code successfully transformed,
+        //thus any previous build error is resolved.
+        this.props.socket.on("code transformed", this.onCodeNormal);
+
+        this.props.socket.on("webpack transform", this.onCodeNormal);
 
     }
 
@@ -27,17 +36,24 @@ export default class Errors extends React.Component {
         }
     }
 
-    onCodeNormal() {
-        this.setState({errorMessage:"ets"});
-    }
+    /**
+     * Event handler for code returning to normal
+     */
+    onCodeNormal = ()=> {
+        this.setState({errorMessage: "ets"});
+    };
 
-    onCodeError( e ) {
+    /**
+     * Event handler for receiving an error from the socket
+     * @param e
+     */
+    onCodeError = ( e ) => {
 
         if ( e !== this.state.errorMessage ) {
             this.setState({errorMessage: e, initialState: false});
         }
 
-    }
+    };
 
     render() {
         return (
@@ -46,3 +62,10 @@ export default class Errors extends React.Component {
         );
     }
 }
+
+Errors.propTypes = {
+    onErrorReceived: PropTypes.func,
+    onErrorCleared: PropTypes.func
+};
+
+export default Errors;

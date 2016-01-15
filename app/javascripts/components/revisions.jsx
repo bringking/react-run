@@ -1,6 +1,12 @@
 import moment from "moment";
 
-export default ( props ) => {
+/**
+ * The revisions panel represents the list of revisions for the particular run
+ * @param props
+ * @returns {XML}
+ * @constructor
+ */
+const RevisionsPanel = ( props ) => {
     return (
         <div className={`code-revisions ${props.showingRevisions?'open':''}`}>
             <h3>Revisions <i className="fa fa-close" onClick={props.hideRevisions}></i></h3>
@@ -12,4 +18,6 @@ export default ( props ) => {
             </ul>
         </div>
     )
-}
+};
+//Export a named function for debugging
+export default RevisionsPanel;

@@ -1,20 +1,27 @@
+//deps
 import React from "react";
 import ReactDOM from "react-dom";
 import brace from 'brace';
 import AceEditor from 'react-ace';
-import Errors from "./errors";
 import 'brace/mode/jsx';
 import 'brace/theme/solarized_dark';
+import defaultsDeep from "lodash.defaultsdeep";
+import ComponentTree from "react-component-tree";
+
+//utilities
 import {initialScript, babelFrameScript} from "../constants";
 import renderReactToFrame from "../utils/render_react_to_frame";
-import ComponentTree from "react-component-tree";
 import debounce from "debounce";
-import Revisions from "./revisions";
-import SocketListener from "./socket_listener";
+
+//child components
+import Errors from "./errors";
 import JsPanel from "./js_panel";
 import CssPanel from "./css_panel";
-import defaultsDeep from "lodash.defaultsdeep";
+import Revisions from "./revisions";
 import StateBar from "./state_bar";
+
+//our socket IO listener components
+import NpmListener from "./listeners/npm_listener";
 
 class Application extends React.Component {
 
@@ -151,38 +158,6 @@ class Application extends React.Component {
 
     }
 
-    /**
-     * This is the callback for when NPM install starts
-     * @param data
-     */
-    onNpmInstall = ( data ) => {
-        this.setState({compiling: true, npmMessage: `Installing ${data.modules.join(' ')} modules`})
-    };
-
-    /**
-     * This is the callback for when NPM errors
-     * @param data
-     */
-    onNpmError = ( data ) => {
-        this.setState({
-            compiling: false,
-            npmMessage: `Error Installing ${data.modules.join(' ')} modules. Stacktrace: ${data.output}`
-        })
-    };
-
-    /**
-     * This is the callback for when NPM is finished processing
-     * @param data
-     */
-    onNpmComplete = data => {
-        this.setState({npmMessage: `Done installing ${data.modules.join(' ')} modules.`}, ()=> {
-            //clear the message
-            setTimeout(()=> {
-                this.setState({npmMessage: null, compiling: false});
-            }, 2000);
-        })
-
-    };
 
     /**
      * Get the React state from the users component tree
@@ -529,15 +504,17 @@ class Application extends React.Component {
                             showPrintMargin={false}
                             editorProps={{$blockScrolling: true}}
                         />
-                        <Errors socket={this.socket} frameError={this.state.frameError}/>
                     </div>
                     <div id="results">
                         <iframe frameBorder="0" ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
                     </div>
                 </div>
+
                 {this.state.npmMessage ? <div className={`npm-message`}>
                     {this.state.npmMessage} <i className="fa fa-circle-o-notch fa-spin"></i>
                 </div> : null}
+
+                <Errors socket={this.socket} frameError={this.state.frameError}/>
                 <div
                     className={`saved animated ${this.state.justSaved ?'fadeIn':'fadeOut'}`}>
                     Saved!
@@ -546,4 +523,4 @@ class Application extends React.Component {
     }
 }
 
-export default SocketListener(Application);
+export default NpmListener(Application);

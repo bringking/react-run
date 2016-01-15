@@ -15,10 +15,18 @@ class SidePanel extends React.Component {
         this.getDescription = this.getDescription.bind(this);
     }
 
+    /**
+     * Default implementation of the description block
+     * @returns {string}
+     */
     getDescription() {
         return "";
     }
 
+    /**
+     * Default implementation of the title block
+     * @returns {string}
+     */
     getTitle() {
         return "";
     }

@@ -3,6 +3,9 @@ import React from "react";
 import assign from "lodash.assign";
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
+/**
+ * The ListPanel represents a side panel component with basic CRUD for a repeating list of items
+ */
 class ListPanel extends SidePanel {
     constructor( props ) {
         super(props);
@@ -54,7 +57,7 @@ class ListPanel extends SidePanel {
 
     }
 
-    onEditItem( item,idx ) {
+    onEditItem( item, idx ) {
         let editing = this.state.editing;
         let edited = this.state.edited;
 
@@ -63,9 +66,7 @@ class ListPanel extends SidePanel {
             edited[item] = {oldVal: item, newVal: item};
         }
 
-
-
-        this.setState({editing, edited},()=>{
+        this.setState({editing, edited}, ()=> {
             this.refs[`input_${idx}`].focus();
         });
     }
@@ -93,9 +94,10 @@ class ListPanel extends SidePanel {
         return <div className="side-panel-form">
             <ReactCSSTransitionGroup transitionName="side-panel-item-animation" transitionEnterTimeout={500}
                                      transitionLeaveTimeout={300}>
-                {this.props.resources.map((r,idx) =><div className="side-panel-listing" key={idx}>
-                    {this.state.editing[r] ? <input ref={`input_${idx}`} className="side-panel-input" value={this.state.edited[r].newVal}
-                                                    onChange={this.onItemChange.bind(this,r)}/> :
+                {this.props.resources.map(( r, idx ) =><div className="side-panel-listing" key={idx}>
+                    {this.state.editing[r] ?
+                        <input ref={`input_${idx}`} className="side-panel-input" value={this.state.edited[r].newVal}
+                               onChange={this.onItemChange.bind(this,r)}/> :
                         <p className="side-panel-listing-left">{r}</p>}
                     <div className="side-panel-listing-right">
                         <i className="fa fa-close" onClick={this.onDeleteItem.bind(this,r)}></i>

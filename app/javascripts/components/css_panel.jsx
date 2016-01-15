@@ -1,5 +1,8 @@
 import ListPanel from "./list_panel";
 
+/**
+ * CssPanel represents the list of CSS resources
+ */
 class CssPanel extends ListPanel {
 
     getPlaceHolder() {

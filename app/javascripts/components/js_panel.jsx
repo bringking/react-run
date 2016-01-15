@@ -1,5 +1,8 @@
 import ListPanel from "./list_panel";
 
+/**
+ * The JSPanel represents the list of JS specific resources
+ */
 class JsPanel extends ListPanel {
 
     getPlaceHolder() {
@@ -13,7 +16,6 @@ class JsPanel extends ListPanel {
     getTitle() {
         return "JavaScript Resources"
     }
-
 
 }
 
