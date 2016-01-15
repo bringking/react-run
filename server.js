@@ -1,7 +1,9 @@
 //load shelljs for NPM utilities
 require('shelljs/global');
+
 //load dotenv for configuration
 require('dotenv').load({silent: true});
+
 //dependencies
 var app          = require('koa')(),
     router       = require('koa-router')(),
@@ -54,6 +56,7 @@ app.use(function *( next ) {
 
 //setup routes
 routes(router, models);
+
 //setup router
 app
     .use(router.routes())
@@ -140,14 +143,12 @@ db.once('open', function() {
         }
     });
 
-
-
     //start the server
     var port = process.env.PORT || 3000;
     server.listen(port);
 
     //log the connection
-    console.log('React.run Started');
+    console.log('React.run started');
 });
 
 
