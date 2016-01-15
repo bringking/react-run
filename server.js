@@ -45,6 +45,20 @@ app.use(staticCache(path.join(__dirname, 'public'), {
 // Use html
 app.use(views("./views", {map: {html: 'swig'}}));
 
+// error handling
+app.use(function *( next ) {
+    try {
+        yield next;
+        var status = this.status || 404;
+        if ( status === 404 )  yield this.render('not_found', {});
+    } catch ( err ) {
+        err.status = err.status || 500;
+        // Set our response.
+        this.status = err.status;
+        yield this.render('error', {});
+    }
+});
+
 router.get('/', function *() {
 
     //generate guid

@@ -1,6 +1,6 @@
 module.exports = function( mongoose ) {
     var bin = mongoose.Schema({
-        id: String,
+        id: {type:String,index: true},
         packages:[String]
     });
 

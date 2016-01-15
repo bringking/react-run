@@ -1,6 +1,6 @@
 module.exports = function( mongoose ) {
     var BinRevision = mongoose.Schema({
-        hash: Number,
+        hash: {type:Number,index: true},
         text: String,
         state: String,
         jsResources: [String],
@@ -9,6 +9,7 @@ module.exports = function( mongoose ) {
         _bin: {type: mongoose.Schema.Types.ObjectId, ref: 'bin'}
     });
 
+    BinRevision.index({tags: 'text'});
     return mongoose.model('binRevision', BinRevision);
 };
 

@@ -12,3 +12,15 @@
     color: $editorBg;
   }
 }
+
+.button {
+  background-color: $editorBg;
+  color: $green;
+  border: 1px solid $green;
+  padding:12px;
+
+  &:hover {
+    background-color: $green;
+    color: $editorBg;
+  }
+}
