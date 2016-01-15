@@ -528,9 +528,6 @@ class Application extends React.Component {
                             showPrintMargin={false}
                             editorProps={{$blockScrolling: true}}
                         />
-                        {this.state.saveState ?
-                            <StateBar onSelectState={this.onSelectState} stateTransitions={[{num:1},{num:2}]}/>
-                            : null}
                     </div>
                     <div id="results">
                         <iframe frameBorder="0" ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
