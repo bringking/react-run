@@ -1,11 +1,11 @@
 .DS_Store
 .sass-cache
+
 # public
 Desktop.ini
 node_modules
 app/assets/stylesheets/generated
 public/
-
 
 # Intellij
 .idea/
