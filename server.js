@@ -63,7 +63,9 @@ app
     .use(router.allowedMethods());
 
 /**
- * Event handler for code being saved by the client
+ * Event handler for the user saving their current revision
+ * @param socket- A reference to the socket connection
+ * @param data- The bin and revision data
  */
 var onCodeSaved = function*( socket, data ) {
     try {
@@ -106,6 +108,11 @@ var onCodeSaved = function*( socket, data ) {
     }
 };
 
+/**
+ * Event handler for code being changed on the client, and requiring transformation
+ * @param socket - a reference to the socket connection
+ * @param data- The data to transpile
+ */
 var onCodeChange = function*( socket, data ) {
     try {
         //TODO Since this is a pure function, we could memoize it for performance
@@ -118,6 +125,8 @@ var onCodeChange = function*( socket, data ) {
 };
 
 //Start our Socket IO connection
+//TODO this is a naive socket implmentation. It doesn't currently handle
+//running the server across multiple dynos or a load balancer. Need to hook up redis or a cache layer
 var server = require('http').Server(app.callback()),
     io     = require('socket.io')(server);
 
@@ -128,13 +137,14 @@ io.on('connection', co.wrap(function *( socket ) {
 }));
 
 //Bring up the DB
-mongoose.connect(process.env.MONGOLAB_URI);
+mongoose.connect(process.env.MONGOLAB_URI || process.env.MONGO_URI);
 var db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
 
     //ensure we have a generated folder
+    //this is used to store generated node_modules
     var generatedFolder = path.join(__dirname, 'public/generated');
     regFs.stat(generatedFolder, function( err, stats ) {
         if ( err ) {
