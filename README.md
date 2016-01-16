@@ -1,6 +1,6 @@
 #React.run
 
-[React.run](www.react.run)
+[React.run](http://www.react.run)
 
 ## What is it?
 
