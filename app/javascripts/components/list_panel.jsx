@@ -29,10 +29,18 @@ class ListPanel extends SidePanel {
         this.refs.addInput.focus();
     }
 
+    /**
+     * Event handler for item to add being changed
+     * @param event
+     */
     onChange = event => {
         this.setState({toAdd: event.target.value})
     };
 
+    /**
+     * Event handler for submitting the form
+     * @param event
+     */
     onSubmit = event => {
         event.preventDefault();
         if ( this.state.toAdd.length ) {
@@ -41,6 +49,10 @@ class ListPanel extends SidePanel {
         }
     };
 
+    /**
+     * Event handler for deleting an item
+     * @param item
+     */
     onDeleteItem( item ) {
         let editing = this.state.editing;
         let edited = this.state.edited;
@@ -57,6 +69,11 @@ class ListPanel extends SidePanel {
 
     }
 
+    /**
+     * Event handler for editing an item
+     * @param item
+     * @param idx
+     */
     onEditItem( item, idx ) {
         let editing = this.state.editing;
         let edited = this.state.edited;
@@ -71,6 +88,10 @@ class ListPanel extends SidePanel {
         });
     }
 
+    /**
+     * Event handler for saving an item
+     * @param item
+     */
     onSaveItem( item ) {
         let editing = this.state.editing;
         let edited = this.state.edited;
@@ -83,6 +104,11 @@ class ListPanel extends SidePanel {
         this.setState({editing, edited});
     }
 
+    /**
+     * Event handler for changing an item
+     * @param item
+     * @param event
+     */
     onItemChange( item, event ) {
         let edited = this.state.edited;
         edited[item].newVal = event.target.value;

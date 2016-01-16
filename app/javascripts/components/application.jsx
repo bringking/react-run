@@ -55,6 +55,7 @@ class Application extends React.Component {
         };
 
         //socket events
+        //TODO Would like to refactor these into higher order components, similar to the NpmListener
         this.socket.on("code transformed", this.onCodeChange);
         this.socket.on("code saved", this.onCodeSaved);
 
@@ -99,10 +100,12 @@ class Application extends React.Component {
         frame.contentWindow.initialState = state;
     };
 
+    /**
+     * Get the contents to write to the frame content. Takes into account the users added
+     * css and js resources
+     */
     getFrameContent = () => {
-
         return frameContent(this.state.cssResources, this.state.jsResources);
-
     };
 
     /**
