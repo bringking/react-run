@@ -4,7 +4,7 @@
 import React from "react"
 import ReactDOM from "react-dom"
 import { createHistory } from 'history'
-import { Router, Route } from 'react-router'
+import { Router, Route, browserHistory} from 'react-router'
 
 //components
 import App from "./components/application"
@@ -23,4 +23,3 @@ ReactDOM.render(<Router history={createHistory()}>
 </Router>, mountNode);
 
 
-console.log(App)
