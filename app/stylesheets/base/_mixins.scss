@@ -15,10 +15,8 @@
   // Animation
 
 // ----------------------------------------------------------------------
-//@import "mixins/animate-link";
 @import "mixins/animations";
 @import "mixins/transitions";
-// @import "mixins/translate";
 
 // ----------------------------------------------------------------------
 
@@ -68,12 +66,9 @@
   // Styles
 
 // ----------------------------------------------------------------------
-// @import "mixins/box-shadow";
-// @import "mixins/inner-shadow";
 @import "mixins/opacity";
 @import "mixins/placeholder";
 @import "mixins/rounded-corners";
-// @import "mixins/text-shadow";
 @import "mixins/triangles";
 @import "mixins/scrollbar";
 @import "mixins/transform";

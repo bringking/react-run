@@ -7,13 +7,6 @@ $green: rgba(133, 154, 0, 1);
 $blue: rgba(28,137,213,1);
 $editorBg: rgba(0, 43, 55, 1);
 
-// ----------------------------------------------------------------------
-// Colors for Text
-// ----------------------------------------------------------------------
-$header: #ffffff;
-$subHeader: #959595;
-$bodyText: #707070;
-
 
 // ----------------------------------------------------------------------
 // Layout Breakpoints
@@ -31,16 +24,6 @@ $breakpoint-xlg: 1600px !default;
 // Font Sizes
 // ----------------------------------------------------------------------
 $regularSize: 16;
-
-// ----------------------------------------------------------------------
-// Font Families
-// ----------------------------------------------------------------------
-$OpenSans: 'OpenSans-Regular', sans-serif;
-$OpenSans-bold: 'OpenSans-Bold', sans-serif;
-$OpenSans-Semibold: 'OpenSans-Semibold', sans-serif;
-$Oswald-light: 'Oswald-Light', sans-serif;
-$Oswald-bold: 'Oswald-Bold', sans-serif;
-$AbandonedExtended: 'AbandonedExtended', sans-serif;
 
 // ----------------------------------------------------------------------
 // Grid
