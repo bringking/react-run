@@ -48,7 +48,7 @@ module.exports = function( env ) {
     };
 
     if ( env === 'development' ) {
-        webpackConfig.devtool = 'source-map';
+        //webpackConfig.devtool = 'source-map';
         webpack.debug = true;
     }
 

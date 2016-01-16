@@ -23,3 +23,4 @@ ReactDOM.render(<Router history={createHistory()}>
 </Router>, mountNode);
 
 
+console.log(App)

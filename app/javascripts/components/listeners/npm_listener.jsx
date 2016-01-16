@@ -68,8 +68,7 @@ const NpmListener = ComposedComponent =>
         render() {
             //compose our component to include the NPM message events
             return <ComposedComponent
-                {...this.state}
-                {...this.props}/>;
+                {...this.props} {...this.state}/>;
         }
     };
 
