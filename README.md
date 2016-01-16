@@ -1,22 +1,17 @@
-# README #
+#React.run
 
-This is a basic react SPA starter template for use at RS. It includes -
+## What is it?
+React.run is an in-browser [React](https://facebook.github.io/react/) that allows you to write, run, and experiment writing
+React components in the browser with no additional tools or configuration. It is the fastest way to get started learning
+the patterns and practices of React.
 
-* React
-* React-Router
-* Bootstrap SASS
-* Font-Awesome SASS
-* Webpack/Browsersync 
+##Features
+* Automatic Babel transpilation of React JSX/ES6 code
+* Create and save multiple revisions
+* Add external Javascript and CSS resources
+* Track the state of your component, save that state to the server, and "rehydrate" the state when the revision is loaded
 
-and more. 
+Even more features are on the horizon. We are tracking features we would like implement in the [Roadmap]()
 
-Things intentionally left out -
+# 
 
-* Server - this is a fully client side SPA app, there is no server side component
-* Flux - this is a simple react app with no flux dependencies. Use only for SMALL projects. Anything complex should introduce flux.
-
-## Running
-
-```npm install```
-then run
-``` gulp ```
