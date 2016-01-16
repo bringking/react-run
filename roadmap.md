@@ -13,7 +13,7 @@ Here are the items that we have on the board to get implemented and would repres
 - [ ] Allow auto installation of NPM modules, and subsequent bundling using Webpack. 
 
 ## Future
-- [ ] Inform user in the window of React specific warnings and errors 
+- [ ] Inform user, in the window, of React specific warnings and errors 
 - [ ] Support changing the [brace](https://github.com/thlorenz/brace) theme. Suprisingly, not everyone likes Solarized Dark
 - [ ] Add a functional split-pane system
 - [ ] Sharing and linking to output
