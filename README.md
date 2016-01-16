@@ -15,7 +15,7 @@ the patterns and practices of React.
 * Add external Javascript and CSS resources
 * Track the state of your component, save that state to the server, and "rehydrate" the state when the revision is loaded
 
-Even more features are on the horizon. We are tracking features we would like implement in the [Roadmap]()
+Even more features are on the horizon. We are tracking features we would like implement in the [Roadmap](https://github.com/RinconStrategies/react-run/blob/master/roadmap.md)
 
 ## Building
 
@@ -56,6 +56,6 @@ There aren't tests currently, but we are working on some!
 
 
 ## Contributing
-Contributions are welcome! We have a lot of ideas in the [Roadmap](), and bugs and features flagged in the issues. Feel 
+Contributions are welcome! We have a lot of ideas in the [Roadmap](https://github.com/RinconStrategies/react-run/blob/master/roadmap.md), and bugs and features flagged in the issues. Feel 
 free to tackle any of the un-implemented features. Please make sure if you plan on tackling a feature, that you 
 call it out in an issue so we can talk about it.
