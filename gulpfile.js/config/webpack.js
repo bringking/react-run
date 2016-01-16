@@ -1,7 +1,7 @@
 var paths = require('./');
 var webpack = require('webpack');
 
-module.exports = function( env ) {
+module.exports = function (env) {
 
     var jsSrc = paths.sourceAssets + '/javascripts/';
     var jsDest = paths.publicAssets + '/javascripts/';
@@ -47,12 +47,12 @@ module.exports = function( env ) {
         }
     };
 
-    if ( env === 'development' ) {
+    if (env === 'development') {
         //webpackConfig.devtool = 'source-map';
         webpack.debug = true;
     }
 
-    if ( env == 'test' ) {
+    if (env == 'test') {
         return {
             debug: true,
             node: {
@@ -70,15 +70,14 @@ module.exports = function( env ) {
         }
     }
 
-    //TODO Allow errors and un-minified code, since I want the user to get good errors
-    //Is there a better way to do this?
-    if ( env === 'production' || env === 'staging' ) {
+
+    if (env === 'production' || env === 'staging') {
         webpackConfig.plugins.push(
-            //new webpack.DefinePlugin({
-            //    'process.env': {
-            //        'NODE_ENV': JSON.stringify('production')
-            //    }
-            //}),
+            new webpack.DefinePlugin({
+                'process.env': {
+                    'NODE_ENV': JSON.stringify('production')
+                }
+            }),
             new webpack.optimize.DedupePlugin(),
             new webpack.optimize.UglifyJsPlugin()
         )
