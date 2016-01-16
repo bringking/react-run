@@ -510,7 +510,7 @@ class Application extends React.Component {
 
                 <div
                     className={`saved animated ${this.state.justSaved ?'fadeIn':'fadeOut'}`}>
-                    Saved!!
+                    Saved!
                 </div>
             </div>);
     }
