@@ -5,6 +5,7 @@
  */
 module.exports = function( mongoose ) {
 
+    //TODO I would like to stop calling these "bins", that was a placeholder name
     return {
         bin: require("./bin")(mongoose),
         binRevision: require("./bin_revision")(mongoose)

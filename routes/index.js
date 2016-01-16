@@ -1,6 +1,10 @@
 var shortid = require('shortid');
 
 module.exports = function( router, models ) {
+    /**
+     * On the intital route, we should make a new "bin" and create the first revision
+     * Once it is created, redirect them to that page
+     */
     router.get('/', function *() {
 
         //generate guid
@@ -25,6 +29,10 @@ module.exports = function( router, models ) {
 
     });
 
+    /**
+     * Allow users to link directly to a "bin". If they do, get the latest revision and
+     * send them there
+     */
     router.get('/:bin', function *() {
 
         var result = yield models.bin
@@ -56,7 +64,9 @@ module.exports = function( router, models ) {
         this.status = 302;
 
     });
-
+    /**
+     * This route will load a bin and a revision by ID
+     */
     router.get('/:bin/:revision', function *() {
 
         var bin = yield models.bin
