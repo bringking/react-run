@@ -19,6 +19,8 @@ import JsPanel from "./js_panel";
 import CssPanel from "./css_panel";
 import Revisions from "./revisions";
 import StateBar from "./state_bar";
+import SaveModal from "./save_modal";
+import NpmMessage from "./npm_message";
 
 //our socket IO listener components
 import NpmListener from "./listeners/npm_listener";
@@ -343,20 +345,34 @@ class Application extends React.Component {
         this.setState({showingRevisions: true, showingJs: false, showingCss: false});
     };
 
+    /**
+     * Toggle the CSS panel
+     */
     toggleCss = () => {
         let showing = this.state.showingCss;
         this.setState({showingCss: !showing, showingJs: false, showingRevisions: false});
     };
 
+    /**
+     * Toggle the JS panel
+     */
     toggleJs = () => {
         let showing = this.state.showingJs;
         this.setState({showingJs: !showing, showingCss: false, showingRevisions: false});
     };
 
+    /**
+     * Hide all the overlay panels
+     */
     hideAllPanels = ()=> {
         this.setState({showingJs: false, showingCss: false, showingRevisions: false});
     };
 
+    /**
+     * Event handler for CSS resource being added. Checks for duplicates and
+     * then reconciles the CSS in the iFrame
+     * @param resource
+     */
     onAddCssResource = resource => {
         let cssResources = this.state.cssResources;
         if ( cssResources.indexOf(resource) === -1 ) {
@@ -367,6 +383,11 @@ class Application extends React.Component {
         }
     };
 
+    /**
+     * Event handler for JS resources being added. Checks for duplicates and
+     * then reconciles the JS in the iFrame
+     * @param resource
+     */
     onAddJsResource = resource => {
         let jsResources = this.state.jsResources;
         if ( jsResources.indexOf(resource) === -1 ) {
@@ -377,6 +398,10 @@ class Application extends React.Component {
         }
     };
 
+    /**
+     * Event handler for deleting CSS resources
+     * @param resource
+     */
     onDeleteCssResource = resource => {
         let cssResources = this.state.cssResources.filter(r => r !== resource);
         this.setState({cssResources}, ()=> {
@@ -384,13 +409,21 @@ class Application extends React.Component {
         });
     };
 
+    /**
+     * Event handler for deleting JS resources
+     * @param resource
+     */
     onDeleteJsResource = resource => {
         let jsResources = this.state.jsResources.filter(r => r !== resource);
         this.setState({jsResources}, ()=> {
             this.reconcileScripts();
         });
     };
-
+    /**
+     * Event handler for re-ordering CSS resources
+     * @param resource
+     * @param direction
+     */
     onReorderCssResource = ( resource, direction ) => {
         let cssResources = this.state.cssResources;
         let idx = cssResources.indexOf(resource);
@@ -407,6 +440,11 @@ class Application extends React.Component {
         });
 
     };
+    /**
+     * Event handler for re-ordering JS resources
+     * @param resource
+     * @param direction
+     */
     onReorderJsResource = ( resource, direction ) => {
         let jsResources = this.state.jsResources;
         let idx = jsResources.indexOf(resource);
@@ -423,7 +461,11 @@ class Application extends React.Component {
         });
 
     };
-
+    /**
+     * Event handler for updating a CSS resource
+     * @param oldVal
+     * @param newVal
+     */
     onCssItemUpdated = ( oldVal, newVal ) => {
         let cssResources = this.state.cssResources;
         let idx = cssResources.indexOf(oldVal);
@@ -432,6 +474,11 @@ class Application extends React.Component {
             this.reconcileCss();
         });
     };
+    /**
+     * Event handler for updating a JS resource
+     * @param oldVal
+     * @param newVal
+     */
     onJsItemUpdated = ( oldVal, newVal ) => {
         let jsResources = this.state.jsResources;
         let idx = jsResources.indexOf(oldVal);
@@ -440,7 +487,10 @@ class Application extends React.Component {
             this.reconcileScripts();
         });
     };
-
+    /**
+     * Toggle the "save"/"track" of the users state, then
+     * update the code
+     */
     setPreserveState = ()=> {
         let saveState = this.state.saveState;
         this.setState({saveState: !saveState}, ()=> {
@@ -448,6 +498,11 @@ class Application extends React.Component {
         });
     };
 
+    /**
+     * Event handler for selecting a particular  state
+     * NOT implemented yet
+     * @param idx
+     */
     onSelectState = ( idx ) => {
         console.log("Selected state " + idx);
     };
@@ -503,15 +558,8 @@ class Application extends React.Component {
                         <iframe frameBorder="0" ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
                     </div>
                 </div>
-
-                {this.props.npmMessage ? <div className={`npm-message`}>
-                    {this.props.npmMessage} <i className="fa fa-circle-o-notch fa-spin"></i>
-                </div> : null}
-
-                <div
-                    className={`saved animated ${this.state.justSaved ?'fadeIn':'fadeOut'}`}>
-                    Saved!
-                </div>
+                <NpmMessage npmMessage={this.props.npmMessage}/>
+                <SaveModal show={this.state.justSaved}/>
             </div>);
     }
 }
