@@ -4,7 +4,7 @@
   "description": "React.run - The fastest way to create React components, right in the browser",
   "repository": {
     "type": "git",
-    "url": "git@bitbucket.org:bringking/jsx_bin.git"
+    "url": "https://github.com/RinconStrategies/react-run.git"
   },
   "scripts": {
     "pretest": "npm install",
