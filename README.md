@@ -46,7 +46,11 @@ The simplest version of this with a local mongo instance would look like - ```MO
 
 
 ### Running the code
-Once the dependencies have been installed, you can run
+Once the global dependencies have been installed, you can run
+
+```npm install```
+
+then
 
 ```npm run develop``` 
 
