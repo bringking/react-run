@@ -85,7 +85,6 @@ class Application extends React.Component {
 
             //write the content
             const frameDocument = frame.contentWindow.document;
-            frameDocument.domain = document.domain;
             frameDocument.open();
             frameDocument.write(this.getFrameContent());
             frameDocument.close();
