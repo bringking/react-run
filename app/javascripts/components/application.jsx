@@ -23,6 +23,7 @@ import Revisions from "./revisions";
 import StateBar from "./state_bar";
 import SaveModal from "./save_modal";
 import NpmMessage from "./npm_message";
+import Toolbar from "./toolbar";
 
 //our socket IO listener components
 import NpmListener from "./listeners/npm_listener";
@@ -47,6 +48,7 @@ class Application extends React.Component {
             frameError: null,
             showingCss: false,
             showingJs: false,
+            autoRun: false,
             jsResources: window.jsResources,
             cssResources: window.cssResources,
             showingRevisions: false,
@@ -265,7 +267,9 @@ class Application extends React.Component {
      */
     onTextChanged = (newValue) => {
         this.setState({value: newValue}, ()=> {
-            this.updateCode();
+            if (this.state.autoRun) {
+                this.updateCode();
+            }
         });
     };
 
@@ -301,6 +305,11 @@ class Application extends React.Component {
         if (event.metaKey && event.keyCode === 83) {
             event.preventDefault();
             this.saveCode();
+            return false;
+        }
+        if (event.metaKey && event.keyCode === 13) {
+            event.preventDefault();
+            this.updateCode();
             return false;
         }
 
@@ -492,6 +501,13 @@ class Application extends React.Component {
     };
 
     /**
+     * Toggle the auto-compilation of the code as you type
+     */
+    toggleAutoRun = ()=> {
+        let autoRun = this.state.autoRun;
+        this.setState({autoRun: !autoRun});
+    };
+    /**
      * Event handler for selecting a particular  state
      * NOT implemented yet
      * @param idx
@@ -520,19 +536,15 @@ class Application extends React.Component {
 
                 <div className="app-inner">
                     <div id="editor" className={`${showingRevisions || showingCss || showingJs  ?'fade':''}`}>
-                        <div className="toolbar">
-                            <div className="toolbar-pad"></div>
-                            <ul className="toolbar-controls">
-                                <li onClick={this.setPreserveState}>Track State {this.state.saveState ?
-                                    <i className="fa fa-check-square"></i> : <i className="fa fa-square"></i> }</li>
-                                <li onClick={this.saveCode}>Save <i className="fa fa-save"></i></li>
-                                <li onClick={this.toggleCss}>CSS Resources <i className="fa fa-css3"></i>
-                                </li>
-                                <li onClick={this.toggleJs}>JS Resources <i className="fa fa-code"></i>
-                                </li>
-                                <li onClick={this.showRevisions}>Revisions <i className="fa fa-file-text"></i></li>
-                            </ul>
-                        </div>
+
+                        <Toolbar saveState={this.state.saveState}
+                                 autoRun={this.state.autoRun}
+                                 onToggleAutoRun={this.toggleAutoRun}
+                                 onClickRunCode={this.updateCode}
+                                 onClickPreserveState={this.setPreserveState}
+                                 onClickSaveCode={this.saveCode}
+                                 onClickToggleCss={this.toggleCss} onClickToggleJs={this.toggleJs}
+                                 onClickShowRevisions={this.showRevisions}/>
                         <Errors
                             socket={this.socket}
                             frameError={this.state.frameError}/>

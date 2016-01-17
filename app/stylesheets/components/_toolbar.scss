@@ -4,21 +4,9 @@
   background-color: $editorBg;
   color: $green;
   font-family: monospace;
-
-  .toolbar-pad {
-    background-color: rgba(0, 49, 64, 1);
-    display: inline-block;
-    height: 60px;
-    width: 48px;
-    float: left;
-
-    @include breakpoint(sm) {
-      height: 30px;
-    }
-  }
   .toolbar-controls {
     display: inline-block;
-    width: calc(100% - 48px);
+    width: 100%;
     float: left;
 
     li {
