@@ -2,6 +2,9 @@
 
 [React.run](http://www.react.run)
 
+[![React.run Demonstration](http://img.youtube.com/vi/Mjo-LVRaL7M/0.jpg)](http://www.youtube.com/watch?v=Mjo-LVRaL7M)
+
+
 ## What is it?
 
 React.run is an in-browser [React](https://facebook.github.io/react/) that allows you to write, run, and experiment writing
