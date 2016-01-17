@@ -84,12 +84,13 @@ class Application extends React.Component {
             frame.contentWindow.getPreviousState = this.getPreviousFrameState;
 
             //write the content
-            frame.contentDocument.domain = document.domain;
-            frame.contentDocument.write(this.getFrameContent());
-            frame.contentDocument.close();
+            const frameDocument = frame.contentWindow.document;
+            frameDocument.domain = document.domain;
+            frameDocument.open();
+            frameDocument.write(this.getFrameContent());
+            frameDocument.close();
 
-            //listen for frame errors
-            frame.contentWindow.console.error = this.onFrameError;
+
             frame.contentWindow.__clearMessages = this.clearFrameError;
         }
 
