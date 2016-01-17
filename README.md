@@ -7,9 +7,8 @@
 
 ## What is it?
 
-React.run is an in-browser [React](https://facebook.github.io/react/) that allows you to write, run, and experiment writing
-React components in the browser with no additional tools or configuration. It is the fastest way to get started learning
-the patterns and practices of React.
+React.run is an in-browser tool that allows you to write, run, and experiment writing
+[React](https://facebook.github.io/react/) components in the browser with no additional tools or configuration. It is the fastest way to get started learning the patterns and practices of React.
 
 ##Features
 
