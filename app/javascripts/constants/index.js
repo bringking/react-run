@@ -17,9 +17,11 @@ export const initialScript = `/**
  * React.run will save your components state to the
  * server and rehydrate it as well!!
  *
- * Toolbar: The toolbar above your code allows you to save your work and
- * add external JS/CSS. Tip: You can save your work by
- * typing "cmd+s" or "window + s" on windows
+ * Toolbar: The toolbar above your code allows you to save your work, run your code
+ * and add external JS/CSS.
+ *
+ * Keyboard: You can save your work by typing "cmd+s" or "window + s" on windows. You can
+ * run your code by typing "cmd+enter" or "window + enter" on windows.
  *
  * Globals Usage: Currently React.run exposes only two global
  * variables for your use, "React" and "ReactDOM".

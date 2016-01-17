@@ -30,7 +30,7 @@ module.exports = function (env) {
 
         output: {
             path: jsDest,
-            filename: '[name].[hash].js',
+            filename: '[name].js',
             publicPath: publicPath
         },
 
@@ -73,6 +73,9 @@ module.exports = function (env) {
 
 
     if (env === 'production' || env === 'staging') {
+
+        webpackConfig.output.filename = '[name].[hash].js';
+
         webpackConfig.plugins.push(
             new AssetsPlugin({fullPath: true}),
             new webpack.DefinePlugin({
