@@ -17,3 +17,6 @@ generated
 
 # Ignore .env configuration files
 .env
+
+#ignore generated assets
+webpack-assets.json
