@@ -1,5 +1,7 @@
 var shortid = require('shortid');
 
+
+
 module.exports = function( router, models ) {
     /**
      * On the intital route, we should make a new "bin" and create the first revision
@@ -68,6 +70,7 @@ module.exports = function( router, models ) {
      * This route will load a bin and a revision by ID
      */
     router.get('/:bin/:revision', function *() {
+
 
         var bin = yield models.bin
             .findOne({'id': this.params.bin});

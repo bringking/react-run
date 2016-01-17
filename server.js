@@ -5,20 +5,20 @@ require('shelljs/global');
 require('dotenv').load({silent: true});
 
 //dependencies
-var app          = require('koa')(),
-    router       = require('koa-router')(),
-    staticCache  = require('koa-static-cache'),
-    co           = require('co'),
-    path         = require("path"),
-    regFs        = require('fs'),
+var app = require('koa')(),
+    router = require('koa-router')(),
+    staticCache = require('koa-static-cache'),
+    co = require('co'),
+    path = require("path"),
+    regFs = require('fs'),
     intersection = require("lodash.intersection"),
-    union        = require('lodash.union'),
-    fs           = require('co-fs'),
-    lusca        = require('koa-lusca'),
-    mongoose     = require('mongoose'),
-    routes       = require("./routes"),
-    transform    = require("./transform"),
-    views        = require('koa-views');
+    union = require('lodash.union'),
+    fs = require('co-fs'),
+    lusca = require('koa-lusca'),
+    mongoose = require('mongoose'),
+    routes = require("./routes"),
+    transform = require("./transform"),
+    views = require('koa-views');
 
 //store our models
 var models = require("./models")(mongoose);
@@ -40,18 +40,35 @@ app.use(staticCache(path.join(__dirname, 'public'), {
 app.use(views("./views", {map: {html: 'swig'}}));
 
 // error handling
-app.use(function *( next ) {
+app.use(function *(next) {
     try {
         yield next;
         var status = this.status || 404;
-        if ( status === 404 )  yield this.render('not_found', {});
-    } catch ( err ) {
+        if (status === 404)  yield this.render('not_found', {});
+    } catch (err) {
         console.error(err);
         err.status = err.status || 500;
         // Set our response.
         this.status = err.status;
         yield this.render('error', {});
     }
+});
+
+//middleware for busting the clientJS cache
+app.use(function*(next) {
+
+    try {
+        var assets = require('./webpack-assets.json');
+        if (assets && assets.client) {
+            this.state.client = assets.client.js;
+        }
+    } catch (e) {
+        this.state.client = "/javascripts/client.js"
+    }
+
+
+    yield next;
+
 });
 
 //setup routes
@@ -67,9 +84,9 @@ app
  * @param socket- A reference to the socket connection
  * @param data- The bin and revision data
  */
-var onCodeSaved = function*( socket, data ) {
+var onCodeSaved = function*(socket, data) {
     try {
-        if ( data.revision && data.bin && data.code ) {
+        if (data.revision && data.bin && data.code) {
             //saving
             var bin = yield models.bin.findOne({'id': data.bin});
 
@@ -91,7 +108,7 @@ var onCodeSaved = function*( socket, data ) {
             var newResult = yield newRevision.save();
 
             //save the result
-            if ( newResult ) {
+            if (newResult) {
                 socket.emit("code saved", {
                     bin: data.bin,
                     revision: newResult.hash,
@@ -102,7 +119,7 @@ var onCodeSaved = function*( socket, data ) {
             }
 
         }
-    } catch ( e ) {
+    } catch (e) {
         console.error(e);
         socket.emit("error saving", {bin: data.bin, revision: data.revision});
     }
@@ -113,13 +130,13 @@ var onCodeSaved = function*( socket, data ) {
  * @param socket - a reference to the socket connection
  * @param data- The data to transpile
  */
-var onCodeChange = function*( socket, data ) {
+var onCodeChange = function*(socket, data) {
     try {
         //TODO Since this is a pure function, we could memoize it for performance
         var result = transform.babelTransform.transform(data.code);
         socket.emit("code transformed", result.code);
 
-    } catch ( e ) {
+    } catch (e) {
         socket.emit("code error", e.message);
     }
 };
@@ -128,9 +145,9 @@ var onCodeChange = function*( socket, data ) {
 //TODO this is a naive socket implmentation. It doesn't currently handle
 //running the server across multiple dynos or a load balancer. Need to hook up redis or a cache layer
 var server = require('http').Server(app.callback()),
-    io     = require('socket.io')(server);
+    io = require('socket.io')(server);
 
-io.on('connection', co.wrap(function *( socket ) {
+io.on('connection', co.wrap(function *(socket) {
     //listen for code saves
     socket.on('code save', co.wrap(onCodeSaved.bind(null, socket)));
     socket.on('code change', co.wrap(onCodeChange.bind(null, socket)));
@@ -141,13 +158,13 @@ mongoose.connect(process.env.MONGOLAB_URI || process.env.MONGO_URI);
 var db = mongoose.connection;
 
 db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
+db.once('open', function () {
 
     //ensure we have a generated folder
     //this is used to store generated node_modules
     var generatedFolder = path.join(__dirname, 'public/generated');
-    regFs.stat(generatedFolder, function( err, stats ) {
-        if ( err ) {
+    regFs.stat(generatedFolder, function (err, stats) {
+        if (err) {
             console.log("making generated folder");
             regFs.mkdirSync(generatedFolder);
         }

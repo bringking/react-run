@@ -1,5 +1,6 @@
 var paths = require('./');
 var webpack = require('webpack');
+var AssetsPlugin = require('assets-webpack-plugin');
 
 module.exports = function (env) {
 
@@ -29,7 +30,7 @@ module.exports = function (env) {
 
         output: {
             path: jsDest,
-            filename: '[name].js',
+            filename: '[name].[hash].js',
             publicPath: publicPath
         },
 
@@ -73,6 +74,7 @@ module.exports = function (env) {
 
     if (env === 'production' || env === 'staging') {
         webpackConfig.plugins.push(
+            new AssetsPlugin({fullPath: true}),
             new webpack.DefinePlugin({
                 'process.env': {
                     'NODE_ENV': JSON.stringify('production')
