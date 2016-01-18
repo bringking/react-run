@@ -20,3 +20,4 @@ generated
 
 #ignore generated assets
 webpack-assets.json
+rev-manifest.json
