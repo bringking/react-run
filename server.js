@@ -142,7 +142,7 @@ var onCodeChange = function*(socket, data) {
 };
 
 //Start our Socket IO connection
-//TODO this is a naive socket implmentation. It doesn't currently handle
+//TODO this is a naive socket implementation. It doesn't currently handle
 //running the server across multiple dynos or a load balancer. Need to hook up redis or a cache layer
 var server = require('http').Server(app.callback()),
     io = require('socket.io')(server);
