@@ -1,11 +1,13 @@
 .state-bar {
   position: absolute;
   right: 0;
-  top: 60px;
-  bottom: 0;
+  top: 72px;
+  bottom: 72px;
   width: 40px;
+
   @include breakpoint(sm) {
-    top: 30px;
+    top: 60px;
+    bottom: 60px;
   }
   display: flex;
   flex-direction: column;
@@ -22,7 +24,7 @@
     height: 20px;
     width: 20px;
     left: -10px;
-    cursor:pointer;
+    cursor: pointer;
   }
   .bar {
     width: 1px;

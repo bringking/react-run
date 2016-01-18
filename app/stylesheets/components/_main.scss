@@ -13,7 +13,7 @@ body {
   position: relative;
   height: 100vh;
   overflow-y: auto;
-  overflow-x:hidden;
+  overflow-x: hidden;
 
   &.fade {
     #editor_window {
@@ -52,4 +52,20 @@ body {
 #resultsFrame {
   height: 100vh;
   width: 100%;
+
+  &.showing-state {
+    height: 80vh;
+  }
+
+}
+
+.selected-state-window {
+  height: 20vh;
+  background: $editorBg;
+  color: $green;
+  font-family: monospace;
+  font-size: 12px;
+  overflow-y: auto;
+  padding: 5px;
+  border: 1px solid $green;
 }

@@ -57,6 +57,9 @@ export const babelFrameScript = ( code ) =>`try{` + code + `
 
                 //app mount node
                 var mountNode = document.getElementById('client_results');
+                //unmount node if there already
+                ReactDOM.unmountComponentAtNode(mountNode);
+
 
                 var MainComponent;
                 if (window.initialState) {
@@ -70,6 +73,53 @@ export const babelFrameScript = ( code ) =>`try{` + code + `
                     MainComponent = ReactDOM.render(React.createElement(Main),mountNode);
                 }
 
+                function resetSetState(){
+                    React.Component.prototype.setState = window.oldState;
+                    window.oldState = null;
+                }
+
+                function overrideSetState(){
+                     //override setState to track state changes.
+                    //TODO this feels hacky, is there a better way to track state changes
+                    //without a store pattern, e.g redux or flux
+                    if (!window.oldState) {
+                       window.oldState = React.Component.prototype.setState;
+
+                       React.Component.prototype.setState = function(partialState, cb) {
+
+                       return oldState.call(this,partialState,function(){
+                            //if user provided a callback, call it
+                            if (cb) {
+                                cb();
+                            }
+                            //inform parent frame of state change
+                            if (window.__onStateChange) {
+                                window.__onStateChange(getState());
+                            }
+                        });
+                    };
+                    }
+                }
+
+
+                //allow for re-renders with state
+                window.reRenderWithState = function(state) {
+                    resetSetState();
+
+                    //unmount
+                    ReactDOM.unmountComponentAtNode(mountNode);
+
+                    MainComponent = ComponentTree.render({
+                      component: Main,
+                      snapshot: state,
+                      container: mountNode
+                    });
+
+                   overrideSetState();
+
+                }
+
+
                 //clear the window initialState, since we don't need it anymore
                 window.initialState = null;
 
@@ -82,5 +132,8 @@ export const babelFrameScript = ( code ) =>`try{` + code + `
                 if (window.__clearMessages) {
                      __clearMessages();
                 }
+
+                //override set state
+                overrideSetState();
 
             }catch(e){console.error(e)}`;
