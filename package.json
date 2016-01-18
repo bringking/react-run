@@ -70,6 +70,7 @@
     "lodash.defaultsdeep": "^4.0.1",
     "lodash.difference": "^4.0.1",
     "lodash.intersection": "^4.0.1",
+    "lodash.isequal": "^4.0.0",
     "lodash.union": "^4.0.1",
     "lodash.uniq": "^4.0.1",
     "merge-stream": "^1.0.0",

@@ -7,6 +7,7 @@ import 'brace/mode/jsx';
 import 'brace/theme/solarized_dark';
 import defaultsDeep from "lodash.defaultsdeep";
 import ComponentTree from "react-component-tree";
+import isEqual from "lodash.isequal";
 
 //utilities
 import {initialScript, babelFrameScript} from "../constants";
@@ -30,7 +31,7 @@ import NpmListener from "./listeners/npm_listener";
 
 class Application extends React.Component {
 
-    constructor(props, context) {
+    constructor( props, context ) {
         super(props, context);
 
         //store a reference to the socket
@@ -44,6 +45,7 @@ class Application extends React.Component {
             revision,
             saveState: window.savedState,
             stateTransitions: [],
+            selectedState: 0,
             justSaved: false,
             frameError: null,
             showingCss: false,
@@ -74,30 +76,43 @@ class Application extends React.Component {
 
     componentDidMount() {
 
-        //update the window with the default script
-        this.updateCode(this.state.value);
-
         let frame = this.refs.resultsFrame;
-        if (frame) {
+        if ( frame ) {
 
             frame.contentWindow.defaultsDeep = defaultsDeep;
             frame.contentWindow.ComponentTree = ComponentTree;
-            frame.contentWindow.initialState = window.savedState;
-            frame.contentWindow.getPreviousState = this.getPreviousFrameState;
-
+            frame.contentWindow.initialState = this.state.saveState;
             //write the content
             const frameDocument = frame.contentWindow.document;
             frameDocument.open();
             frameDocument.write(this.getFrameContent());
             frameDocument.close();
 
-
+            //This is our "bridge" to the frame, setup callbacks to
+            //this code in the frame
+            frame.contentWindow.getPreviousState = this.getPreviousFrameState;
+            frame.contentWindow.__onStateChange = this.onStateChange;
             frame.contentWindow.__clearMessages = this.clearFrameError;
         }
 
+        //add intial state
+        if ( this.state.saveState ) {
+            let stateTransitions = this.state.stateTransitions;
+            stateTransitions.push(this.state.saveState);
+            this.setState({stateTransitions},()=>{
+                //update the window with the default script
+                this.updateCode(this.state.value);
+            })
+        } else {
+            //update the window with the default script
+            this.updateCode(this.state.value);
+        }
+
+
+
     }
 
-    enableStateReplacement = (state) => {
+    enableStateReplacement = ( state ) => {
         let frame = this.refs.resultsFrame;
         frame.contentWindow.initialState = state;
     };
@@ -119,11 +134,11 @@ class Application extends React.Component {
         let head = frame.contentDocument.getElementsByTagName("head")[0];
 
         //cleanup
-        Array.prototype.forEach.call(styles, (style) => {
+        Array.prototype.forEach.call(styles, ( style ) => {
             head.removeChild(style);
         });
 
-        if (this.state.cssResources.length) {
+        if ( this.state.cssResources.length ) {
             this.state.cssResources.forEach(r => {
                 let link = frame.contentDocument.createElement('link');
                 link.rel = 'stylesheet';
@@ -144,11 +159,25 @@ class Application extends React.Component {
         //clear the previous scripts
         scripts.innerHTML = "";
         //re-add
-        if (this.state.jsResources.length) {
+        if ( this.state.jsResources.length ) {
             scripts.innerHTML = `${this.state.jsResources.map(r =>'<script type="text/javascript" src="' + r + '"></script>')}`
         }
 
     }
+
+    onStateChange = ( newState ) => {
+        //are we supposed to be tracking state?
+        if ( this.state.saveState ) {
+            let stateTransitions = this.state.stateTransitions;
+            let lastState = stateTransitions[stateTransitions.length - 1];
+            if ( !isEqual(newState, lastState) ) {
+                stateTransitions.push(newState);
+                //store the state change
+                this.setState({stateTransitions, selectedState: stateTransitions.length - 1});
+            }
+
+        }
+    };
 
     /**
      * Get the React state from the users component tree
@@ -156,7 +185,7 @@ class Application extends React.Component {
      */
     serializeFrameState = () => {
         let frame = this.refs.resultsFrame;
-        if (frame.contentWindow.getState) {
+        if ( frame.contentWindow.getState ) {
             return frame.contentWindow.getState();
         }
         return null;
@@ -183,7 +212,7 @@ class Application extends React.Component {
      */
     renderCode = code => {
         let frame = this.refs.resultsFrame;
-        if (frame) {
+        if ( frame ) {
             renderReactToFrame(frame, code);
         }
     };
@@ -193,9 +222,9 @@ class Application extends React.Component {
      * @param code
      * @param common
      */
-    renderWebpackCode = (code, common) => {
+    renderWebpackCode = ( code, common ) => {
         let frame = this.refs.resultsFrame;
-        if (frame) {
+        if ( frame ) {
             renderReactToFrame(frame, code, common);
         }
     };
@@ -205,7 +234,7 @@ class Application extends React.Component {
      * @param data
      */
     onWebpackCodeChanged = data => {
-        if (data.common && data.main) {
+        if ( data.common && data.main ) {
 
             //splice in exports
             data.main = data.main.replace("var Main = function (", "window.Main = function (");
@@ -232,7 +261,7 @@ class Application extends React.Component {
      * @param code
      */
     onCodeChange = code => {
-        if (code) {
+        if ( code ) {
             this.setState({compiling: false}, ()=> {
                 this.renderCode(babelFrameScript(code));
             });
@@ -246,8 +275,8 @@ class Application extends React.Component {
     updateCode = () => {
 
         //persist state across refreshes
-        if (this.state.saveState) {
-            this.enableStateReplacement(this.serializeFrameState());
+        if ( this.state.saveState ) {
+            this.enableStateReplacement(this.state.saveState);
         }
 
         //emit the change
@@ -265,9 +294,9 @@ class Application extends React.Component {
      * Event handler for when text in the editor has changed
      * @param newValue
      */
-    onTextChanged = (newValue) => {
+    onTextChanged = ( newValue ) => {
         this.setState({value: newValue}, ()=> {
-            if (this.state.autoRun) {
+            if ( this.state.autoRun ) {
                 this.updateCode();
             }
         });
@@ -277,9 +306,9 @@ class Application extends React.Component {
      * Event handler for code being successfully saved on the server
      * @param data
      */
-    onCodeSaved = (data) => {
+    onCodeSaved = ( data ) => {
         let {bin,revision,createdAt,jsResources,cssResources} = data;
-        if (bin && revision) {
+        if ( bin && revision ) {
             this.props.history.push({
                 pathname: `/${bin}/${revision}`
             });
@@ -302,12 +331,12 @@ class Application extends React.Component {
      * @returns {boolean}
      */
     onKeyDown = event => {
-        if (event.metaKey && event.keyCode === 83) {
+        if ( event.metaKey && event.keyCode === 83 ) {
             event.preventDefault();
             this.saveCode();
             return false;
         }
-        if (event.metaKey && event.keyCode === 13) {
+        if ( event.metaKey && event.keyCode === 13 ) {
             event.preventDefault();
             this.updateCode();
             return false;
@@ -377,7 +406,7 @@ class Application extends React.Component {
      */
     onAddCssResource = resource => {
         let cssResources = this.state.cssResources;
-        if (cssResources.indexOf(resource) === -1) {
+        if ( cssResources.indexOf(resource) === -1 ) {
             cssResources.push(resource);
             this.setState({cssResources}, ()=> {
                 this.reconcileCss();
@@ -392,7 +421,7 @@ class Application extends React.Component {
      */
     onAddJsResource = resource => {
         let jsResources = this.state.jsResources;
-        if (jsResources.indexOf(resource) === -1) {
+        if ( jsResources.indexOf(resource) === -1 ) {
             jsResources.push(resource);
             this.setState({jsResources}, ()=> {
                 this.reconcileScripts();
@@ -426,7 +455,7 @@ class Application extends React.Component {
      * @param resource
      * @param direction
      */
-    onReorderCssResource = (resource, direction) => {
+    onReorderCssResource = ( resource, direction ) => {
         let cssResources = this.state.cssResources;
         let idx = cssResources.indexOf(resource);
         let newIdx = direction === "up"
@@ -447,7 +476,7 @@ class Application extends React.Component {
      * @param resource
      * @param direction
      */
-    onReorderJsResource = (resource, direction) => {
+    onReorderJsResource = ( resource, direction ) => {
         let jsResources = this.state.jsResources;
         let idx = jsResources.indexOf(resource);
         let newIdx = direction === "up"
@@ -468,7 +497,7 @@ class Application extends React.Component {
      * @param oldVal
      * @param newVal
      */
-    onCssItemUpdated = (oldVal, newVal) => {
+    onCssItemUpdated = ( oldVal, newVal ) => {
         let cssResources = this.state.cssResources;
         let idx = cssResources.indexOf(oldVal);
         cssResources[idx] = newVal;
@@ -481,7 +510,7 @@ class Application extends React.Component {
      * @param oldVal
      * @param newVal
      */
-    onJsItemUpdated = (oldVal, newVal) => {
+    onJsItemUpdated = ( oldVal, newVal ) => {
         let jsResources = this.state.jsResources;
         let idx = jsResources.indexOf(oldVal);
         jsResources[idx] = newVal;
@@ -495,7 +524,17 @@ class Application extends React.Component {
      */
     setPreserveState = ()=> {
         let saveState = this.state.saveState;
-        this.setState({saveState: !saveState}, ()=> {
+        let stateTransitions = this.state.stateTransitions;
+
+        if ( saveState ) {
+            saveState = null;
+            stateTransitions.length = 0;
+        } else {
+            saveState = this.serializeFrameState();
+            stateTransitions = [saveState];
+        }
+
+        this.setState({saveState, stateTransitions}, ()=> {
             this.updateCode();
         });
     };
@@ -509,11 +548,17 @@ class Application extends React.Component {
     };
     /**
      * Event handler for selecting a particular  state
-     * NOT implemented yet
      * @param idx
      */
-    onSelectState = (idx) => {
-        console.log("Selected state " + idx);
+    onSelectState = ( idx ) => {
+        let frame = this.refs.resultsFrame;
+        let requestedState = this.state.stateTransitions[idx];
+
+        if ( frame.contentWindow.reRenderWithState && requestedState ) {
+            this.setState({selectedState: idx}, ()=> {
+                return frame.contentWindow.reRenderWithState(requestedState);
+            });
+        }
     };
 
     render() {
@@ -558,9 +603,22 @@ class Application extends React.Component {
                             showPrintMargin={false}
                             editorProps={{$blockScrolling: true}}
                         />
+                        {this.state.saveState && this.state.stateTransitions.length ?
+                            <StateBar onSelectState={this.onSelectState} selectedState={this.state.selectedState}
+                                      stateTransitions={this.state.stateTransitions}/>
+                            : null}
                     </div>
                     <div id="results">
-                        <iframe frameBorder="0" ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
+                        <iframe
+                            className={this.state.saveState && this.state.stateTransitions.length ? 'showing-state':''}
+                            frameBorder="0" ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
+                        {this.state.saveState && this.state.stateTransitions.length ?
+                            <div className="selected-state-window">
+                                <h3>Active state</h3>
+                                <pre
+                                    dangerouslySetInnerHTML={{__html:JSON.stringify(this.state.stateTransitions[this.state.selectedState], null,4)}}></pre>
+                            </div>
+                            : null}
                     </div>
                 </div>
                 <NpmMessage npmMessage={this.props.npmMessage}/>
