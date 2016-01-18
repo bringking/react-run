@@ -61,7 +61,7 @@ app.use(function*( next ) {
     try {
         var jsAssets = require('./webpack-assets.json');
         if ( jsAssets && jsAssets.client ) {
-            this.state.client = assets.client.js;
+            this.state.client = jsAssets.client.js;
         }
 
     } catch ( e ) {
