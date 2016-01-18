@@ -9,7 +9,7 @@ Here are the items that we have on the board to get implemented and would repres
 - [x] Track the state of your component across refreshes (persist to the server)
 
 ## Work started 
-- [ ] Time travel debugging of state changes. 
+- [x] Time travel debugging of state changes. 
 - [ ] Allow auto installation of NPM modules, and subsequent bundling using Webpack. 
 
 ## Future
