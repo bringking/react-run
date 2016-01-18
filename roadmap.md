@@ -7,9 +7,9 @@ Here are the items that we have on the board to get implemented and would repres
 - [x] Create and Save revisions
 - [x] Add external JS and CSS resources
 - [x] Track the state of your component across refreshes (persist to the server)
+- [x] Time travel debugging of state changes. 
 
 ## Work started 
-- [x] Time travel debugging of state changes. 
 - [ ] Allow auto installation of NPM modules, and subsequent bundling using Webpack. 
 
 ## Future
