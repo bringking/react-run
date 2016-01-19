@@ -1,41 +1,20 @@
-//deps
-import React from "react";
-import ReactDOM from "react-dom";
-import brace from 'brace';
-import AceEditor from 'react-ace';
-import 'brace/mode/jsx';
-import 'brace/theme/solarized_dark';
-import defaultsDeep from "lodash.defaultsdeep";
-import ComponentTree from "react-component-tree";
-import isEqual from "lodash.isequal";
-
-//utilities
-import {initialScript, babelFrameScript} from "../constants";
-import frameContent from "../constants/frame_content";
-
-import renderReactToFrame from "../utils/render_react_to_frame";
-import debounce from "debounce";
-
-//child components
-import Errors from "./errors";
+import React,{Component} from "react"
 import JsPanel from "./js_panel";
 import CssPanel from "./css_panel";
+import ReactRunner from "./react_runner";
 import Revisions from "./revisions";
-import StateBar from "./state_bar";
-import SaveModal from "./save_modal";
-import NpmMessage from "./npm_message";
-import Toolbar from "./toolbar";
+//listeners
+import NpmListener from "./listeners/npm_listener"
 
-//our socket IO listener components
-import NpmListener from "./listeners/npm_listener";
-
-class Application extends React.Component {
-
-    constructor( props, context ) {
-        super(props, context);
-
-        //store a reference to the socket
-        this.socket = io();
+/**
+ * The Application component is the root level component that composes our main application parts
+ * target as props
+ * @param ComposedComponent
+ * @constructor
+ */
+class Application extends Component {
+    constructor( props ) {
+        super(props);
 
         //set the initial bin
         let {bin,revision} = props.params;
@@ -43,324 +22,14 @@ class Application extends React.Component {
         this.state = {
             bin,
             revision,
-            saveState: window.savedState,
-            stateTransitions: [],
-            selectedState: 0,
-            justSaved: false,
-            frameError: null,
-            showingCss: false,
-            showingJs: false,
-            autoRun: false,
+            revisions: window.revisions || [],
+            showingRevisions: false,
             jsResources: window.jsResources,
             cssResources: window.cssResources,
-            showingRevisions: false,
-            revisions: window.revisions || [],
-            value: window.existingCode || initialScript
-        };
-
-        //socket events
-        //TODO Would like to refactor these into higher order components, similar to the NpmListener
-        this.socket.on("code transformed", this.onCodeChange);
-        this.socket.on("code saved", this.onCodeSaved);
-
-        //webpack events
-        this.socket.on("webpack transform", this.onWebpackCodeChanged);
-
-        //bind keyboard handlers
-        document.addEventListener("keydown", this.onKeyDown);
-
-        //debounce the auto compile
-        this.updateCode = debounce(this.updateCode, 500);
-
+            showingCss: false,
+            showingJs: false
+        }
     }
-
-    componentDidMount() {
-
-        let frame = this.refs.resultsFrame;
-        if ( frame ) {
-
-            frame.contentWindow.defaultsDeep = defaultsDeep;
-            frame.contentWindow.ComponentTree = ComponentTree;
-            frame.contentWindow.initialState = this.state.saveState;
-            //write the content
-            const frameDocument = frame.contentWindow.document;
-            frameDocument.open();
-            frameDocument.write(this.getFrameContent());
-            frameDocument.close();
-
-            //This is our "bridge" to the frame, setup callbacks to
-            //this code in the frame
-            frame.contentWindow.getPreviousState = this.getPreviousFrameState;
-            frame.contentWindow.__onStateChange = this.onStateChange;
-            frame.contentWindow.__clearMessages = this.clearFrameError;
-        }
-
-        //add intial state
-        if ( this.state.saveState ) {
-            let stateTransitions = this.state.stateTransitions;
-            stateTransitions.push(this.state.saveState);
-            this.setState({stateTransitions},()=>{
-                //update the window with the default script
-                this.updateCode(this.state.value);
-            })
-        } else {
-            //update the window with the default script
-            this.updateCode(this.state.value);
-        }
-
-
-
-    }
-
-    enableStateReplacement = ( state ) => {
-        let frame = this.refs.resultsFrame;
-        frame.contentWindow.initialState = state;
-    };
-
-    /**
-     * Get the contents to write to the frame content. Takes into account the users added
-     * css and js resources
-     */
-    getFrameContent = () => {
-        return frameContent(this.state.cssResources, this.state.jsResources);
-    };
-
-    /**
-     * Reconcile the frames head <link> tags with the new resources from the CSS resources state
-     */
-    reconcileCss() {
-        let frame = this.refs.resultsFrame;
-        let styles = frame.contentDocument.getElementsByClassName("injected-style");
-        let head = frame.contentDocument.getElementsByTagName("head")[0];
-
-        //cleanup
-        Array.prototype.forEach.call(styles, ( style ) => {
-            head.removeChild(style);
-        });
-
-        if ( this.state.cssResources.length ) {
-            this.state.cssResources.forEach(r => {
-                let link = frame.contentDocument.createElement('link');
-                link.rel = 'stylesheet';
-                link.className = 'injected-style';
-                link.href = r;
-                head.appendChild(link);
-            });
-        }
-
-    }
-
-    /**
-     * Reconcile the frames 'injected-scripts' with the new scripts from the jsResources
-     */
-    reconcileScripts() {
-        let frame = this.refs.resultsFrame;
-        let scripts = frame.contentDocument.getElementById("injected-scripts");
-        //clear the previous scripts
-        scripts.innerHTML = "";
-        //re-add
-        if ( this.state.jsResources.length ) {
-            scripts.innerHTML = `${this.state.jsResources.map(r =>'<script type="text/javascript" src="' + r + '"></script>')}`
-        }
-
-    }
-
-    onStateChange = ( newState ) => {
-        //are we supposed to be tracking state?
-        if ( this.state.saveState ) {
-            let stateTransitions = this.state.stateTransitions;
-            let lastState = stateTransitions[stateTransitions.length - 1];
-            if ( !isEqual(newState, lastState) ) {
-                stateTransitions.push(newState);
-                //store the state change
-                this.setState({stateTransitions, selectedState: stateTransitions.length - 1});
-            }
-
-        }
-    };
-
-    /**
-     * Get the React state from the users component tree
-     * @returns {*}
-     */
-    serializeFrameState = () => {
-        let frame = this.refs.resultsFrame;
-        if ( frame.contentWindow.getState ) {
-            return frame.contentWindow.getState();
-        }
-        return null;
-    };
-
-    /**
-     * Clear any frame errors
-     */
-    clearFrameError = () => {
-        this.setState({frameError: null});
-    };
-
-    /**
-     * Event handler for an exception caught in the frame
-     * @param msg
-     */
-    onFrameError = msg => {
-        this.setState({frameError: msg.message});
-    };
-
-    /**
-     * Render babel code to the iframe
-     * @param code
-     */
-    renderCode = code => {
-        let frame = this.refs.resultsFrame;
-        if ( frame ) {
-            renderReactToFrame(frame, code);
-        }
-    };
-
-    /**
-     * Render webpack code to the iframe
-     * @param code
-     * @param common
-     */
-    renderWebpackCode = ( code, common ) => {
-        let frame = this.refs.resultsFrame;
-        if ( frame ) {
-            renderReactToFrame(frame, code, common);
-        }
-    };
-
-    /**
-     * Callback for webpack compiled code being passed from the server
-     * @param data
-     */
-    onWebpackCodeChanged = data => {
-        if ( data.common && data.main ) {
-
-            //splice in exports
-            data.main = data.main.replace("var Main = function (", "window.Main = function (");
-
-            let codeToRender = `try{` + data.main + `
-
-                (function(){
-                var mountNode = document.getElementById('client_results');
-                ReactDOM.render(React.createElement(Main),mountNode);})();
-
-                if(window.__clearMessages) {
-                     __clearMessages();
-                }
-
-            }catch(e){console.error(e)}`;
-
-            this.renderWebpackCode(codeToRender, data.common);
-        }
-    };
-
-    /**
-     * This is the callback function for when babel
-     * compiled code comes back from the socket
-     * @param code
-     */
-    onCodeChange = code => {
-        if ( code ) {
-            this.setState({compiling: false}, ()=> {
-                this.renderCode(babelFrameScript(code));
-            });
-
-        }
-    };
-
-    /**
-     * Update the code running in the frame by emitting a code change event
-     */
-    updateCode = () => {
-
-        //persist state across refreshes
-        if ( this.state.saveState ) {
-            this.enableStateReplacement(this.state.saveState);
-        }
-
-        //emit the change
-        this.socket.emit("code change", {
-            code: this.state.value,
-            bin: this.state.bin,
-            jsResources: this.state.jsResources,
-            cssResources: this.state.cssResources,
-            revision: this.state.revision
-        });
-
-    };
-
-    /**
-     * Event handler for when text in the editor has changed
-     * @param newValue
-     */
-    onTextChanged = ( newValue ) => {
-        this.setState({value: newValue}, ()=> {
-            if ( this.state.autoRun ) {
-                this.updateCode();
-            }
-        });
-    };
-
-    /**
-     * Event handler for code being successfully saved on the server
-     * @param data
-     */
-    onCodeSaved = ( data ) => {
-        let {bin,revision,createdAt,jsResources,cssResources} = data;
-        if ( bin && revision ) {
-            this.props.history.push({
-                pathname: `/${bin}/${revision}`
-            });
-
-            //store in revisions
-            let revisions = this.state.revisions;
-            revisions.push({hash: revision, createdAt});
-            this.setState({jsResources, cssResources, revisions, revision, justSaved: true}, ()=> {
-                setTimeout(()=> {
-                    this.setState({justSaved: false});
-                }, 600)
-            });
-        }
-
-    };
-
-    /**
-     * Key handler for performing keyboard shortcuts.
-     * @param event
-     * @returns {boolean}
-     */
-    onKeyDown = event => {
-        if ( event.metaKey && event.keyCode === 83 ) {
-            event.preventDefault();
-            this.saveCode();
-            return false;
-        }
-        if ( event.metaKey && event.keyCode === 13 ) {
-            event.preventDefault();
-            this.updateCode();
-            return false;
-        }
-
-        return true;
-    };
-
-    /**
-     * Save the current state of the code, passing the text, the bin, the revision and the serialized state of the
-     * mounted component
-     */
-    saveCode = () => {
-        let {bin,revision} = this.props.params;
-
-        this.socket.emit("code save", {
-            jsResources: this.state.jsResources,
-            cssResources: this.state.cssResources,
-            code: this.state.value,
-            bin,
-            revision,
-            state: this.state.saveState ? this.serializeFrameState() : null
-        });
-    };
 
     /**
      * Hide the revisions popover
@@ -368,35 +37,17 @@ class Application extends React.Component {
     hideRevisions = () => {
         this.setState({showingRevisions: false});
     };
-
     /**
      * Show the revisions popover
      */
     showRevisions = () => {
-        this.setState({showingRevisions: true, showingJs: false, showingCss: false});
+        this.setState({showingRevisions: true});
     };
-
     /**
-     * Toggle the CSS panel
+     * Toggle the revision panel
      */
-    toggleCss = () => {
-        let showing = this.state.showingCss;
-        this.setState({showingCss: !showing, showingJs: false, showingRevisions: false});
-    };
-
-    /**
-     * Toggle the JS panel
-     */
-    toggleJs = () => {
-        let showing = this.state.showingJs;
-        this.setState({showingJs: !showing, showingCss: false, showingRevisions: false});
-    };
-
-    /**
-     * Hide all the overlay panels
-     */
-    hideAllPanels = ()=> {
-        this.setState({showingJs: false, showingCss: false, showingRevisions: false});
+    toggleRevisions = () => {
+        this.setState({showingRevisions: !this.state.showingRevisions});
     };
 
     /**
@@ -407,11 +58,56 @@ class Application extends React.Component {
     onAddCssResource = resource => {
         let cssResources = this.state.cssResources;
         if ( cssResources.indexOf(resource) === -1 ) {
-            cssResources.push(resource);
-            this.setState({cssResources}, ()=> {
-                this.reconcileCss();
-            });
+            this.setState({cssResources: cssResources.concat([resource])});
         }
+    };
+
+    /**
+     * Event handler for deleting CSS resources
+     * @param resource
+     */
+    onDeleteCssResource = resource => {
+        let cssResources = this.state.cssResources.filter(r => r !== resource);
+        this.setState({cssResources});
+    };
+
+    /**
+     * Event handler for re-ordering CSS resources
+     * @param resource
+     * @param direction
+     */
+    onReorderCssResource = ( resource, direction ) => {
+        let cssResources = [].concat(this.state.cssResources);
+        let idx = cssResources.indexOf(resource);
+        let newIdx = direction === "up"
+            ? Math.max(idx - 1, 0)
+            : Math.min(idx + 1, cssResources.length);
+
+        cssResources.splice(idx, 1);
+        cssResources.splice(newIdx, 0, resource);
+
+        //move item up or down
+        this.setState({cssResources});
+
+    };
+
+    /**
+     * Event handler for updating a CSS resource
+     * @param oldVal
+     * @param newVal
+     */
+    onCssItemUpdated = ( oldVal, newVal ) => {
+        let cssResources = this.state.cssResources;
+        let idx = cssResources.indexOf(oldVal);
+
+        this.setState({
+            cssResources: cssResources.map(( v, _idx ) => {
+                if ( _idx === idx ) {
+                    return newVal
+                }
+                return v;
+            })
+        });
     };
 
     /**
@@ -422,62 +118,35 @@ class Application extends React.Component {
     onAddJsResource = resource => {
         let jsResources = this.state.jsResources;
         if ( jsResources.indexOf(resource) === -1 ) {
-            jsResources.push(resource);
-            this.setState({jsResources}, ()=> {
-                this.reconcileScripts();
-            });
+            this.setState({jsResources: jsResources.concat([resource])});
         }
     };
 
     /**
-     * Event handler for deleting CSS resources
-     * @param resource
+     * Event handler for updating a JS resource
+     * @param oldVal
+     * @param newVal
      */
-    onDeleteCssResource = resource => {
-        let cssResources = this.state.cssResources.filter(r => r !== resource);
-        this.setState({cssResources}, ()=> {
-            this.reconcileCss();
+    onJsItemUpdated = ( oldVal, newVal ) => {
+        let jsResources = this.state.jsResources;
+        let idx = jsResources.indexOf(oldVal);
+        this.setState({
+            jsResources: jsResources.map(( v, _idx ) => {
+                if ( idx === _idx ) {
+                    return newVal;
+                }
+                return v;
+            })
         });
     };
 
-    /**
-     * Event handler for deleting JS resources
-     * @param resource
-     */
-    onDeleteJsResource = resource => {
-        let jsResources = this.state.jsResources.filter(r => r !== resource);
-        this.setState({jsResources}, ()=> {
-            this.reconcileScripts();
-        });
-    };
-    /**
-     * Event handler for re-ordering CSS resources
-     * @param resource
-     * @param direction
-     */
-    onReorderCssResource = ( resource, direction ) => {
-        let cssResources = this.state.cssResources;
-        let idx = cssResources.indexOf(resource);
-        let newIdx = direction === "up"
-            ? Math.max(idx - 1, 0)
-            : Math.min(idx + 1, cssResources.length);
-
-        cssResources.splice(idx, 1);
-        cssResources.splice(newIdx, 0, resource);
-
-        //move item up or down
-        this.setState({cssResources}, ()=> {
-            this.reconcileCss();
-        });
-
-    };
     /**
      * Event handler for re-ordering JS resources
      * @param resource
      * @param direction
      */
     onReorderJsResource = ( resource, direction ) => {
-        let jsResources = this.state.jsResources;
+        let jsResources = [].concat(this.state.jsResources);
         let idx = jsResources.indexOf(resource);
         let newIdx = direction === "up"
             ? Math.max(idx - 1, 0)
@@ -487,143 +156,71 @@ class Application extends React.Component {
         jsResources.splice(newIdx, 0, resource);
 
         //move item up or down
-        this.setState({jsResources}, ()=> {
-            this.reconcileScripts();
-        });
-
-    };
-    /**
-     * Event handler for updating a CSS resource
-     * @param oldVal
-     * @param newVal
-     */
-    onCssItemUpdated = ( oldVal, newVal ) => {
-        let cssResources = this.state.cssResources;
-        let idx = cssResources.indexOf(oldVal);
-        cssResources[idx] = newVal;
-        this.setState({cssResources}, ()=> {
-            this.reconcileCss();
-        });
-    };
-    /**
-     * Event handler for updating a JS resource
-     * @param oldVal
-     * @param newVal
-     */
-    onJsItemUpdated = ( oldVal, newVal ) => {
-        let jsResources = this.state.jsResources;
-        let idx = jsResources.indexOf(oldVal);
-        jsResources[idx] = newVal;
-        this.setState({jsResources}, ()=> {
-            this.reconcileScripts();
-        });
-    };
-    /**
-     * Toggle the "save"/"track" of the users state, then
-     * update the code
-     */
-    setPreserveState = ()=> {
-        let saveState = this.state.saveState;
-        let stateTransitions = this.state.stateTransitions;
-
-        if ( saveState ) {
-            saveState = null;
-            stateTransitions.length = 0;
-        } else {
-            saveState = this.serializeFrameState();
-            stateTransitions = [saveState];
-        }
-
-        this.setState({saveState, stateTransitions}, ()=> {
-            this.updateCode();
-        });
+        this.setState({jsResources});
     };
 
     /**
-     * Toggle the auto-compilation of the code as you type
+     * Event handler for deleting JS resources
+     * @param resource
      */
-    toggleAutoRun = ()=> {
-        let autoRun = this.state.autoRun;
-        this.setState({autoRun: !autoRun});
+    onDeleteJsResource = resource => {
+        let jsResources = this.state.jsResources.filter(r => r !== resource);
+        this.setState({jsResources});
     };
-    /**
-     * Event handler for selecting a particular  state
-     * @param idx
-     */
-    onSelectState = ( idx ) => {
-        let frame = this.refs.resultsFrame;
-        let requestedState = this.state.stateTransitions[idx];
 
-        if ( frame.contentWindow.reRenderWithState && requestedState ) {
-            this.setState({selectedState: idx}, ()=> {
-                return frame.contentWindow.reRenderWithState(requestedState);
-            });
-        }
+    /**
+     * Toggle the CSS panel
+     */
+    toggleCss = () => {
+        let showing = this.state.showingCss;
+        this.setState({showingCss: !showing, showingJs: false});
+    };
+
+    /**
+     * Toggle the JS panel
+     */
+    toggleJs = () => {
+        let showing = this.state.showingJs;
+        this.setState({showingJs: !showing, showingCss: false});
+    };
+
+    /**
+     * Hide all the overlay panels
+     */
+    hideAllPanels = ()=> {
+        this.setState({showingRevisions: false, showingJs: false, showingCss: false});
+    };
+
+    /**
+     * Add a revision to the revision set
+     * @param rev
+     */
+    addRevision = ( rev ) => {
+        let revisions = this.state.revisions;
+        this.setState({revision: rev.hash, revisions: revisions.concat([rev])});
     };
 
     render() {
-        const {showingRevisions, showingCss, showingJs,cssResources,jsResources} = this.state;
-        return (
-            <div className="app-container">
-
-                <CssPanel onUpdateItem={this.onCssItemUpdated} onReorderItem={this.onReorderCssResource}
-                          onDelete={this.onDeleteCssResource}
-                          onAdd={this.onAddCssResource} resources={cssResources}
-                          open={this.state.showingCss}
-                          onClose={this.toggleCss}/>
-                <JsPanel onUpdateItem={this.onJsItemUpdated} onReorderItem={this.onReorderJsResource}
-                         onDelete={this.onDeleteJsResource}
-                         onAdd={this.onAddJsResource} resources={jsResources}
-                         open={this.state.showingJs}
-                         onClose={this.toggleJs}/>
-                <Revisions revision={this.state.revision} bin={this.state.bin} revisions={this.state.revisions}
-                           showingRevisions={showingRevisions} hideRevisions={this.hideRevisions}/>
-
-                <div className="app-inner">
-                    <div id="editor" className={`${showingRevisions || showingCss || showingJs  ?'fade':''}`}>
-
-                        <Toolbar saveState={this.state.saveState}
-                                 autoRun={this.state.autoRun}
-                                 onToggleAutoRun={this.toggleAutoRun}
-                                 onClickRunCode={this.updateCode}
-                                 onClickPreserveState={this.setPreserveState}
-                                 onClickSaveCode={this.saveCode}
-                                 onClickToggleCss={this.toggleCss} onClickToggleJs={this.toggleJs}
-                                 onClickShowRevisions={this.showRevisions}/>
-                        <Errors
-                            socket={this.socket}
-                            frameError={this.state.frameError}/>
-                        <AceEditor
-                            mode="jsx"
-                            theme="solarized_dark"
-                            onFocus={this.hideAllPanels}
-                            onChange={this.onTextChanged}
-                            value={this.state.value}
-                            name="editor_window"
-                            showPrintMargin={false}
-                            editorProps={{$blockScrolling: true}}
-                        />
-                        {this.state.saveState && this.state.stateTransitions.length ?
-                            <StateBar onSelectState={this.onSelectState} selectedState={this.state.selectedState}
-                                      stateTransitions={this.state.stateTransitions}/>
-                            : null}
-                    </div>
-                    <div id="results">
-                        <iframe
-                            className={this.state.saveState && this.state.stateTransitions.length ? 'showing-state':''}
-                            frameBorder="0" ref="resultsFrame" src="about:blank" id="resultsFrame"></iframe>
-                        {this.state.saveState && this.state.stateTransitions.length ?
-                            <div className="selected-state-window">
-                                <h3>Active state</h3>
-                                <pre
-                                    dangerouslySetInnerHTML={{__html:JSON.stringify(this.state.stateTransitions[this.state.selectedState], null,4)}}></pre>
-                            </div>
-                            : null}
-                    </div>
-                </div>
-                <NpmMessage npmMessage={this.props.npmMessage}/>
-                <SaveModal show={this.state.justSaved}/>
-            </div>);
+        let {cssResources, jsResources, showingRevisions,showingCss,showingJs} = this.state;
+        return <div className="app-container">
+            <Revisions revision={this.state.revision} bin={this.state.bin} revisions={this.state.revisions}
+                       showingRevisions={showingRevisions} hideRevisions={this.hideRevisions}/>
+            <CssPanel onUpdateItem={this.onCssItemUpdated} onReorderItem={this.onReorderCssResource}
+                      onDelete={this.onDeleteCssResource}
+                      onAdd={this.onAddCssResource} resources={cssResources}
+                      open={this.state.showingCss}
+                      onClose={this.toggleCss}/>
+            <JsPanel onUpdateItem={this.onJsItemUpdated} onReorderItem={this.onReorderJsResource}
+                     onDelete={this.onDeleteJsResource}
+                     onAdd={this.onAddJsResource} resources={jsResources}
+                     open={this.state.showingJs}
+                     onClose={this.toggleJs}/>
+            <ReactRunner {...this.props} {...this.state}
+                editorClassName={`${showingRevisions || showingCss || showingJs  ?'fade':''}`}
+                onEditorFocus={this.hideAllPanels} toggleCss={this.toggleCss}
+                toggleJs={this.toggleJs}
+                toggleRevisions={this.toggleRevisions} addRevision={this.addRevision}/>
+        </div>;
     }
 }
 
