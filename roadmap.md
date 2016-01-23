@@ -12,6 +12,7 @@ Here are the items that we have on the board to get implemented and would repres
 ## Work started 
 - [ ] Allow auto installation of NPM modules, and subsequent bundling using Webpack. 
 - [ ] Support changing the [brace](https://github.com/thlorenz/brace) theme. Suprisingly, not everyone likes Solarized Dark
+
 ## Future
 - [ ] Tests on the server side and client components
 - [ ] Inform user, in the window, of React specific warnings and errors 
