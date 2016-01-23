@@ -1,0 +1,114 @@
+@mixin theme-app($mainBg,$mainBgLight,$textAccent,$textColor,$textNegative,$accentColor) {
+
+  //override the toolbar
+  .toolbar {
+    background-color: $mainBg;
+    color: $textAccent;
+    border-color: $textAccent;
+  }
+
+  //side panels
+  .side-panel {
+    background-color: $mainBgLight;
+
+    a {
+      color: $textColor;
+    }
+    h3, p {
+      color: $textColor;
+    }
+    h3 {
+      border-color: $textColor;
+    }
+
+    .revision-hash {
+      background-color: $textColor;
+      color: $textNegative;
+    }
+
+    li.active {
+      background-color: $textColor;
+      color: $textNegative;
+
+      a {
+        color: $textNegative;
+      }
+      .revision-hash {
+        background-color: $textNegative;
+        color: $textColor;
+      }
+    }
+  }
+
+  //side panel select items
+  .select-panel-item {
+    color: $textColor;
+
+    &.active {
+      background-color: $textColor;
+      color: $textNegative;
+    }
+  }
+
+  //the input in the side panels
+  .side-panel-input {
+    border-color: $textColor;
+    background-color: $mainBg;
+
+    &::-webkit-input-placeholder { /* Safari, Chrome and Opera */
+      color: $textColor * .7;
+    }
+
+    &:-moz-placeholder { /* Firefox 18- */
+      color: $textColor * .7;
+    }
+
+    &::-moz-placeholder { /* Firefox 19+ */
+      color: $textColor * .7;
+    }
+
+    &:-ms-input-placeholder { /* IE 10+ */
+      color: $textColor * .7;
+    }
+
+    &::-ms-input-placeholder { /* Edge */
+      color: $textColor * .7;
+    }
+
+    &:placeholder-shown { /* Standard one last! */
+      color: $textColor * .7;
+    }
+  }
+
+  //the button in the side panel
+  .side-panel-button {
+    background-color: $mainBg;
+    color: $textColor;
+    border-color: $textColor;
+  }
+
+  //the side panel listing buttons
+  .side-panel-listing {
+    color: $accentColor;
+  }
+
+  //state window
+  .selected-state-window {
+    background-color: $mainBg;
+    color: $textColor;
+    border-color: $textColor;
+    border-left-color:transparent;
+  }
+  //state bar handle
+  .state-bar .handle {
+    background-color: $accentColor;
+  }
+  //saved modal
+  .saved {
+    background-color: $mainBg;
+    color: $textColor;
+  }
+  #editor {
+    border-color: $textAccent;
+  }
+}

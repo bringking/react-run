@@ -8,7 +8,7 @@ import moment from "moment";
  */
 const RevisionsPanel = ( props ) => {
     return (
-        <div className={`code-revisions ${props.showingRevisions?'open':''}`}>
+        <div className={`side-panel ${props.showingRevisions?'open':''}`}>
             <h3>Revisions <i className="fa fa-close" onClick={props.hideRevisions}></i></h3>
             <ul>
                 {props.revisions.map(r=><li key={r.hash} className={`${props.revision == r.hash?'active':''}`}>

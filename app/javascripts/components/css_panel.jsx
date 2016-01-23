@@ -1,4 +1,4 @@
-import ListPanel from "./list_panel";
+import ListPanel from "./panels/list_panel";
 
 /**
  * CssPanel represents the list of CSS resources

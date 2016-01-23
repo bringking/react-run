@@ -1,0 +1,14 @@
+.select-panel-item {
+  padding: 5px;
+  color: $green;
+  font-family: monospace;
+  height: auto;
+  min-height: 20px;
+  font-size: 12px;
+  cursor: pointer;
+
+  &.active {
+    background-color: $green;
+    color: $editorBg;
+  }
+}

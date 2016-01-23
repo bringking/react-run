@@ -14,6 +14,7 @@ body {
   height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
+  border-right: 1px solid transparent;
 
   &.fade {
     #editor_window {
@@ -68,4 +69,5 @@ body {
   overflow-y: auto;
   padding: 5px;
   border: 1px solid $green;
+  border-left-color:$green;
 }

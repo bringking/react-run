@@ -19,6 +19,7 @@
 // ----------------------------------------------------------------------
 // Components
 // ----------------------------------------------------------------------
+@import "components/select_panel";
 @import "components/buttons";
 @import "components/main";
 @import "components/error_message";
@@ -30,3 +31,7 @@
 @import "components/state_bar";
 @import "components/not_found";
 @import "components/internal-error";
+// ----------------------------------------------------------------------
+// Themes
+// ----------------------------------------------------------------------
+@import "themes/themes";

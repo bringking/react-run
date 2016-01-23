@@ -1,5 +1,5 @@
 
-.code-revisions, .side-panel {
+.side-panel {
   &.large {
     width: 600px;
     transform: translate3d(-600px, 0, 0);
@@ -46,7 +46,6 @@
     font-family: monospace;
     height: auto;
     min-height: 20px;
-    display: block;
     font-size: 12px;
     display: flex;
     align-items: center;
