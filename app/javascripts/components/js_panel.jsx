@@ -1,4 +1,4 @@
-import ListPanel from "./list_panel";
+import ListPanel from "./panels/list_panel";
 
 /**
  * The JSPanel represents the list of JS specific resources

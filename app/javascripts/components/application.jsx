@@ -1,10 +1,13 @@
 import React,{Component} from "react"
 import JsPanel from "./js_panel";
 import CssPanel from "./css_panel";
+import ThemePanel from "./theme_panel"
 import ReactRunner from "./react_runner";
 import Revisions from "./revisions";
 //listeners
 import NpmListener from "./listeners/npm_listener"
+//themes for brace
+import themes from 'themes';
 
 /**
  * The Application component is the root level component that composes our main application parts
@@ -20,12 +23,15 @@ class Application extends Component {
         let {bin,revision} = props.params;
 
         this.state = {
+            theme: window.currentTheme || "solarized_dark",
+            available_themes: themes,
             bin,
             revision,
             revisions: window.revisions || [],
             showingRevisions: false,
             jsResources: window.jsResources,
             cssResources: window.cssResources,
+            showingTheme: false,
             showingCss: false,
             showingJs: false
         }
@@ -185,10 +191,19 @@ class Application extends Component {
     };
 
     /**
+     * Toggle the Theme panel
+     */
+    toggleTheme = () => {
+        console.log("showing theme");
+        let showing = this.state.showingTheme;
+        this.setState({showingTheme: !showing, showingCss: false, showingJs: false, showingRevisions: false});
+    };
+
+    /**
      * Hide all the overlay panels
      */
     hideAllPanels = ()=> {
-        this.setState({showingRevisions: false, showingJs: false, showingCss: false});
+        this.setState({showingTheme: false, showingRevisions: false, showingJs: false, showingCss: false});
     };
 
     /**
@@ -200,9 +215,17 @@ class Application extends Component {
         this.setState({revision: rev.hash, revisions: revisions.concat([rev])});
     };
 
+    /**
+     * Set the selected theme
+     * @param theme
+     */
+    onSelectTheme = ( theme ) => {
+        this.setState({theme});
+    };
+
     render() {
-        let {cssResources, jsResources, showingRevisions,showingCss,showingJs} = this.state;
-        return <div className="app-container">
+        let {showingTheme, cssResources, jsResources, showingRevisions,showingCss,showingJs} = this.state;
+        return <div className={`app-container ${this.state.theme}`}>
             <Revisions revision={this.state.revision} bin={this.state.bin} revisions={this.state.revisions}
                        showingRevisions={showingRevisions} hideRevisions={this.hideRevisions}/>
             <CssPanel onUpdateItem={this.onCssItemUpdated} onReorderItem={this.onReorderCssResource}
@@ -215,10 +238,17 @@ class Application extends Component {
                      onAdd={this.onAddJsResource} resources={jsResources}
                      open={this.state.showingJs}
                      onClose={this.toggleJs}/>
+            <ThemePanel onClose={this.toggleTheme}
+                        open={this.state.showingTheme}
+                        selectedItem={this.state.theme}
+                        items={this.state.available_themes}
+                        onSelectItem={this.onSelectTheme}/>
             <ReactRunner {...this.props} {...this.state}
-                editorClassName={`${showingRevisions || showingCss || showingJs  ?'fade':''}`}
+                editorClassName={`${showingTheme || showingRevisions || showingCss || showingJs  ?'fade':''}`}
                 onEditorFocus={this.hideAllPanels} toggleCss={this.toggleCss}
                 toggleJs={this.toggleJs}
+                toggleTheme={this.toggleTheme}
+                theme={this.state.theme}
                 toggleRevisions={this.toggleRevisions} addRevision={this.addRevision}/>
         </div>;
     }

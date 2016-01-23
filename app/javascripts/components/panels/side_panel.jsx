@@ -7,7 +7,8 @@ class SidePanel extends React.Component {
         super();
 
         this.state = {
-            open: false
+            open: false,
+            size: 'large'
         };
 
         this.getContents = this.getContents.bind(this);
@@ -41,7 +42,7 @@ class SidePanel extends React.Component {
 
     render() {
         const {open,onClose} = this.props;
-        return (<div className={`side-panel ${open?'open':''} large`}>
+        return (<div className={`side-panel ${open?'open':''} ${this.state.size}`}>
                 <h3>{this.getTitle()} <i className="fa fa-close" onClick={onClose}></i></h3>
                 <p>{this.getDescription()}</p>
                 <div className="side-panel-inner">

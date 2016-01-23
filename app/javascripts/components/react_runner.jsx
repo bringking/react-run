@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import brace from 'brace';
 import AceEditor from 'react-ace';
 import 'brace/mode/jsx';
-import 'brace/theme/solarized_dark';
+
 import defaultsDeep from "lodash.defaultsdeep";
 import ComponentTree from "react-component-tree";
 import isEqual from "lodash.isequal";
@@ -38,6 +38,7 @@ class ReactRunner extends React.Component {
         this.socket = io();
 
         this.state = {
+
             saveState: window.savedState,
             stateTransitions: [],
             selectedState: 0,
@@ -350,6 +351,7 @@ class ReactRunner extends React.Component {
             jsResources: this.props.jsResources,
             cssResources: this.props.cssResources,
             code: this.state.value,
+            currentTheme: this.props.theme,
             bin,
             revision,
             state: this.state.saveState ? this.serializeFrameState() : null
@@ -402,7 +404,7 @@ class ReactRunner extends React.Component {
     render() {
         return (
             <div className="app-container">
-                <div className="app-inner">
+                <div className='app-inner'>
                     <div id="editor" className={this.props.editorClassName}>
                         <Toolbar saveState={this.state.saveState}
                                  autoRun={this.state.autoRun}
@@ -412,13 +414,14 @@ class ReactRunner extends React.Component {
                                  onClickSaveCode={this.saveCode}
                                  onClickToggleCss={this.props.toggleCss}
                                  onClickToggleJs={this.props.toggleJs}
+                                 onClickToggleTheme={this.props.toggleTheme}
                                  onClickShowRevisions={this.props.toggleRevisions}/>
                         <Errors
                             socket={this.socket}
                             frameError={this.state.frameError}/>
                         <AceEditor
                             mode="jsx"
-                            theme="solarized_dark"
+                            theme={this.props.theme}
                             onFocus={this.props.onEditorFocus}
                             onChange={this.onTextChanged}
                             value={this.state.value}

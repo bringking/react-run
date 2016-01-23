@@ -1,0 +1,135 @@
+@import "./theme_mixin";
+
+//do theme overrides here
+//$mainBg, $mainBgLight, $textAccent, $textColor, $textNegative, $accentColor
+.app-container.ambiance {
+  @include theme-app(#202020, rgba(41, 41, 41, 0.94), #E6E1DC, #9B859D, $black, #24C2C7)
+}
+
+.app-container.chaos {
+  @include theme-app(#161616, rgba(32, 32, 32, 0.94), #E6E1DC, #56C252, $black, #00698F)
+}
+
+.app-container.chrome {
+  @include theme-app(#FFFFFF, rgba(#ebebeb, 0.94), black, #1A1AA6, #ffffff, rgb(147, 15, 128))
+}
+
+.app-container.clouds {
+  @include theme-app(#FFFFFF, rgba(#ebebeb, 0.94), black, #5D90CD, #ffffff, #C52727)
+}
+
+.app-container.clouds_midnight {
+  @include theme-app(#191919, rgba(#232323, 0.94), #929292, #5D90CD, #ffffff, #C52727)
+}
+
+.app-container.cobalt {
+  @include theme-app(#002240, rgba(#011e3a, 0.94), #ffffff, #0088FF, #ffffff, #80FFBB)
+}
+
+.app-container.crimson_editor {
+  @include theme-app(#ffffff, rgba(#ebebeb, 0.94), rgb(0, 102, 255), black, #ffffff, rgb(109, 121, 222))
+}
+
+.app-container.dawn {
+  @include theme-app(#F9F9F9, rgba(#ebebeb, 0.94), #5A525F, black, #F9F9F9, #691C97)
+}
+
+.app-container.dreamweaver {
+  @include theme-app(#ffffff, rgba(#e8e8e8, 0.94), rgb(0, 102, 255), black, #F9F9F9, #009)
+}
+
+.app-container.eclipse {
+  @include theme-app(#ffffff, rgba(#ebebeb, 0.94), rgb(63, 95, 191), black, #F9F9F9, rgb(127, 0, 85))
+}
+
+.app-container.github {
+  @include theme-app(#ffffff, rgba(#e8e8e8, 0.94), #998, black, #F9F9F9, #D14)
+}
+
+.app-container.idle_fingers {
+  @include theme-app(#323232, rgba(#3b3b3b, 0.94), #BC9458, #fff, #323232, #CC7833)
+}
+
+.app-container.iplastic {
+  @include theme-app(#eeeeee, rgba(#dddddd, 0.94), #777777, #333333, #eeeeee, #0000FF)
+}
+
+.app-container.katzenmilch {
+  @include theme-app(#f3f2f3, rgba(#e8e8e8, 0.94), rgba(64, 79, 80, 0.67), rgba(15, 0, 9, 1.0), #f3f2f3, #674Aa8)
+}
+
+.app-container.kr_theme {
+  @include theme-app(#0B0A09, rgba(#1c1917, 0.94), #706D5B, #FCFFE0, #0B0A09, #9FC28A)
+}
+
+.app-container.kuroir {
+  @include theme-app(#E8E9E8, rgba(#e8e8e8, 0.94), rgba(148, 148, 148, 0.91), #363636, #E8E9E8, #104E8B)
+}
+
+.app-container.merbivore {
+  @include theme-app(#161616, rgba(#202020, 0.94), #AD2EA4, #E6E1DC, #161616, #FC6F09)
+}
+
+.app-container.merbivore_soft {
+  @include theme-app(#1C1C1C, rgba(#262424, 0.94), #AC4BB8, #E6E1DC, #1C1C1C, #FC803A)
+}
+
+.app-container.mono_industrial {
+  @include theme-app(#222C28, rgba(#1d2521, 0.94), #666C68, #fff, #222C28, #5778B6)
+}
+
+.app-container.monokai {
+  @include theme-app(#272822, rgba(#2F3129, 0.94), #75715E, #F8F8F2, #272822, #66D9EF)
+}
+
+.app-container.pastel_on_dark {
+  @include theme-app(#2C2828, rgba(#353030, 0.94), #A6C6FF, #8F938F, #2C2828, #757aD8)
+}
+
+.app-container.solarized_light {
+  @include theme-app(#FDF6E3, rgba(#fbf1d3, 0.94), #93A1A1, #586E75, #FDF6E3, #859900)
+}
+
+.app-container.sqlserver {
+  @include theme-app(#FFFFFF, rgba(#ebebeb, 0.94), #008000, black, #fff, #008080)
+}
+
+.app-container.terminal {
+  @include theme-app(black, rgba(#1a0005, 0.94), orangered, #DEDEDE, black, #E7C547)
+}
+
+.app-container.textmate {
+  @include theme-app(#fff, rgba(#f0f0f0, 0.94), rgb(0, 102, 255), black, white, rgb(109, 121, 222))
+}
+
+.app-container.tomorrow {
+  @include theme-app(#FFFFFF, rgba(#f6f6f6, 0.94), #8E908C, #4D4D4C, #FFFFFF, #C99E00)
+}
+
+.app-container.tomorrow_night {
+  @include theme-app(#1D1F21, rgba(#25282c, 0.94), #969896, #C5C8C6, #1D1F21, #F0C674)
+}
+
+.app-container.tomorrow_night_blue {
+  @include theme-app(#002451, rgba(#00204b, 0.94), #7285B7, #FFFFFF, #002451, #FFEEAD)
+}
+
+.app-container.tomorrow_night_bright {
+  @include theme-app(#000000, rgba(#1a1a1a, 0.94), #969896, #DEDEDE, #000000, #E7C547)
+}
+
+.app-container.tomorrow_night_eighties {
+  @include theme-app(#2D2D2D, rgba(#272727, 0.94), #999999, #CCCCCC, #2D2D2D, #FFCC66)
+}
+
+.app-container.twilight {
+  @include theme-app(#141414, rgba(#232323, 0.94), #5F5A60, #F8F8F8, #141414, #9B859D)
+}
+
+.app-container.vibrant_ink {
+  @include theme-app(#0F0F0F, rgba(#1a1a1a, 0.94), #9933CC, #FFFFFF, #0F0F0F, #FF6600)
+}
+
+.app-container.xcode {
+  @include theme-app(#ffffff, rgba(#e8e8e8, 0.94), #008E00, black, #ffffff, #790EAD)
+}

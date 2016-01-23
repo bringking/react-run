@@ -13,6 +13,7 @@ class ListPanel extends SidePanel {
         this.state = {
             open: false,
             toAdd: "",
+            size: 'large',
             editing: {},
             edited: {}
         };

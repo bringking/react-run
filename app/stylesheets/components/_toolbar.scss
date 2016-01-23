@@ -1,17 +1,15 @@
 .toolbar {
-  height: 30px;
-  line-height: 30px;
+  height: auto;
   background-color: $editorBg;
   color: $green;
   font-family: monospace;
+  border-bottom: 1px solid $green;
+
   .toolbar-controls {
     display: inline-block;
     width: 100%;
-    float: left;
-
     li {
-      padding-left: 12px;
-      padding-right: 12px;
+      padding: 6px 12px;
       float: right;
       cursor: pointer;
       font-size: 12px;

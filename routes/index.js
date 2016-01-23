@@ -1,7 +1,5 @@
 var shortid = require('shortid');
 
-
-
 module.exports = function( router, models ) {
     /**
      * On the intital route, we should make a new "bin" and create the first revision
@@ -11,7 +9,7 @@ module.exports = function( router, models ) {
 
         //generate guid
         var id = shortid.generate();
-        var newBin = new models.bin({id: id});
+        var newBin = new models.bin({id: id, currentTheme: "solarized_dark"});
 
         var result = yield newBin.save();
         var newRevision = new models.binRevision({
@@ -71,7 +69,6 @@ module.exports = function( router, models ) {
      */
     router.get('/:bin/:revision', function *() {
 
-
         var bin = yield models.bin
             .findOne({'id': this.params.bin});
 
@@ -100,6 +97,7 @@ module.exports = function( router, models ) {
             otherRevisions: otherRevisions,
             jsResources: binRevision.jsResources,
             cssResources: binRevision.cssResources,
+            currentTheme: bin.currentTheme,
             state: binRevision.state ? JSON.parse(binRevision.state) : null
         });
     });

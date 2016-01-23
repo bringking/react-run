@@ -101,6 +101,12 @@ var onCodeSaved = function*( socket, data ) {
             //saving
             var bin = yield models.bin.findOne({'id': data.bin});
 
+            //did they change the theme? persist the change
+            if ( bin.currentTheme !== data.currentTheme ) {
+                bin.currentTheme = data.currentTheme;
+                yield bin.save();
+            }
+
             var latestRevision = yield models
                 .binRevision
                 .find({'_bin': bin._id}).sort('-hash')

@@ -10,6 +10,12 @@ module.exports = function( mongoose ) {
          * The "friendly" id of the bin, not the Mongo generated ID
          */
         id: {type: String, index: true},
+
+        /**
+         * The current editor theme of the bin
+         */
+        currentTheme: String,
+
         /**
          * An array of NPM modules that the bin has installed
          */
