@@ -14,10 +14,58 @@ class SelectPanel extends SidePanel {
             open: false,
             size: ''
         };
+
     }
 
+    componentDidMount() {
+        //bind keyboard handlers
+        document.addEventListener("keydown", this.onKeyDown);
+        //focus this element
+        this.refs.sidePanel.focus();
+    }
+
+    componentWillUnmount() {
+        //bind keyboard handlers
+        document.removeEventListener("keydown", this.onKeyDown);
+    }
+
+    /**
+     * Select the next item in the list
+     */
+    selectNext = ()=> {
+        let currentIdx = this.props.items.indexOf(this.props.selectedItem);
+        let nextIdx = Math.min(currentIdx + 1, this.props.items.length);
+        this.props.onSelectItem(this.props.items[nextIdx]);
+    };
+    /**
+     * Select the previous item in the list
+     */
+    selectPrevious = () => {
+        let currentIdx = this.props.items.indexOf(this.props.selectedItem);
+        let nextIdx = Math.max(currentIdx - 1, 0);
+        this.props.onSelectItem(this.props.items[nextIdx]);
+    };
+    /**
+     * Event handler for keyboard events
+     * @param event
+     * @returns {boolean}
+     */
+    onKeyDown = ( event ) => {
+
+        if ( event.keyCode === 38 ) {
+            event.preventDefault();
+            this.selectPrevious();
+            return false;
+        }
+        if ( event.keyCode === 40 ) {
+            event.preventDefault();
+            this.selectNext();
+            return false;
+        }
+    };
+
     getContents() {
-        return <div className="side-panel-form">
+        return <div className="side-panel-form" ref="sidePanel">
             <ReactCSSTransitionGroup component="ul" transitionName="side-panel-item-animation"
                                      transitionEnterTimeout={500}
                                      transitionLeaveTimeout={300}>
