@@ -34,7 +34,7 @@ class SelectPanel extends SidePanel {
      */
     selectNext = ()=> {
         let currentIdx = this.props.items.indexOf(this.props.selectedItem);
-        let nextIdx = Math.min(currentIdx + 1, this.props.items.length);
+        let nextIdx = Math.min(currentIdx + 1, this.props.items.length - 1);
         this.props.onSelectItem(this.props.items[nextIdx]);
     };
     /**

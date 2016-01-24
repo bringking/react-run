@@ -194,7 +194,6 @@ class Application extends Component {
      * Toggle the Theme panel
      */
     toggleTheme = () => {
-        console.log("showing theme");
         let showing = this.state.showingTheme;
         this.setState({showingTheme: !showing, showingCss: false, showingJs: false, showingRevisions: false});
     };
