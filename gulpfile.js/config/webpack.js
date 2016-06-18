@@ -73,7 +73,6 @@ module.exports = function(env) {
     }
   }
 
-
   if (env === 'production' || env === 'staging') {
 
     // add optimize plugin
@@ -82,20 +81,19 @@ module.exports = function(env) {
     webpackConfig.output.filename = '[name].[hash].js';
 
     webpackConfig.plugins.push(
-
       new webpack.DefinePlugin({
         'process.env': {
           'NODE_ENV': JSON.stringify('production')
         }
       }),
-      new webpack.optimize.DedupePlugin()
+      new webpack.optimize.DedupePlugin(),
       new webpack.optimize.UglifyJsPlugin({
-          compress: {
-            unused: true,
-            dead_code: true,
-            warnings: false
-          }
-        })
+        compress: {
+          unused: true,
+          dead_code: true,
+          warnings: false
+        }
+      })
     )
   }
 
