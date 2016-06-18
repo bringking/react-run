@@ -1,9 +1,6 @@
 #React.run
 
-[React.run](http://www.react.run)
-
-[![React.run Demonstration](http://img.youtube.com/vi/Mjo-LVRaL7M/0.jpg)](http://www.youtube.com/watch?v=Mjo-LVRaL7M)
-
+## [React.run](http://www.react.run)
 
 ## What is it?
 
