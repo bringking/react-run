@@ -4,7 +4,7 @@
 # public
 Desktop.ini
 node_modules
-app/assets/stylesheets/generated
+app/static/stylesheets/generated
 public/
 
 # Intellij

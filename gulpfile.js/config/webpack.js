@@ -34,7 +34,9 @@ module.exports = function(env) {
       publicPath: publicPath
     },
 
-    plugins: [],
+    plugins: [
+      new AssetsPlugin({ fullPath: true })
+    ],
 
     resolve: {
       modulesDirectories: ['', paths.sourceAssets + '/javascripts/lib', 'node_modules'],
@@ -53,7 +55,7 @@ module.exports = function(env) {
     webpack.debug = true;
   }
 
-  if (env == 'test') {
+  if (env === 'test') {
     return {
       debug: true,
       node: {
@@ -71,31 +73,29 @@ module.exports = function(env) {
     }
   }
 
+
   if (env === 'production' || env === 'staging') {
 
     // add optimize plugin
     babelJsxLoader.query.presets.push("react-optimize");
     babelJsLoader.query.presets.push("react-optimize");
-
     webpackConfig.output.filename = '[name].[hash].js';
 
     webpackConfig.plugins.push(
-      new AssetsPlugin({ fullPath: true }),
+
       new webpack.DefinePlugin({
         'process.env': {
           'NODE_ENV': JSON.stringify('production')
         }
       }),
-      new webpack.optimize.DedupePlugin(),
-      new webpack.optimize.UglifyJsPlugin(
-        {
-          compress: {
-            unused: true,
-            dead_code: true,
-            warnings: false
-          }
-        }
-      )
+      new webpack.optimize.DedupePlugin()
+      // new webpack.optimize.UglifyJsPlugin({
+      //     compress: {
+      //       unused: true,
+      //       dead_code: true,
+      //       warnings: false
+      //     }
+      //   })
     )
   }
 

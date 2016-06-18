@@ -1,19 +1,31 @@
 .error-message {
-  position:relative;
-  min-height: 40px;
+  font-family: monospace;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   opacity: .9;
-  background: darkred;
+  background: #c0392b;
   color: white;
-  font-family: sans-serif;
   padding-left: 12px;
   pointer-events: none;
-  display: flex;
   flex-direction: column;
-  justify-content: center;
+  text-align: left;
   p {
     width: 100%;
+    font-size: 1.5rem;
   }
   &.initial {
     visibility: hidden;
+  }
+  h1 {
+    width: 100%;
+    font-size: 2.5rem;
+  }
+
+  &.warning-message {
+    background: #d35400;
   }
 }
