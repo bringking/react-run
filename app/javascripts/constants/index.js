@@ -2,7 +2,7 @@
  * The initialScript is the script that shows in the initial window
  */
 export const initialScript = `/**
- * Welcome to the React.run beta! The in-browser React testing environment.
+ * Welcome to React.run! The in-browser React testing environment.
  * This "Main" component is required for React.run to work,
  * and it is your main Application entry point. You can feel free
  * to modify it and add other components. Enjoy!
@@ -27,7 +27,6 @@ export const initialScript = `/**
  * variables for your use, "React" and "ReactDOM".
  * There are plans to add more soon!
  *
- * This is a beta so expect more features soon!
  * Built with love by http://rinconstrategies.io
  */
 class Main extends React.Component {
