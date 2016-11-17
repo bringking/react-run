@@ -6,7 +6,7 @@ import ListPanel from "./panels/list_panel";
 class JsPanel extends ListPanel {
 
     getPlaceHolder() {
-        return "e.g. https://npmcdn.com/three.js";
+        return "e.g. https://unpkg.com/three.js";
     }
 
     getDescription() {
