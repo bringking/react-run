@@ -1,5 +1,7 @@
 # [React.run](http://www.react.run)
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/bringking/react-run.svg)](https://greenkeeper.io/)
+
 ## What is it?
 
 React.run is an in-browser tool that allows you to write, run, and experiment writing
