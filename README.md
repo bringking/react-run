@@ -5,7 +5,7 @@
 React.run is an in-browser tool that allows you to write, run, and experiment writing
 [React](https://facebook.github.io/react/) components in the browser with no additional tools or configuration. It's the fastest way to get started learning the patterns and practices of React.
 
-##Features
+## Features
 
 * Automatic Babel transpilation of React JSX/ES6 code
 * Create and save multiple revisions
